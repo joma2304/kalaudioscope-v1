@@ -35,7 +35,7 @@ io.on('connection', socket => {
     console.log(`User ${socket.id} connected`)
 
     // Upon connection - only to user 
-    socket.emit('message', buildMsg(ADMIN, "Welcome to Chat App!"))
+    socket.emit('message', buildMsg(ADMIN, "Välkommen!"))
 
     socket.on('enterRoom', ({ name, room }) => {
 
@@ -44,7 +44,7 @@ io.on('connection', socket => {
 
         if (prevRoom) {
             socket.leave(prevRoom)
-            io.to(prevRoom).emit('message', buildMsg(ADMIN, `${name} has left the room`))
+            io.to(prevRoom).emit('message', buildMsg(ADMIN, `${name} har lämnat`))
         }
 
         const user = activateUser(socket.id, name, room)
@@ -60,10 +60,10 @@ io.on('connection', socket => {
         socket.join(user.room)
 
         // To user who joined 
-        socket.emit('message', buildMsg(ADMIN, `You have joined the ${user.room} chat room`))
+        socket.emit('message', buildMsg(ADMIN, `Ansluten till rum ${user.room}`))
 
         // To everyone else 
-        socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined the room`))
+        socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} har gått med i rummet`))
 
         // Update user list for room 
         io.to(user.room).emit('userList', {
@@ -82,7 +82,7 @@ io.on('connection', socket => {
         userLeavesApp(socket.id)
 
         if (user) {
-            io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has left the room`))
+            io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} har lämnat rummet`))
 
             io.to(user.room).emit('userList', {
                 users: getUsersInRoom(user.room)

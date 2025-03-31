@@ -67,7 +67,7 @@ socket.on("message", (data) => {
 
 let activityTimer
 socket.on("activity", (name) => {
-    activity.textContent = `${name} is typing...`
+    activity.textContent = `${name} skriver...`
 
     // Clear after 3 seconds 
     clearTimeout(activityTimer)
@@ -87,7 +87,7 @@ socket.on('roomList', ({ rooms }) => {
 function showUsers(users) {
     usersList.textContent = ''
     if (users) {
-        usersList.innerHTML = `<em>Users in ${chatRoom.value}:</em>`
+        usersList.innerHTML = `<em>Användare i ${chatRoom.value}:</em>`
         users.forEach((user, i) => {
             usersList.textContent += ` ${user.name}`
             if (users.length > 1 && i !== users.length - 1) {
@@ -100,7 +100,7 @@ function showUsers(users) {
 function showRooms(rooms) {
     roomList.textContent = ''
     if (rooms) {
-        roomList.innerHTML = '<em>Active Rooms:</em>'
+        roomList.innerHTML = '<em>Aktiva rum:</em>'
         rooms.forEach((room, i) => {
             roomList.textContent += ` ${room}`
             if (rooms.length > 1 && i !== rooms.length - 1) {
