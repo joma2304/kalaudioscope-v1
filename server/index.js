@@ -34,67 +34,81 @@ const io = new Server(expressServer, {
 io.on('connection', socket => {
     console.log(`User ${socket.id} connected`)
 
-    // Upon connection - only to user 
-    socket.emit('message', buildMsg(ADMIN, "Välkommen!"))
-
     socket.on('enterRoom', ({ name, room }) => {
+        const prevUser = getUser(socket.id);
 
-        // leave previous room 
-        const prevRoom = getUser(socket.id)?.room
-
-        if (prevRoom) {
-            socket.leave(prevRoom)
-            io.to(prevRoom).emit('message', buildMsg(ADMIN, `${name} har lämnat`))
-        }
-
-        const user = activateUser(socket.id, name, room)
-
-        // Cannot update previous room users list until after the state update in activate user 
-        if (prevRoom) {
+        if (prevUser) {
+            // Om användaren redan är i ett rum, lämna det rummet
+            const prevRoom = prevUser.room;
+            socket.leave(prevRoom);
+            io.to(prevRoom).emit('message', buildMsg(ADMIN, `${prevUser.name} har lämnat rummet`));
             io.to(prevRoom).emit('userList', {
-                users: getUsersInRoom(prevRoom)
-            })
+                users: getUsersInRoom(prevRoom),
+            });
         }
 
-        // join room 
-        socket.join(user.room)
+        // Aktivera användaren i det nya rummet
+        const user = activateUser(socket.id, name, room);
 
-        // To user who joined 
-        socket.emit('message', buildMsg(ADMIN, `Ansluten till rum ${user.room}`))
+        socket.join(user.room);
 
-        // To everyone else 
-        socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} har gått med i rummet`))
+        // Skicka meddelanden och uppdatera användarlistor
+        socket.emit('message', buildMsg(ADMIN, `Ansluten till rum ${user.room}`));
+        socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} har gått med i rummet`));
 
-        // Update user list for room 
         io.to(user.room).emit('userList', {
-            users: getUsersInRoom(user.room)
-        })
+            users: getUsersInRoom(user.room),
+        });
 
-        // Update rooms list for everyone 
         io.emit('roomList', {
-            rooms: getAllActiveRooms()
-        })
-    })
+            rooms: getAllActiveRooms(),
+        });
+    });
 
     // When user disconnects - to all others 
     socket.on('disconnect', () => {
-        const user = getUser(socket.id)
-        userLeavesApp(socket.id)
+        const user = getUser(socket.id);
 
-        if (user) {
-            io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} har lämnat rummet`))
-
-            io.to(user.room).emit('userList', {
-                users: getUsersInRoom(user.room)
-            })
-
-            io.emit('roomList', {
-                rooms: getAllActiveRooms()
-            })
+        if (!user) {
+            console.log(`User ${socket.id} already removed`);
+            return; // Användaren är redan borttagen
         }
 
-        console.log(`User ${socket.id} disconnected`)
-    })
+        userLeavesApp(socket.id);
+
+      io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} har lämnat rummet`));
+        io.to(user.room).emit('userList', {
+            users: getUsersInRoom(user.room),
+        });
+
+        io.emit('roomList', {
+            rooms: getAllActiveRooms(),
+        });
+
+        console.log(`User ${socket.id} disconnected`);
+    });
+
+    socket.on('leaveRoom', ({ name, room }) => {
+        const user = getUser(socket.id);
+    
+        if (user) {
+            // Ta bort användaren från UsersState
+            userLeavesApp(socket.id);
+    
+            // Lämna rummet
+            socket.leave(room);
+    
+            // Skicka meddelande till andra användare i rummet
+            io.to(room).emit('message', buildMsg(ADMIN, `${name} har lämnat rummet`));
+    
+            // Uppdatera användarlistan för rummet
+            io.to(room).emit('userList', {
+                users: getUsersInRoom(room),
+            });
+    
+            console.log(`User ${name} left room ${room}`);
+        }
+    });
 
     // Listening for a message event 
     socket.on('message', ({ name, text }) => {
@@ -136,9 +150,16 @@ function activateUser(id, name, room) {
 }
 
 function userLeavesApp(id) {
+    const user = getUser(id);
+    if (!user) {
+        console.log(`User ${id} not found in UsersState`);
+        return;
+    }
+
     UsersState.setUsers(
         UsersState.users.filter(user => user.id !== id)
-    )
+    );
+    console.log(`User removed: ${JSON.stringify(user)}`);
 }
 
 function getUser(id) {
@@ -152,3 +173,4 @@ function getUsersInRoom(room) {
 function getAllActiveRooms() {
     return Array.from(new Set(UsersState.users.map(user => user.room)))
 }
+
