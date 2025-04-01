@@ -13,6 +13,7 @@ interface Message {
 const ChatApp = () => {
     const socket = useSocket();
     const [name, setName] = useState("");
+    const [ticketNumber, setTicketNumber] = useState("");
     const [room, setRoom] = useState("");
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
@@ -23,7 +24,8 @@ const ChatApp = () => {
     const [showHeader, setShowHeader] = useState(true);
     const [lastLeftTime, setLastLeftTime] = useState<number | null>(null); // Tidsstämpel för senaste lämning
     const [hasLeft, setHasLeft] = useState(false); // För att hålla reda på om användaren lämnat via knappen
-    
+    const [error, setError] = useState(""); // För felmeddelanden
+
     // Funktioner för att hantera inloggning och anslutning till rummet
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
@@ -70,16 +72,28 @@ const ChatApp = () => {
 
     const joinRoom = (e: React.FormEvent) => {
         e.preventDefault();
-        if (name && room) {
-            setMessages([]);
-            localStorage.setItem("chatName", name);
-            localStorage.setItem("chatRoom", room);
 
-            socket.emit("enterRoom", { name, room });
-
-            setShowChat(true);
-            setShowHeader(false);
+        if (!name.trim()) {
+            setError("Du måste ange ett namn!");
+            return;
         }
+
+        if (ticketNumber.length !== 10) {
+            setError("Biljettnumret måste vara exakt 10 siffror!");
+            return;
+        }
+
+        const room = ticketNumber.slice(0, 4); // De första 4 siffrorna avgör rummet
+
+        // Spara i localStorage
+        localStorage.setItem("chatName", name);
+        localStorage.setItem("chatRoom", room);
+
+        // Skicka anslutningshändelse till servern
+        socket.emit("enterRoom", { name, room });
+
+        setShowChat(true);
+        setShowHeader(false);
     };
 
     const sendMessage = (e: React.FormEvent) => {
@@ -149,11 +163,20 @@ const ChatApp = () => {
                     />
                     <input
                         type="text"
-                        placeholder="Biljettnummer"
-                        value={room}
-                        onChange={(e) => setRoom(e.target.value)}
+                        placeholder="Biljettnummer (10 siffror)"
+                        value={ticketNumber}
+                        onChange={(e) => {
+                            // Tillåt endast siffror
+                            if (/^\d*$/.test(e.target.value)) {
+                                setTicketNumber(e.target.value);
+                            }
+                        }}
+                        maxLength={10} // Begränsa till 10 tecken
                         required
                     />
+
+                    {error && <p className="error-message">{error}</p>}
+
                     <button type="submit">Anslut</button>
                 </form>
             )}
@@ -162,19 +185,18 @@ const ChatApp = () => {
 
             {showChat && (
                 <div className="chat-display" ref={chatRef}>
-                    <div className="chat-title">Välkommen till chattrum: {room}</div>
+                    <div className="chat-title">Välkommen!</div>
                     {messages.map((msg, index) => (
                         <div
                             key={index}
-                            className={`post ${
-                                msg.name === "Admin"
+                            className={`post ${msg.name === "Admin"
                                     ? "post--system"
                                     : msg.name === name
-                                    ? "post--right"
-                                    : "post--left"
-                            }`}
+                                        ? "post--right"
+                                        : "post--left"
+                                }`}
                         >
-                            {msg.name !== "Admin" && <strong>{msg.name}</strong>}
+                            <span className="sender">{msg.name !== "Admin" && <strong>{msg.name}</strong>}</span>
                             <span className="msg">{msg.text}</span>
                             <em>Kl: {msg.time}</em>
                         </div>
@@ -205,7 +227,7 @@ const ChatApp = () => {
             {showChat && <p className="users-in-room">Användare i rummet: <strong>{users.join(", ")}</strong></p>}
 
             {showChat && <button onClick={leaveChat} className="leave-chat"> <LogOut size={18} />
-            <span>Lämna rummet</span></button>}
+                <span>Lämna rummet</span></button>}
 
         </div>
     );
