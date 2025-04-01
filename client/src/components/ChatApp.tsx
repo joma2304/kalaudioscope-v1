@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useSocket } from "../context/SocketContext";
 import "./ChatApp.css";
+import { LogOut, SendHorizonal } from "lucide-react";
+
 
 interface Message {
     name: string;
@@ -147,7 +149,7 @@ const ChatApp = () => {
                     />
                     <input
                         type="text"
-                        placeholder="Rum"
+                        placeholder="Biljettnummer"
                         value={room}
                         onChange={(e) => setRoom(e.target.value)}
                         required
@@ -160,6 +162,7 @@ const ChatApp = () => {
 
             {showChat && (
                 <div className="chat-display" ref={chatRef}>
+                    <div className="chat-title">Välkommen till chattrum: {room}</div>
                     {messages.map((msg, index) => (
                         <div
                             key={index}
@@ -171,9 +174,9 @@ const ChatApp = () => {
                                     : "post--left"
                             }`}
                         >
-                            {msg.name !== "Admin" && <strong>{msg.name}:</strong>}
-                            <span>{msg.text}</span>
-                            <em>{msg.time}</em>
+                            {msg.name !== "Admin" && <strong>{msg.name}</strong>}
+                            <span className="msg">{msg.text}</span>
+                            <em>Kl: {msg.time}</em>
                         </div>
                     ))}
                 </div>
@@ -195,20 +198,15 @@ const ChatApp = () => {
                         }}
                         required
                     />
-                    <button type="submit">Skicka</button>
+                    <button type="submit"><SendHorizonal size={18} /> <span>Skicka</span></button>
                 </form>
             )}
 
-            {showChat && <p>Användare i rummet: {users.join(", ")}</p>}
+            {showChat && <p className="users-in-room">Användare i rummet: <strong>{users.join(", ")}</strong></p>}
 
-            {showChat && <button onClick={leaveChat}>Lämna chatten</button>}
+            {showChat && <button onClick={leaveChat} className="leave-chat"> <LogOut size={18} />
+            <span>Lämna rummet</span></button>}
 
-            {/* Meddelande om återanslutning */}
-            {hasLeft && Date.now() - lastLeftTime! > 60000 && (
-                <div className="rejoin-notice">
-                    <p>Du har lämnat rummet och återanslutit!</p>
-                </div>
-            )}
         </div>
     );
 };

@@ -17,7 +17,8 @@ body {
 }
 
 .container {
-    width: 100%;
+    width: 90vw;
+    max-width: 900px;
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
@@ -45,12 +46,16 @@ input {
 }
 
 input:focus {
-    outline: 2px solid #6200ea;
+    outline: 2px solid #606060;
 }
 
 button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     border: none;
-    background: #6200ea;
+    background: #0f7a18;
     color: #fff;
     padding: 0.75rem 1rem;
     border-radius: 6px;
@@ -60,14 +65,25 @@ button {
 }
 
 button:hover {
-    background: #4b00c4;
+    background: #0b5e12;
+}
+
+.leave-chat {
+    display: flex;
+    align-items: center; 
+    gap: 0.5rem;
+    max-width: 200px;
+    margin: 0 auto;
+    background: #bb1838;
+}
+
+.leave-chat:hover{
+    background: #90122b;
 }
 
 /* Chat Display */
 .chat-display {
     background: #1e1e1e;
-    min-width: 30vw;
-    max-width: 900px;
     border-radius: 8px;
     padding: 1.5rem;
     display: flex;
@@ -78,8 +94,15 @@ button:hover {
     margin: 10px;
 }
 
+.chat-title {
+    font-size: 1.3rem;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
 .post {
-    max-width: 70%;
+    max-width: 80%;
     width: 100%;
     padding: 0.75rem;
     border-radius: 8px;
@@ -87,6 +110,11 @@ button:hover {
     display: flex;
     flex-direction: column;
     word-wrap: break-word;
+}
+/*Meddelandetexten i chatten*/
+.msg {
+    font-size: 1rem;
+    color: #e0e0e0;
 }
 
 .post--left {
@@ -115,6 +143,14 @@ button:hover {
     font-style: italic;
     color: #b0b0b0;
     text-align: center;
+}
+
+.users-in-room {
+    font-size: 1rem;
+    color: #b0b0b0;
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;;
 }
 
 /* Responsive Design */
