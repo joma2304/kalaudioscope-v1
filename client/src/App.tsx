@@ -1,15 +1,12 @@
-import ChatApp from "./components/ChatApp";
-import OnlyShow from "./components/OnlyShow";
 import { SocketProvider } from "./context/SocketContext";
+import ChatApp from "./components/ChatApp";
 
 const App = () => {
     return (
         <SocketProvider>
-            <OnlyShow />
             <ChatApp />
         </SocketProvider>
     );
 };
 
 export default App;
-
