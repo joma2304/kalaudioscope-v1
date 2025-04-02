@@ -20,7 +20,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    background: rgba(30, 30, 30, 0.1); /* Genomskinlig bakgrund för hela chatten */
+    background: rgba(30, 30, 30, 0.4); /* Genomskinlig bakgrund för hela chatten */
     border-radius: 10px;
     padding: 1rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -175,19 +175,19 @@ button:hover {
 
 /* Meddelandebubblor */
 .post--left {
-    background: rgba(32, 129, 21, 0.5); /* Genomskinlig bakgrund på vänstra meddelanden */
-    color: #e0e0e0;
+    background: rgba(32, 129, 21, 0.8); /* Genomskinlig bakgrund på vänstra meddelanden */
+    color: #ffffff;
     align-self: flex-start;
 }
 
 .post--right {
-    background: rgba(0, 123, 255, 0.5); /* Genomskinlig bakgrund på högra meddelanden */
+    background: rgba(0, 123, 255, 0.8); /* Genomskinlig bakgrund på högra meddelanden */
     color: #fff;
     align-self: flex-end;
 }
 
 .post--system {
-    color: #b0b0b0;
+    color: #ffffff;
     align-self: center;
     font-style: italic;
     padding: 0.5rem;
@@ -198,14 +198,14 @@ button:hover {
 /* Aktivitetsindikator */
 .activity {
     font-style: italic;
-    color: #b0b0b0;
+    color: #ffffff;
     text-align: center;
     animation: fadeIn 0.5s ease-in-out;
 }
 
 .users-in-room {
     font-size: 1rem;
-    color: #b0b0b0;
+    color: #ffffff;
     text-align: center;
     margin-top: 1rem;
     margin-bottom: 1rem;

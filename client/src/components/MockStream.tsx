@@ -9,7 +9,7 @@ const MockStream = () => {
     <div className="stream-container">
       <div className="video-player">
         <video ref={videoRef} width="100%" height="auto" controls>
-          <source src="your-video-source.mp4" type="video/mp4" />
+          <source src="https://www.w3schools.com/html/movie.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
 

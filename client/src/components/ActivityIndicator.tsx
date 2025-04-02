@@ -3,7 +3,7 @@ interface ActivityIndicatorProps {
 }
 
 const ActivityIndicator: React.FC<ActivityIndicatorProps> = ({ activity }) => {
-    return <p>{activity}</p>;
+    return <p className="activity">{activity}</p>;
 };
 
 export default ActivityIndicator;
