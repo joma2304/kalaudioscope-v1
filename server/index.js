@@ -36,6 +36,7 @@ io.on('connection', socket => {
 
     // Användaren ansluter till ett rum
     socket.on('enterRoom', ({ name, room }) => {
+        console.log(`User ${name} with socket ID ${socket.id} joined room ${room}`);
         const existingUser = UsersState.users.find(u => u.name === name && u.room === room);
     
         if (existingUser) {
@@ -88,6 +89,9 @@ io.on('connection', socket => {
 
     // När användaren lämnar ett rum
     socket.on('leaveRoom', ({ name, room }) => {
+
+        console.log(`Received leaveRoom event: ${name} is leaving room ${room}`);
+
         const user = getUser(socket.id);
 
         if (user) {

@@ -11,6 +11,15 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         console.log("Connecting socket...");
         socket.connect();
 
+        socket.on("connect", () => {
+            console.log("Connected to server with ID:", socket.id);
+        });
+
+        socket.on("disconnect", () => {
+            console.log("Disconnected from server");
+        });
+    
+
         return () => {
             console.log("Disconnecting socket...");
             socket.disconnect();

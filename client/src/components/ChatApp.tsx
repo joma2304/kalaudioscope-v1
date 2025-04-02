@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSocket } from "../context/SocketContext";
 import "./ChatApp.css";
-import { LogOut, SendHorizonal } from "lucide-react";
+import { LogOut, SendHorizonal, CircleX, MessageSquareIcon } from "lucide-react";
 
 
 interface Message {
@@ -25,6 +25,8 @@ const ChatApp = () => {
     const [lastLeftTime, setLastLeftTime] = useState<number | null>(null); // Tidsstämpel för senaste lämning
     const [hasLeft, setHasLeft] = useState(false); // För att hålla reda på om användaren lämnat via knappen
     const [error, setError] = useState(""); // För felmeddelanden
+    const [displayChat, setDisplayChat] = useState(true); // För att visa eller dölja chattfönstret
+
 
     // Funktioner för att hantera inloggning och anslutning till rummet
     useEffect(() => {
@@ -89,8 +91,12 @@ const ChatApp = () => {
         localStorage.setItem("chatName", name);
         localStorage.setItem("chatRoom", room);
 
+        console.log("Joining room:", { name, room }); // Logga room här!
+
+
         // Skicka anslutningshändelse till servern
         socket.emit("enterRoom", { name, room });
+        setRoom(room); // Säkerställ att room sätts här
 
         setShowChat(true);
         setShowHeader(false);
@@ -105,10 +111,17 @@ const ChatApp = () => {
     };
 
     const leaveChat = () => {
-        localStorage.removeItem("chatName");
-        localStorage.removeItem("chatRoom");
+        console.log("Leaving room:", { name, room }); // Lägg till denna logg
+
+        if (!room) {
+            console.error("Room is empty, cannot leave!");
+            return;
+        }
 
         socket.emit("leaveRoom", { name, room });
+
+        localStorage.removeItem("chatName");
+        localStorage.removeItem("chatRoom");
 
         setMessages([]);
         setUsers([]);
@@ -151,85 +164,102 @@ const ChatApp = () => {
     }, [messages]);
 
     return (
-        <div className="container">
-            {showHeader && (
-                <form onSubmit={joinRoom}>
-                    <input
-                        type="text"
-                        placeholder="Ditt namn"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="text"
-                        placeholder="Biljettnummer (10 siffror)"
-                        value={ticketNumber}
-                        onChange={(e) => {
-                            // Tillåt endast siffror
-                            if (/^\d*$/.test(e.target.value)) {
-                                setTicketNumber(e.target.value);
-                            }
-                        }}
-                        maxLength={10} // Begränsa till 10 tecken
-                        required
-                    />
+        <>
+            {/*Visa och dölj chatten-knapp */}
+            <div className="toggle-chat-container">
+                {showChat && (
+                    <button onClick={() => setDisplayChat(!displayChat)} className="toggle-chat">
+                        {displayChat ? (
+                            <> <CircleX /></>
+                        ) : (
+                            <><MessageSquareIcon />Visa chatt</>
+                        )}
+                    </button>
+                )}
+            </div>
+            {displayChat && (
+                <div className="container">
+                    <h2>Se föreställningen tillsammans i grupp med chatt</h2>
+                    {showHeader && (
+                        <form onSubmit={joinRoom}>
+                            <input
+                                type="text"
+                                placeholder="Ditt namn"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                            />
+                            <input
+                                type="text"
+                                placeholder="Biljettnummer (10 siffror)"
+                                value={ticketNumber}
+                                onChange={(e) => {
+                                    // Tillåt endast siffror
+                                    if (/^\d*$/.test(e.target.value)) {
+                                        setTicketNumber(e.target.value);
+                                    }
+                                }}
+                                maxLength={10} // Begränsa till 10 tecken
+                                required
+                            />
 
-                    {error && <p className="error-message">{error}</p>}
+                            {error && <p className="error-message">{error}</p>}
 
-                    <button type="submit">Anslut</button>
-                </form>
-            )}
+                            <button type="submit">Anslut med chatt</button>
+                        </form>
+                    )}
 
-            {!showChat && !showHeader && <p>Ansluter till rummet...</p>}
+                    {!showChat && !showHeader && <p>Ansluter till rummet...</p>}
 
-            {showChat && (
-                <div className="chat-display" ref={chatRef}>
-                    <div className="chat-title">Välkommen!</div>
-                    {messages.map((msg, index) => (
-                        <div
-                            key={index}
-                            className={`post ${msg.name === "Admin"
-                                    ? "post--system"
-                                    : msg.name === name
-                                        ? "post--right"
-                                        : "post--left"
-                                }`}
-                        >
-                            <span className="sender">{msg.name !== "Admin" && <strong>{msg.name}</strong>}</span>
-                            <span className="msg">{msg.text}</span>
-                            <em>Kl: {msg.time}</em>
+                    {showChat && (
+                        <div className="chat-display" ref={chatRef}>
+                            <div className="chat-title">Välkommen!</div>
+                            {messages.map((msg, index) => (
+                                <div
+                                    key={index}
+                                    className={`post ${msg.name === "Admin"
+                                        ? "post--system"
+                                        : msg.name === name
+                                            ? "post--right"
+                                            : "post--left"
+                                        }`}
+                                >
+                                    <span className="sender">{msg.name !== "Admin" && <strong>{msg.name}</strong>}</span>
+                                    <span className="msg">{msg.text}</span>
+                                    <em>Kl: {msg.time}</em>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    )}
+
+                    {showChat && <p>{activity}</p>}
+
+                    {showChat && (
+                        <form onSubmit={sendMessage}>
+                            <input
+                                type="text"
+                                placeholder="Ditt meddelande"
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                onKeyDown={() => {
+                                    if (!typingTimeoutRef.current) {
+                                        handleTyping();
+                                    }
+                                }}
+                                required
+                            />
+                            <button type="submit"><SendHorizonal size={18} /> <span>Skicka</span></button>
+                        </form>
+                    )}
+
+                    {showChat && <p className="users-in-room">Användare i rummet: <strong>{users.join(", ")}</strong></p>}
+
+                    {showChat && <button onClick={leaveChat} className="leave-chat"> <LogOut size={18} />
+                        <span>Lämna rummet</span></button>}
+
                 </div>
             )}
-
-            {showChat && <p>{activity}</p>}
-
-            {showChat && (
-                <form onSubmit={sendMessage}>
-                    <input
-                        type="text"
-                        placeholder="Ditt meddelande"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        onKeyDown={() => {
-                            if (!typingTimeoutRef.current) {
-                                handleTyping();
-                            }
-                        }}
-                        required
-                    />
-                    <button type="submit"><SendHorizonal size={18} /> <span>Skicka</span></button>
-                </form>
-            )}
-
-            {showChat && <p className="users-in-room">Användare i rummet: <strong>{users.join(", ")}</strong></p>}
-
-            {showChat && <button onClick={leaveChat} className="leave-chat"> <LogOut size={18} />
-                <span>Lämna rummet</span></button>}
-
-        </div>
+        </>
     );
 };
 

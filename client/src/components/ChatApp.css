@@ -7,7 +7,7 @@
 }
 
 body {
-    background-color: #121212;
+    background-color: #12243c;
     color: #e0e0e0;
     display: flex;
     justify-content: center;
@@ -54,17 +54,18 @@ input::placeholder {
 }
 
 input:focus {
-    outline: 2px solid #4CAF50;
+    outline: 2px solid #007bff;
     background: #383838;
 }
 
+/* Knappstil */
 button {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     border: none;
-    background: linear-gradient(135deg, #0f7a18, #14a02a);
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: #fff;
     padding: 0.75rem 1rem;
     border-radius: 8px;
@@ -74,21 +75,48 @@ button {
 }
 
 button:hover {
-    background: linear-gradient(135deg, #0b5e12, #0d8c1e);
+    background: linear-gradient(135deg, #0056b3, #004494);
     transform: scale(1.05);
 }
 
+/* Knapp för att lämna chatt */
 .leave-chat {
-    background: linear-gradient(135deg, #bb1838, #e02a4f);
+    background: linear-gradient(135deg, #555, #777);
     max-width: 200px;
     margin: 0 auto;
 }
 
 .leave-chat:hover {
-    background: linear-gradient(135deg, #90122b, #c02444);
+    background: linear-gradient(135deg, #444, #666);
 }
 
-/* Chat Display */
+/* Visa/dölj chatt-knapp */
+.toggle-chat-container {
+    display: flex;
+    justify-content: left;
+    align-items: right;
+    margin-top: 1rem;
+}
+
+.toggle-chat {
+    background: transparent;
+    color: #007bff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    margin-top: 1rem;
+    border: none;
+    outline: none;
+    padding: 0.2em;
+}
+
+.toggle-chat:hover {
+    background: transparent;
+    transform: scale(1.15);
+    color: #ffffff;
+}
+
+/* Chattvisning */
 .chat-display {
     background: #1e1e1e;
     border-radius: 10px;
@@ -103,12 +131,13 @@ button:hover {
     border: 1px solid #333;
 }
 
+/* Meddelande avsändare */
 .sender {
     font-weight: 600;
     color: #ffffff;
     font-size: 0.95rem;
     letter-spacing: 0.5px;
-    padding: 4px 8px;
+    padding: 2px 0px;
     border-radius: 6px;
     display: inline-block;
 }
@@ -121,6 +150,7 @@ button:hover {
     color: #03dac6;
 }
 
+/* Chattitel */
 .chat-title {
     font-size: 1.5rem;
     font-weight: bold;
@@ -130,6 +160,7 @@ button:hover {
     animation: fadeIn 1s ease-in-out;
 }
 
+/* Chattbubblor */
 .post {
     max-width: 80%;
     padding: 0.75rem;
@@ -142,13 +173,13 @@ button:hover {
 }
 
 .post--left {
-    background: #333;
+    background: #2c2c2c;
     color: #e0e0e0;
     align-self: flex-start;
 }
 
 .post--right {
-    background: #6200ea;
+    background: #007bff;
     color: #fff;
     align-self: flex-end;
 }
@@ -162,7 +193,7 @@ button:hover {
     width: 100%;
 }
 
-/* Activity Indicator */
+/* Aktivitetsindikator */
 .activity {
     font-style: italic;
     color: #b0b0b0;
@@ -179,7 +210,7 @@ button:hover {
     animation: fadeIn 0.5s ease-in-out;
 }
 
-/* Animations */
+/* Animationer */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -190,7 +221,7 @@ button:hover {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive Design */
+/* Responsiv design */
 @media (max-width: 600px) {
     .container {
         max-width: 100%;
