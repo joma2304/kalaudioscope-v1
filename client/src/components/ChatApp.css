@@ -7,20 +7,27 @@
 }
 
 body {
-    background-color: #12243c;
-    color: #e0e0e0;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 1rem;
 }
 
-.container {
+.chat-container {
+    position: fixed; /* Fixera hela containern på skärmen */
+    top: 35px; /* Justera för att placera containern lite ner från toppen */
+    right: 20px; /* Justera för att placera den till höger */
     display: flex;
     flex-direction: column;
-    gap: 0.1rem;
-    animation: fadeIn 0.5s ease-in-out;
+    gap: 0.5rem;
+    background: rgba(30, 30, 30, 0.1); /* Genomskinlig bakgrund för hela chatten */
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 999; /* Se till att chatten ligger ovanpå annat innehåll */
+    max-width: 100vw;
 }
+
 
 /* Form Styling */
 form {
@@ -32,19 +39,19 @@ form {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     flex-wrap: wrap;
-    animation: slideUp 0.5s ease-in-out;
+    background: rgba(30, 30, 30, 0.1); /* Genomskinlig bakgrund för hela chatten */
 }
 
+/* Övrig styling av chattkomponenter */
 input {
     flex-grow: 1;
     border: none;
     padding: 0.75rem;
     border-radius: 8px;
-    background: #2c2c2c;
+    background: rgba(30, 30, 30, 0.5); /* Genomskinlig bakgrund för hela chatten */
     color: #fff;
-    min-width: 150px;
-    transition: all 0.3s ease-in-out;
 }
+
 
 input::placeholder {
     color: #d7d7d7;
@@ -69,6 +76,7 @@ button {
     cursor: pointer;
     transition: all 0.3s ease-in-out;
     flex-shrink: 0;
+    font-size: 0.9em;
 }
 
 button:hover {
@@ -81,6 +89,7 @@ button:hover {
     background: linear-gradient(135deg, #555, #777);
     max-width: 200px;
     margin: 0 auto;
+    font-size: 0.9em;
 }
 
 .leave-chat:hover {
@@ -89,10 +98,11 @@ button:hover {
 
 /* Visa/dölj chatt-knapp */
 .toggle-chat-container {
-    display: flex;
-    justify-content: left;
-    align-items: right;
     margin-top: 1rem;
+    position: fixed; /* Fixera hela containern på skärmen */
+    top: 0; /* Justera för att placera containern lite ner från toppen */
+    right: 20px; /* Justera för att placera den till höger */
+    z-index: 1000; /* Se till att knappen ligger ovanpå annat innehåll */
 }
 
 .toggle-chat {
@@ -105,6 +115,7 @@ button:hover {
     border: none;
     outline: none;
     padding: 0.2em;
+    z-index: 1000;
 }
 
 .toggle-chat:hover {
@@ -115,7 +126,7 @@ button:hover {
 
 /* Chattvisning */
 .chat-display {
-    background: #1e1e1e;
+    background: rgba(30, 30, 30, 0.1); /* Genomskinlig bakgrund */
     border-radius: 10px;
     padding: 1.5rem;
     display: flex;
@@ -123,12 +134,11 @@ button:hover {
     gap: 0.5rem;
     max-height: 400px;
     overflow-y: auto;
-    margin: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     border: 1px solid #333;
 }
 
-/* Meddelande avsändare */
+/* Namn på avsändare */
 .sender {
     font-weight: 600;
     color: #ffffff;
@@ -137,15 +147,9 @@ button:hover {
     padding: 2px 0px;
     border-radius: 6px;
     display: inline-block;
+
 }
 
-.post--right .sender {
-    color: #ffffff;
-}
-
-.post--left .sender {
-    color: #03dac6;
-}
 
 /* Chattitel */
 .chat-title {
@@ -169,14 +173,15 @@ button:hover {
     animation: fadeIn 0.3s ease-in-out;
 }
 
+/* Meddelandebubblor */
 .post--left {
-    background: #2c2c2c;
+    background: rgba(32, 129, 21, 0.5); /* Genomskinlig bakgrund på vänstra meddelanden */
     color: #e0e0e0;
     align-self: flex-start;
 }
 
 .post--right {
-    background: #007bff;
+    background: rgba(0, 123, 255, 0.5); /* Genomskinlig bakgrund på högra meddelanden */
     color: #fff;
     align-self: flex-end;
 }
@@ -217,32 +222,3 @@ button:hover {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
-/* Responsiv design 
-@media (max-width: 600px) {
-    .container {
-        max-width: 100%;
-    }
-
-    form {
-        flex-direction: column;
-        gap: 0.75rem;
-        padding: 1rem;
-    }
-
-    input {
-        width: 100%;
-    }
-
-    button {
-        width: 100%;
-    }
-
-    .chat-display {
-        min-width: 80vw;
-    }
-
-    .post {
-        max-width: 90%;
-    }
-} */

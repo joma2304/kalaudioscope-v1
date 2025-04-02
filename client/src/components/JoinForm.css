@@ -1,0 +1,10 @@
+.join-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background: #1e1e1e;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    flex-wrap: wrap;
+}

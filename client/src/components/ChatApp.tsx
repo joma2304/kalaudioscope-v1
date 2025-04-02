@@ -174,20 +174,23 @@ const ChatApp = () => {
 
     return (
         <>
-            {showChat && <MockStream />}
-            <div className="toggle-chat-container">
-                {showChat && (
-                    <button onClick={() => setDisplayChat(!displayChat)} className="toggle-chat">
-                        {displayChat ? (
-                            <> <CircleX /></>
-                        ) : (
-                            <><MessageSquareIcon />Visa chatt</>
-                        )}
-                    </button>
-                )}
+            <div>
+                {showChat && <MockStream />}
+                <div className="toggle-chat-container">
+                    {showChat && (
+                        <button onClick={() => setDisplayChat(!displayChat)} className="toggle-chat">
+                            {displayChat ? (
+                                <> <CircleX /></>
+                            ) : (
+                                <><MessageSquareIcon />Visa chatt</>
+                            )}
+                        </button>
+                    )}
+                </div>
             </div>
+
             {displayChat && (
-                <div className="container">
+                <div>
                     {showHeader && (
                         <JoinForm
                             name={name}
@@ -203,16 +206,18 @@ const ChatApp = () => {
 
                     {showChat && (
                         <>
-                            <MessageList messages={messages} name={name} chatRef={chatRef} />
-                            <ActivityIndicator activity={activity} />
-                            <MessageForm
-                                message={message}
-                                setMessage={setMessage}
-                                sendMessage={sendMessage}
-                                handleTyping={handleTyping}
-                            />
-                            <UserList users={users} />
-                            <LeaveChatButton leaveChat={leaveChat} />
+                            <div className="chat-container">
+                                <MessageList messages={messages} name={name} chatRef={chatRef} />
+                                <ActivityIndicator activity={activity} />
+                                <MessageForm
+                                    message={message}
+                                    setMessage={setMessage}
+                                    sendMessage={sendMessage}
+                                    handleTyping={handleTyping}
+                                />
+                                <UserList users={users} />
+                                <LeaveChatButton leaveChat={leaveChat} />
+                            </div>
                         </>
                     )}
                 </div>

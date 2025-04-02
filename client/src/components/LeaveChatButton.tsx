@@ -7,7 +7,7 @@ interface LeaveChatButtonProps {
 const LeaveChatButton: React.FC<LeaveChatButtonProps> = ({ leaveChat }) => {
     return (
         <button onClick={leaveChat} className="leave-chat">
-            <LogOut size={18} /> <span>Lämna rummet</span>
+            <LogOut size={18} /> <span>Lämna föreställning</span>
         </button>
     );
 };
