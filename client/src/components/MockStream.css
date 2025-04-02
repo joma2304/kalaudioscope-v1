@@ -1,0 +1,22 @@
+.stream-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .video-player {
+    display: flex;
+    max-width: 100wv; 
+    border-radius: 8px; 
+    overflow: hidden; 
+  }
+  
+  video {
+    width: 100%; /* Full bredd på video */
+    min-width: 95vw;
+    height: auto; 
+    border-radius: 8px; 
+    background-color: #000; 
+    object-fit: cover; 
+  }
+  

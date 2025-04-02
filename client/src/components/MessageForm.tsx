@@ -1,0 +1,26 @@
+import { SendHorizonal } from "lucide-react";
+
+interface MessageFormProps {
+    message: string;
+    setMessage: (value: string) => void;
+    sendMessage: (e: React.FormEvent) => void;
+    handleTyping: () => void;
+}
+
+const MessageForm: React.FC<MessageFormProps> = ({ message, setMessage, sendMessage, handleTyping }) => {
+    return (
+        <form onSubmit={sendMessage}>
+            <input
+                type="text"
+                placeholder="Ditt meddelande"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleTyping}
+                required
+            />
+            <button type="submit"><SendHorizonal size={18} /> <span>Skicka</span></button>
+        </form>
+    );
+};
+
+export default MessageForm;

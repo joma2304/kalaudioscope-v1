@@ -12,16 +12,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     padding: 1rem;
 }
 
 .container {
-    width: 90vw;
-    max-width: 900px;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.1rem;
     animation: fadeIn 0.5s ease-in-out;
 }
 
@@ -124,7 +121,7 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    max-height: 60vh;
+    max-height: 400px;
     overflow-y: auto;
     margin: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -221,7 +218,7 @@ button:hover {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsiv design */
+/* Responsiv design 
 @media (max-width: 600px) {
     .container {
         max-width: 100%;
@@ -248,4 +245,4 @@ button:hover {
     .post {
         max-width: 90%;
     }
-}
+} */
