@@ -3,6 +3,16 @@ import { Server } from "socket.io"
 import path from 'path'
 import { fileURLToPath } from 'url'
 
+import {
+    UsersState,
+    buildMsg,
+    activateUser,
+    userLeavesApp,
+    getUser,
+    getUsersInRoom,
+    getAllActiveRooms,
+} from "./roomManager.js";
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -17,13 +27,13 @@ const expressServer = app.listen(PORT, () => {
     console.log(`listening on port ${PORT}`)
 })
 
-// state 
-const UsersState = {
-    users: [],
-    setUsers: function (newUsersArray) {
-        this.users = newUsersArray
-    }
-}
+// // state 
+// const UsersState = {
+//     users: [],
+//     setUsers: function (newUsersArray) {
+//         this.users = newUsersArray
+//     }
+// }
 
 const io = new Server(expressServer, {
     cors: {
@@ -124,50 +134,51 @@ io.on('connection', socket => {
     });
 });
 
+//Lagt dessa i egen fil som importeras längst upp
 // Hjälpfunktioner
 
-function buildMsg(name, text) {
-    return {
-        name,
-        text,
-        time: new Intl.DateTimeFormat('default', {
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric'
-        }).format(new Date())
-    }
-}
+// function buildMsg(name, text) {
+//     return {
+//         name,
+//         text,
+//         time: new Intl.DateTimeFormat('default', {
+//             hour: 'numeric',
+//             minute: 'numeric',
+//             second: 'numeric'
+//         }).format(new Date())
+//     }
+// }
 
-function activateUser(id, name, room) {
-    const user = { id, name, room }
-    UsersState.setUsers([
-        ...UsersState.users.filter(user => user.id !== id),
-        user
-    ])
-    return user
-}
+// function activateUser(id, name, room) {
+//     const user = { id, name, room }
+//     UsersState.setUsers([
+//         ...UsersState.users.filter(user => user.id !== id),
+//         user
+//     ])
+//     return user
+// }
 
-function userLeavesApp(id) {
-    const user = getUser(id);
-    if (!user) {
-        console.log(`User ${id} not found in UsersState`);
-        return;
-    }
+// function userLeavesApp(id) {
+//     const user = getUser(id);
+//     if (!user) {
+//         console.log(`User ${id} not found in UsersState`);
+//         return;
+//     }
 
-    UsersState.setUsers(
-        UsersState.users.filter(user => user.id !== id)
-    );
-    console.log(`User removed: ${JSON.stringify(user)}`);
-}
+//     UsersState.setUsers(
+//         UsersState.users.filter(user => user.id !== id)
+//     );
+//     console.log(`User removed: ${JSON.stringify(user)}`);
+// }
 
-function getUser(id) {
-    return UsersState.users.find(user => user.id === id)
-}
+// function getUser(id) {
+//     return UsersState.users.find(user => user.id === id)
+// }
 
-function getUsersInRoom(room) {
-    return UsersState.users.filter(user => user.room === room)
-}
+// function getUsersInRoom(room) {
+//     return UsersState.users.filter(user => user.room === room)
+// }
 
-function getAllActiveRooms() {
-    return Array.from(new Set(UsersState.users.map(user => user.room)))
-}
+// function getAllActiveRooms() {
+//     return Array.from(new Set(UsersState.users.map(user => user.room)))
+// }

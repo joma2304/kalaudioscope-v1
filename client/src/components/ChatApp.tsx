@@ -11,6 +11,11 @@ import ActivityIndicator from "./ActivityIndicator";
 import LeaveChatButton from "./LeaveChatButton";
 import MockStream from "./MockStream";
 
+import { Canvas } from '@react-three/fiber';
+
+import Video360 from "./Video360"; // Importera Video360-komponenten 
+import { OrbitControls } from "@react-three/drei";
+
 
 
 interface Message {
@@ -175,7 +180,15 @@ const ChatApp = () => {
     return (
         <>
             <div>
-                {showChat && <MockStream />}
+                {showChat &&
+                    <Canvas style={{ width: "100vw", height: "100vh" }} camera={{ position: [0, 0, 0.1] }}>
+                        {/* Lägg till OrbitControls för att möjliggöra interaktivitet */}
+                        <OrbitControls enableZoom={false} enablePan={false} minPolarAngle={Math.PI / 3}
+                            maxPolarAngle={Math.PI / 1.5} />
+                        <Video360 videoSrc="https://cdn.bitmovin.com/content/assets/playhouse-vr/progressive.mp4" />
+                    </Canvas>
+
+                }
                 <div className="toggle-chat-container">
                     {showChat && (
                         <button onClick={() => setDisplayChat(!displayChat)} className="toggle-chat">
