@@ -9,7 +9,7 @@ import MessageForm from "./MessageForm";
 import UserList from "./UserList";
 import ActivityIndicator from "./ActivityIndicator";
 import LeaveChatButton from "./LeaveChatButton";
-import MockStream from "./MockStream";
+// import MockStream from "./MockStream";
 
 import { Canvas } from '@react-three/fiber';
 
