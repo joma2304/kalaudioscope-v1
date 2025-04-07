@@ -6,6 +6,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "mongoose": "^8.13.2",
     "undici-types": "^6.21.0"
   },
   "scripts": {
