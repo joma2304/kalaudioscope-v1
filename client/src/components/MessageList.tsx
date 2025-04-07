@@ -24,9 +24,10 @@ const MessageList: React.FC<MessageListProps> = ({ messages, name, chatRef }) =>
                             : "post--left"
                         }`}
                 >
-                    <span className="sender">{msg.name !== "Admin" && <strong>{msg.name}</strong>}</span>
+                    <span className="sender">{msg.name !== "Admin" && <strong>{msg.name} <hr /></strong>}</span>
+            
                     <span className="msg">{msg.text}</span>
-                    <em>Kl: {msg.time}</em>
+                    <em className="sent-time">{msg.time}</em>
                 </div>
             ))}
         </div>

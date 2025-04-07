@@ -141,6 +141,7 @@ button:hover {
 
 /* Namn på avsändare */
 .sender {
+    font-size: 1.05em !important;
     font-weight: 600;
     color: #ffffff;
     font-size: 0.95rem;
@@ -148,7 +149,12 @@ button:hover {
     padding: 2px 0px;
     border-radius: 6px;
     display: inline-block;
+}
 
+hr {
+    border: 0;
+    height: 1px;
+    background: rgba(30, 30, 30, 0.4); 
 }
 
 
@@ -160,6 +166,14 @@ button:hover {
     text-align: center;
     margin-bottom: 1rem;
     animation: fadeIn 1s ease-in-out;
+}
+
+.sent-time {
+    font-size: 0.8rem;
+    color: #ffffff;
+    text-align: right;
+    margin-top: 0.5rem;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 /* Chattbubblor */
@@ -176,7 +190,7 @@ button:hover {
 
 /* Meddelandebubblor */
 .post--left {
-    background: rgba(32, 129, 21, 0.8); /* Genomskinlig bakgrund på vänstra meddelanden */
+    background: rgba(161, 19, 147, 0.8); /* Genomskinlig bakgrund på vänstra meddelanden */
     color: #ffffff;
     align-self: flex-start;
 }
