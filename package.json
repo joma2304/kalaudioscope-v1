@@ -1,5 +1,26 @@
 {
   "devDependencies": {
     "@types/node": "^22.13.14"
-  }
+  },
+  "name": "testchat",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "undici-types": "^6.21.0"
+  },
+  "scripts": {
+    "build": "npm install --prefix server && npm install --prefix client && npm run build --prefix client"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joma2304/testchat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joma2304/testchat/issues"
+  },
+  "homepage": "https://github.com/joma2304/testchat#readme",
+  "description": ""
 }
