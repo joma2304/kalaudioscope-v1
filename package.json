@@ -1,6 +1,7 @@
 {
   "devDependencies": {
-    "@types/node": "^22.13.14"
+    "@types/node": "^22.13.14",
+    "concurrently": "^9.1.2"
   },
   "name": "testchat",
   "version": "1.0.0",
@@ -10,6 +11,7 @@
     "undici-types": "^6.21.0"
   },
   "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "build": "npm install --prefix server && npm install --prefix client && npm run build --prefix client"
   },
   "repository": {

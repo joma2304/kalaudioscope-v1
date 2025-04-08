@@ -3,6 +3,7 @@ import { useSocket } from "../context/SocketContext";
 import "./ChatApp.css";
 import { LogOut, SendHorizonal, CircleX, MessageSquareIcon } from "lucide-react";
 
+
 import JoinForm from "./JoinForm";
 import MessageList from "./MessageList";
 import MessageForm from "./MessageForm";
@@ -15,6 +16,8 @@ import { Canvas } from '@react-three/fiber';
 
 import Video360 from "./Video360"; // Importera Video360-komponenten 
 import { OrbitControls } from "@react-three/drei";
+import { send } from "process";
+import { set } from "mongoose";
 
 
 
@@ -46,10 +49,13 @@ const ChatApp = () => {
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
         const storedRoom = localStorage.getItem("chatRoom");
+        const storedTicketNumber = localStorage.getItem("ticketNumber");
 
         if (storedName && storedRoom) {
             setName(storedName);
             setRoom(storedRoom);
+            setTicketNumber(storedTicketNumber || ""); // Sätt ticketNumber från localStorage
+            
 
             socket.emit("enterRoom", { name: storedName, room: storedRoom });
 
@@ -104,6 +110,7 @@ const ChatApp = () => {
         // Spara i localStorage
         localStorage.setItem("chatName", name);
         localStorage.setItem("chatRoom", room);
+        localStorage.setItem("ticketNumber", ticketNumber); // Spara ticketNumber i localStorage
 
         console.log("Joining room:", { name, room }); // Logga room här!
 
@@ -120,9 +127,39 @@ const ChatApp = () => {
         e.preventDefault();
         if (name && message) {
             socket.emit("message", { name, text: message });
+    
+            const sendMessageToDB = async (text: string) => {
+                try {
+                    const res = await fetch("http://localhost:3500/api/send", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            name: name,
+                            text,
+                            ticketNumber: localStorage.getItem("ticketNumber"),
+                            roomId: localStorage.getItem("chatRoom"),
+                        }),
+                    });
+            
+                    if (!res.ok) {
+                        throw new Error("Något gick fel med att skicka meddelandet till databasen.");
+                    }
+            
+                    const data = await res.json();
+                    console.log("Meddelande skickat till databasen:", data);
+                } catch (error) {
+                    console.error("Fel vid skick till databasen:", error);
+                }
+            };
+            
+    
+            sendMessageToDB(message); // Skicka meddelandet till databasen
             setMessage("");
         }
     };
+    
 
     const leaveChat = () => {
         console.log("Leaving room:", { name, room }); // Lägg till denna logg
@@ -136,6 +173,7 @@ const ChatApp = () => {
 
         localStorage.removeItem("chatName");
         localStorage.removeItem("chatRoom");
+        localStorage.removeItem("ticketNumber");
 
         setMessages([]);
         setUsers([]);
@@ -144,6 +182,7 @@ const ChatApp = () => {
         setShowHeader(true);
         setName("");
         setRoom("");
+        setTicketNumber("");
 
         // Spara senaste lämningstid och markera att användaren lämnat
         setLastLeftTime(Date.now());
