@@ -42,7 +42,9 @@ const MessageHistory = ({ roomId }: { roomId: string }) => {
                         <small>{formatTime(message.createdAt)}</small>
                     </div>
                 ))}
+                {messages.length > 0 && 
                 <p className="chat-history-title">Skrolla upp för chatthistorik</p>
+}
             </div>
         </div>
     );
