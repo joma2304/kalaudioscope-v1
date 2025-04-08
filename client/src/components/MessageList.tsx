@@ -7,7 +7,7 @@ interface Message {
 interface MessageListProps {
     messages: Message[];
     name: string;
-    chatRef: React.RefObject<HTMLDivElement | null>;
+    chatRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const MessageList: React.FC<MessageListProps> = ({ messages, name, chatRef }) => {

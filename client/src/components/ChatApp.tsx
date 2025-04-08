@@ -16,9 +16,6 @@ import { Canvas } from '@react-three/fiber';
 
 import Video360 from "./Video360"; // Importera Video360-komponenten 
 import { OrbitControls } from "@react-three/drei";
-import { send } from "process";
-import { set } from "mongoose";
-
 
 
 interface Message {
@@ -54,12 +51,8 @@ const ChatApp = () => {
         if (storedName && storedRoom) {
             setName(storedName);
             setRoom(storedRoom);
-<<<<<<< Updated upstream
             setTicketNumber(storedTicketNumber || ""); // Sätt ticketNumber från localStorage
             
-=======
-            setTicketNumber(storedTicketNumber || "");
->>>>>>> Stashed changes
 
             socket.emit("enterRoom", { name: storedName, room: storedRoom });
 
@@ -114,11 +107,7 @@ const ChatApp = () => {
         // Spara i localStorage
         localStorage.setItem("chatName", name);
         localStorage.setItem("chatRoom", room);
-<<<<<<< Updated upstream
         localStorage.setItem("ticketNumber", ticketNumber); // Spara ticketNumber i localStorage
-=======
-        localStorage.setItem("ticketNumber", ticketNumber);
->>>>>>> Stashed changes
 
         console.log("Joining room:", { name, room }); // Logga room här!
 
