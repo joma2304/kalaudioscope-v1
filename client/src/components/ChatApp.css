@@ -14,17 +14,22 @@ body {
 }
 
 .chat-container {
-    position: fixed; /* Fixera hela containern på skärmen */
-    top: 35px; /* Justera för att placera containern lite ner från toppen */
-    right: 20px; /* Justera för att placera den till höger */
+    position: fixed;
+    /* Fixera hela containern på skärmen */
+    top: 35px;
+    /* Justera för att placera containern lite ner från toppen */
+    right: 20px;
+    /* Justera för att placera den till höger */
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    background: rgba(30, 30, 30, 0.4); /* Genomskinlig bakgrund för hela chatten */
+    background: rgba(30, 30, 30, 0.4);
+    /* Genomskinlig bakgrund för hela chatten */
     border-radius: 10px;
     padding: 1rem;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    z-index: 999; /* Se till att chatten ligger ovanpå annat innehåll */
+    z-index: 999;
+    /* Se till att chatten ligger ovanpå annat innehåll */
     max-width: 100vw;
     max-height: 75vh;
 }
@@ -40,7 +45,8 @@ form {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     flex-wrap: wrap;
-    background: rgba(30, 30, 30, 0.1); /* Genomskinlig bakgrund för hela chatten */
+    background: rgba(30, 30, 30, 0.1);
+    /* Genomskinlig bakgrund för hela chatten */
 }
 
 /* Övrig styling av chattkomponenter */
@@ -49,7 +55,8 @@ input {
     border: none;
     padding: 0.75rem;
     border-radius: 8px;
-    background: rgba(30, 30, 30, 0.5); /* Genomskinlig bakgrund för hela chatten */
+    background: rgba(30, 30, 30, 0.5);
+    /* Genomskinlig bakgrund för hela chatten */
     color: #fff;
 }
 
@@ -100,10 +107,14 @@ button:hover {
 /* Visa/dölj chatt-knapp */
 .toggle-chat-container {
     margin-top: 1rem;
-    position: fixed; /* Fixera hela containern på skärmen */
-    top: 0; /* Justera för att placera containern lite ner från toppen */
-    right: 20px; /* Justera för att placera den till höger */
-    z-index: 1000; /* Se till att knappen ligger ovanpå annat innehåll */
+    position: fixed;
+    /* Fixera hela containern på skärmen */
+    top: 0;
+    /* Justera för att placera containern lite ner från toppen */
+    right: 20px;
+    /* Justera för att placera den till höger */
+    z-index: 1000;
+    /* Se till att knappen ligger ovanpå annat innehåll */
 }
 
 .toggle-chat {
@@ -127,7 +138,8 @@ button:hover {
 
 /* Chattvisning */
 .chat-display {
-    background: rgba(30, 30, 30, 0.1); /* Genomskinlig bakgrund */
+    background: rgba(30, 30, 30, 0.1);
+    /* Genomskinlig bakgrund */
     border-radius: 10px;
     padding: 1.5rem;
     display: flex;
@@ -154,7 +166,7 @@ button:hover {
 hr {
     border: 0;
     height: 1px;
-    background: rgba(30, 30, 30, 0.4); 
+    background: rgba(30, 30, 30, 0.4);
 }
 
 
@@ -171,8 +183,8 @@ hr {
 .sent-time {
     font-size: 0.8rem;
     color: #ffffff;
-    text-align: right;
-    margin-top: 0.5rem;
+    text-align: left;
+    margin-top: 0.2rem;
     animation: fadeIn 0.5s ease-in-out;
 }
 
@@ -191,13 +203,15 @@ hr {
 
 /* Meddelandebubblor */
 .post--left {
-    background: rgba(161, 19, 147, 0.8); /* Genomskinlig bakgrund på vänstra meddelanden */
+    background: rgba(161, 19, 147, 0.8);
+    /* Genomskinlig bakgrund på vänstra meddelanden */
     color: #ffffff;
     align-self: flex-start;
 }
 
 .post--right {
-    background: rgba(0, 123, 255, 0.8); /* Genomskinlig bakgrund på högra meddelanden */
+    background: rgba(0, 123, 255, 0.8);
+    /* Genomskinlig bakgrund på högra meddelanden */
     color: #fff;
     align-self: flex-end;
 }
@@ -210,6 +224,11 @@ hr {
     text-align: center;
     width: 100%;
 }
+
+.post--system .sent-time {
+    text-align: center;
+}
+
 
 /* Aktivitetsindikator */
 .activity {
@@ -230,11 +249,25 @@ hr {
 
 /* Animationer */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

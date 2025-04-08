@@ -33,7 +33,6 @@ const MessageHistory = ({ roomId }: { roomId: string }) => {
     return (
         <div>
             <div className="chat-history">
-                <p className="chat-history-title">Chatthistorik för rummet</p>
                 {messages.map((message, index) => (
                     <div key={index} className={`message ${message.senderName === name ? "message--self" : "message--other"}`}
                     >
@@ -43,6 +42,7 @@ const MessageHistory = ({ roomId }: { roomId: string }) => {
                         <small>{formatTime(message.createdAt)}</small>
                     </div>
                 ))}
+                <p className="chat-history-title">Skrolla upp för chatthistorik</p>
             </div>
         </div>
     );
