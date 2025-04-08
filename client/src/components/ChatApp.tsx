@@ -263,7 +263,7 @@ const ChatApp = () => {
                     {showChat && (
                         <>
                             <div className="chat-container">
-                                <MessageList messages={messages} name={name} chatRef={chatRef} />
+                                <MessageList messages={messages} name={name} chatRef={chatRef} roomId={""} />
                                 <ActivityIndicator activity={activity} />
                                 <MessageForm
                                     message={message}

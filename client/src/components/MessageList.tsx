@@ -1,3 +1,6 @@
+import MessageHistory from "./MessageHistory";
+import React from "react";
+
 interface Message {
     name: string;
     text: string;
@@ -8,12 +11,16 @@ interface MessageListProps {
     messages: Message[];
     name: string;
     chatRef?: React.RefObject<HTMLDivElement | null>;
+    roomId: string;
 }
 
-const MessageList: React.FC<MessageListProps> = ({ messages, name, chatRef }) => {
+const MessageList: React.FC<MessageListProps> = ({ messages, name, chatRef, roomId }) => {
     return (
         <div className="chat-display" ref={chatRef}>
             <div className="chat-title">Välkommen!</div>
+
+            <MessageHistory roomId={roomId} />
+
             {messages.map((msg, index) => (
                 <div
                     key={index}

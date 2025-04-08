@@ -1,8 +1,9 @@
 import express from 'express';
-import { sendMessage } from '../controllers/message.controller.js';
+import { sendMessage, getMessagesByRoomId } from '../controllers/message.controller.js';
 
 const router = express.Router();
 
 router.post("/send", sendMessage);
+router.get("/messages/:roomId", getMessagesByRoomId)
 
 export default router;

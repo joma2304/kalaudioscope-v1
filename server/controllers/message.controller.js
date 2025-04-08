@@ -20,3 +20,16 @@ export const sendMessage = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const getMessagesByRoomId = async (req, res) => {
+    try {
+        const { roomId } = req.params;
+
+        const messages = await Message.find({ roomId }).sort({ createdAt: 1 }); // Hämtar meddelanden och sorterar efter skapelsedatum
+
+        res.status(200).json(messages);
+    } catch (error) {
+        console.log("Error in getMessagesByRoomId controller", error.message);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
