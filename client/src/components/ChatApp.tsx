@@ -54,8 +54,12 @@ const ChatApp = () => {
         if (storedName && storedRoom) {
             setName(storedName);
             setRoom(storedRoom);
+<<<<<<< Updated upstream
             setTicketNumber(storedTicketNumber || ""); // Sätt ticketNumber från localStorage
             
+=======
+            setTicketNumber(storedTicketNumber || "");
+>>>>>>> Stashed changes
 
             socket.emit("enterRoom", { name: storedName, room: storedRoom });
 
@@ -110,7 +114,11 @@ const ChatApp = () => {
         // Spara i localStorage
         localStorage.setItem("chatName", name);
         localStorage.setItem("chatRoom", room);
+<<<<<<< Updated upstream
         localStorage.setItem("ticketNumber", ticketNumber); // Spara ticketNumber i localStorage
+=======
+        localStorage.setItem("ticketNumber", ticketNumber);
+>>>>>>> Stashed changes
 
         console.log("Joining room:", { name, room }); // Logga room här!
 
@@ -221,9 +229,16 @@ const ChatApp = () => {
             <div>
                 {showChat &&
                     <Canvas style={{ width: "100vw", height: "100vh" }} camera={{ position: [0, 0, 0.1] }}>
-                        {/* Lägg till OrbitControls för att möjliggöra interaktivitet */}
-                        <OrbitControls enableZoom={false} enablePan={false} minPolarAngle={Math.PI / 3}
-                            maxPolarAngle={Math.PI / 1.5} />
+                        {/* OrbitControls för att möjliggöra interaktivitet */}
+                        <OrbitControls
+                            enableZoom={false}
+                            enablePan={false}
+                            enableRotate={true}
+                            rotateSpeed={0.5}
+                            keyPanSpeed={0.5}
+                            minPolarAngle={Math.PI / 3}
+                            maxPolarAngle={Math.PI / 1.5}
+                        />
                         <Video360 videoSrc="https://cdn.bitmovin.com/content/assets/playhouse-vr/progressive.mp4" />
                     </Canvas>
 
