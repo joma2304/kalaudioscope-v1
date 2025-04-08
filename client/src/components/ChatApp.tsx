@@ -156,7 +156,6 @@ const ChatApp = () => {
             setMessage("");
         }
     };
-    
 
     const leaveChat = () => {
         console.log("Leaving room:", { name, room }); // Lägg till denna logg
