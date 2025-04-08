@@ -15,9 +15,8 @@ text-align: center;
 .message {
     min-width: 45%;
     max-width: 80%;
-    padding: 10px;
+    padding: 0.75rem;
     border-radius: 10px;
-    margin-bottom: 10px;
     word-wrap: break-word;
 }
 
