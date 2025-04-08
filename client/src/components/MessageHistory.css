@@ -1,0 +1,49 @@
+.chat-history {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Mellanrum mellan meddelandena */
+    padding: 10px;
+}
+
+.chat-history-title {
+text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.message {
+    max-width: 80%;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.message--self {
+    align-self: flex-end; /* Positionera meddelandet till höger */
+    background: rgba(0, 123, 255, 0.8); /* Genomskinlig bakgrund på högra meddelanden */
+    color: #fff;
+}
+
+.message--other {
+    align-self: flex-start; /* Positionera meddelandet till vänster */
+    background: rgba(161, 19, 147, 0.8); /* Genomskinlig bakgrund på vänstra meddelanden */
+    color: #ffffff;
+}
+
+  
+  .sender-name {
+    font-weight: 600;
+    color: #444;
+  }
+  
+  .message-text {
+    margin: 0.4rem 0;
+    line-height: 1.4;
+  }
+  
+  .message-time {
+    font-size: 0.75rem;
+    color: #888;
+    text-align: right;
+  }
+  

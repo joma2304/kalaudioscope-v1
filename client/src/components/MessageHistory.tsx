@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import "./MessageHistory.css"
 
 const MessageHistory = ({ roomId }: { roomId: string }) => {
     const [messages, setMessages] = useState<any[]>([]);
+    const name = localStorage.getItem("chatName") || "Guest"; // Sätt en fallback till "Guest"
+
 
     useEffect(() => {
         // Hämtar meddelanden för chattrummet
@@ -20,7 +23,7 @@ const MessageHistory = ({ roomId }: { roomId: string }) => {
         };
 
         fetchMessages(localStorage.getItem("chatRoom") || roomId); // Använd roomId om inget finns i localStorage
-    }, [roomId]); 
+    }, [roomId]);
 
     const formatTime = (timestamp: string) => {
         const date = new Date(timestamp);
@@ -30,9 +33,12 @@ const MessageHistory = ({ roomId }: { roomId: string }) => {
     return (
         <div>
             <div className="chat-history">
+                <p className="chat-history-title">Chatthistorik för rummet</p>
                 {messages.map((message, index) => (
-                    <div key={index} className="message">
-                        <strong>{message.senderName}: </strong>
+                    <div key={index} className={`message ${message.senderName === name ? "message--self" : "message--other"}`}
+                    >
+                        <strong>{message.senderName} </strong>
+                        <hr />
                         <p>{message.text}</p>
                         <small>{formatTime(message.createdAt)}</small>
                     </div>
