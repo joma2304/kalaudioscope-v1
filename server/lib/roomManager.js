@@ -14,7 +14,6 @@ function buildMsg(name, text) {
         time: new Intl.DateTimeFormat('default', {
             hour: 'numeric',
             minute: 'numeric',
-            second: 'numeric',
             hourCycle: 'h23' // Använd 24-timmarsformat
         }).format(new Date())
     }
