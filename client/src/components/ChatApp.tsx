@@ -52,7 +52,7 @@ const ChatApp = () => {
             setName(storedName);
             setRoom(storedRoom);
             setTicketNumber(storedTicketNumber || ""); // Sätt ticketNumber från localStorage
-            
+
 
             socket.emit("enterRoom", { name: storedName, room: storedRoom });
 
@@ -124,7 +124,7 @@ const ChatApp = () => {
         e.preventDefault();
         if (name && message) {
             socket.emit("message", { name, text: message });
-    
+
             const sendMessageToDB = async (text: string) => {
                 try {
                     const res = await fetch("http://localhost:3500/api/send", {
@@ -139,24 +139,24 @@ const ChatApp = () => {
                             roomId: localStorage.getItem("chatRoom"),
                         }),
                     });
-            
+
                     if (!res.ok) {
                         throw new Error("Något gick fel med att skicka meddelandet till databasen.");
                     }
-            
+
                     const data = await res.json();
                     console.log("Meddelande skickat till databasen:", data);
                 } catch (error) {
                     console.error("Fel vid skick till databasen:", error);
                 }
             };
-            
-    
+
+
             sendMessageToDB(message); // Skicka meddelandet till databasen
             setMessage("");
         }
     };
-    
+
 
     const leaveChat = () => {
         console.log("Leaving room:", { name, room }); // Lägg till denna logg
@@ -228,7 +228,7 @@ const ChatApp = () => {
                             minPolarAngle={Math.PI / 3}
                             maxPolarAngle={Math.PI / 1.5}
                         />
-                        <Video360 videoSrc="https://cdn.bitmovin.com/content/assets/playhouse-vr/progressive.mp4" />
+                        <Video360 videoSrc="/Malmolive360_Fb360_360-1.mp4" />
                     </Canvas>
 
                 }
