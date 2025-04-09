@@ -9,7 +9,7 @@ const Video360: React.FC<Video360Props> = ({ videoSrc }) => {
     // Skapa videotekstur från källan
     const videoTexture = useVideoTexture(videoSrc, {
         loop: true,
-        muted: false,
+        muted: true,
         autoplay: true,
         crossOrigin: "anonymous", // Viktigt om man kör från public
     });
