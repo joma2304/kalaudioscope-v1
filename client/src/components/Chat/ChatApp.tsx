@@ -1,28 +1,30 @@
 import { useState, useEffect, useRef } from "react";
-import { useSocket } from "../context/SocketContext";
+import { useSocket } from "../../context/SocketContext";
 import "./ChatApp.css";
-import { LogOut, SendHorizonal, CircleX, MessageSquareIcon } from "lucide-react";
-
-
-import JoinForm from "./JoinForm";
+import { CircleX, MessageSquareIcon } from "lucide-react";
 import MessageList from "./ChatContainer/MessageList";
 import MessageForm from "./ChatContainer/MessageForm";
 import UserList from "./ChatContainer/UserList";
 import ActivityIndicator from "./ChatContainer/ActivityIndicator";
 import LeaveChatButton from "./ChatContainer/LeaveChatButton";
 // import MockStream from "./MockStream";
+import TestMovableDiv from "../testMovableDiv";
+import { sendMessageToServer } from "../../utils/SendMessageToServer";
 
-import TestMovableDiv from "./testMovableDiv";
-import  { sendMessageToServer } from "./SendMessageToServer";
 
-
+// Interfaces
 interface Message {
     name: string;
     text: string;
     time: string;
 }
 
-const ChatApp = () => {
+interface ChatAppProps {
+    onLeave: () => void;
+}
+
+const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
+
     const socket = useSocket();
     const [name, setName] = useState("");
     const [ticketNumber, setTicketNumber] = useState("");
@@ -38,7 +40,6 @@ const ChatApp = () => {
     const [hasLeft, setHasLeft] = useState(false); // För att hålla reda på om användaren lämnat via knappen
     const [error, setError] = useState(""); // För felmeddelanden
     const [displayChat, setDisplayChat] = useState(true); // För att visa eller dölja chattfönstret
-
 
     // Funktioner för att hantera inloggning och anslutning till rummet
     useEffect(() => {
@@ -87,36 +88,16 @@ const ChatApp = () => {
         };
     }, [socket, lastLeftTime]);
 
-    const joinRoom = (e: React.FormEvent) => {
-        e.preventDefault();
+    // Hantera scrollning av chattfönstret
+    const chatRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        
 
-        if (!name.trim()) {
-            setError("Du måste ange ett namn!");
-            return;
+        if (chatRef.current) {
+            chatRef.current.scrollTop = chatRef.current.scrollHeight;
         }
+    }, [messages]);
 
-        if (ticketNumber.length !== 10) {
-            setError("Biljettnumret måste vara exakt 10 siffror!");
-            return;
-        }
-
-        const room = ticketNumber.slice(0, 4); // De första 4 siffrorna avgör rummet
-
-        // Spara i localStorage
-        localStorage.setItem("chatName", name);
-        localStorage.setItem("chatRoom", room);
-        localStorage.setItem("ticketNumber", ticketNumber); // Spara ticketNumber i localStorage
-
-        console.log("Joining room:", { name, room }); // Logga room här!
-
-
-        // Skicka anslutningshändelse till servern
-        socket.emit("enterRoom", { name, room });
-        setRoom(room); // Säkerställ att room sätts här
-
-        setShowChat(true);
-        setShowHeader(false);
-    };
 
     const sendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -129,11 +110,9 @@ const ChatApp = () => {
             setMessage("");
         }
     };
-    
 
-
-    function leaveChat() {
-        console.log("Leaving room:", { name, room }); // Lägg till denna logg
+    const leaveChat = () => {
+        console.log("Leaving room:", { name, room });
 
         if (!room) {
             console.error("Room is empty, cannot leave!");
@@ -155,14 +134,16 @@ const ChatApp = () => {
         setRoom("");
         setTicketNumber("");
 
-        // Spara senaste lämningstid och markera att användaren lämnat
         setLastLeftTime(Date.now());
         setHasLeft(true);
-    }
 
-    const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+        // Anropa onLeave för att uppdatera App.tsx
+        onLeave();
+    };
 
     const handleTyping = () => {
+
+        const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
         if (!isTyping) {
             socket.emit("activity", name);
             setIsTyping(true);
@@ -179,17 +160,9 @@ const ChatApp = () => {
         }, 2000);
     };
 
-    const chatRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (chatRef.current) {
-            chatRef.current.scrollTop = chatRef.current.scrollHeight;
-        }
-    }, [messages]);
-
     return (
         <>
-            <div><TestMovableDiv/>
+            <div><TestMovableDiv />
 
                 <div className="toggle-chat-container">
                     {showChat && (
@@ -206,18 +179,7 @@ const ChatApp = () => {
 
             {displayChat && (
                 <div>
-                    {showHeader && (
-                        <JoinForm
-                            name={name}
-                            setName={setName}
-                            ticketNumber={ticketNumber}
-                            setTicketNumber={setTicketNumber}
-                            joinRoom={joinRoom}
-                            error={error}
-                        />
-                    )}
-
-                    {!showChat && !showHeader && <p>Ansluter till rummet...</p>}
+                    {!showChat && <p>Ansluter till rummet...</p>}
 
                     {showChat && (
                         <>
@@ -233,12 +195,9 @@ const ChatApp = () => {
                                 <UserList users={users} />
                                 <LeaveChatButton leaveChat={leaveChat} />
                             </div>
-                            
                         </>
                     )}
-                    
                 </div>
-                
             )}
         </>
     );
