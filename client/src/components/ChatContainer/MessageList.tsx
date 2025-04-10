@@ -1,4 +1,4 @@
-import MessageHistory from "./MessageHistory";
+import MessageHistory from "./MessageList/MessageHistory";
 import React from "react";
 
 interface Message {

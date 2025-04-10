@@ -5,18 +5,15 @@ import { LogOut, SendHorizonal, CircleX, MessageSquareIcon } from "lucide-react"
 
 
 import JoinForm from "./JoinForm";
-import MessageList from "./MessageList";
-import MessageForm from "./MessageForm";
-import UserList from "./UserList";
-import ActivityIndicator from "./ActivityIndicator";
-import LeaveChatButton from "./LeaveChatButton";
+import MessageList from "./ChatContainer/MessageList";
+import MessageForm from "./ChatContainer/MessageForm";
+import UserList from "./ChatContainer/UserList";
+import ActivityIndicator from "./ChatContainer/ActivityIndicator";
+import LeaveChatButton from "./ChatContainer/LeaveChatButton";
 // import MockStream from "./MockStream";
 
-import { Canvas } from '@react-three/fiber';
-
-import Video360 from "./Video360"; // Importera Video360-komponenten 
-import { OrbitControls } from "@react-three/drei";
 import TestMovableDiv from "./testMovableDiv";
+import  { sendMessageToServer } from "./SendMessageToServer";
 
 
 interface Message {
@@ -121,45 +118,21 @@ const ChatApp = () => {
         setShowHeader(false);
     };
 
-    const sendMessage = (e: React.FormEvent) => {
+    const sendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (name && message) {
-            socket.emit("message", { name, text: message });
-
-            const sendMessageToDB = async (text: string) => {
-                try {
-                    const res = await fetch("http://localhost:3500/api/send", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            name: name,
-                            text,
-                            ticketNumber: localStorage.getItem("ticketNumber"),
-                            roomId: localStorage.getItem("chatRoom"),
-                        }),
-                    });
-
-                    if (!res.ok) {
-                        throw new Error("Något gick fel med att skicka meddelandet till databasen.");
-                    }
-
-                    const data = await res.json();
-                    console.log("Meddelande skickat till databasen:", data);
-                } catch (error) {
-                    console.error("Fel vid skick till databasen:", error);
-                }
-            };
-
-
-            sendMessageToDB(message); // Skicka meddelandet till databasen
+        if (message.trim() && name) {
+            await sendMessageToServer({
+                name,
+                text: message,
+                socket,
+            });
             setMessage("");
         }
     };
+    
 
 
-    const leaveChat = () => {
+    function leaveChat() {
         console.log("Leaving room:", { name, room }); // Lägg till denna logg
 
         if (!room) {
@@ -185,7 +158,7 @@ const ChatApp = () => {
         // Spara senaste lämningstid och markera att användaren lämnat
         setLastLeftTime(Date.now());
         setHasLeft(true);
-    };
+    }
 
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -217,23 +190,7 @@ const ChatApp = () => {
     return (
         <>
             <div><TestMovableDiv/>
-                {showChat &&
-                    <Canvas style={{ width: "100vw", height: "100vh" }} camera={{ position: [0, 0, 0.1] }}>
-                        {/* OrbitControls för att möjliggöra interaktivitet */}
-                        <OrbitControls
-                            enableZoom={false}
-                            enablePan={false}
-                            enableRotate={true}
-                            rotateSpeed={0.5}
-                            keyPanSpeed={0.5}
-                            minPolarAngle={Math.PI / 3}
-                            maxPolarAngle={Math.PI / 1.5}
-                        />
-                        <Video360 videoSrc="/Malmolive360_Fb360_360-1.mp4" />
-                        
-                    </Canvas>
 
-                }
                 <div className="toggle-chat-container">
                     {showChat && (
                         <button onClick={() => setDisplayChat(!displayChat)} className="toggle-chat">
