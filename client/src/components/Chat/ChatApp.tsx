@@ -140,9 +140,9 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
         onLeave();
     };
 
+    const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const handleTyping = () => {
 
-        const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
         if (!isTyping) {
             socket.emit("activity", name);
             setIsTyping(true);
