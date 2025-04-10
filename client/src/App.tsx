@@ -3,6 +3,7 @@ import { SocketProvider } from "./context/SocketContext";
 import ChatApp from "./components/Chat/ChatApp";
 import JoinForm from "./components/Login/JoinForm";
 import VideoParent from "./components/Video/VideoParent";
+import DraggableWrapper from "./components/DraggableWrapper";
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,7 +31,9 @@ const App = () => {
         <SocketProvider>
             {isLoggedIn ? (
                 <>
-                    <ChatApp onLeave={handleLogout} />
+                    <DraggableWrapper>
+                        <ChatApp onLeave={handleLogout} />
+                    </DraggableWrapper>
                     <VideoParent />
                 </>
             ) : (

@@ -14,7 +14,7 @@ body {
 }
 
 .chat-container {
-    position: fixed;
+    position: relative;
     /* Fixera hela containern på skärmen */
     top: 35px;
     /* Justera för att placera containern lite ner från toppen */

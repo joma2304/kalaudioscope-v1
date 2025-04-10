@@ -8,7 +8,6 @@ import UserList from "./ChatContainer/UserList";
 import ActivityIndicator from "./ChatContainer/ActivityIndicator";
 import LeaveChatButton from "./ChatContainer/LeaveChatButton";
 // import MockStream from "./MockStream";
-import TestMovableDiv from "../testMovableDiv";
 import { sendMessageToServer } from "../../utils/SendMessageToServer";
 
 
@@ -162,13 +161,13 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
 
     return (
         <>
-            <div><TestMovableDiv />
+            <div>
 
                 <div className="toggle-chat-container">
                     {showChat && (
                         <button onClick={() => setDisplayChat(!displayChat)} className="toggle-chat">
                             {displayChat ? (
-                                <> <CircleX /></>
+                                <> <CircleX />Dölj chatt</>
                             ) : (
                                 <><MessageSquareIcon />Visa chatt</>
                             )}
