@@ -229,6 +229,7 @@ const ChatApp = () => {
                             maxPolarAngle={Math.PI / 1.5}
                         />
                         <Video360 videoSrc="/Malmolive360_Fb360_360-1.mp4" />
+                        
                     </Canvas>
 
                 }
@@ -262,7 +263,7 @@ const ChatApp = () => {
 
                     {showChat && (
                         <>
-                            <div className="chat-container">
+                            <div className="chat-container" >
                                 <MessageList messages={messages} name={name} chatRef={chatRef} roomId={""} />
                                 <ActivityIndicator activity={activity} />
                                 <MessageForm
@@ -274,9 +275,12 @@ const ChatApp = () => {
                                 <UserList users={users} />
                                 <LeaveChatButton leaveChat={leaveChat} />
                             </div>
+                            
                         </>
                     )}
+                    
                 </div>
+                
             )}
         </>
     );
