@@ -16,6 +16,7 @@ import { Canvas } from '@react-three/fiber';
 
 import Video360 from "./Video360"; // Importera Video360-komponenten 
 import { OrbitControls } from "@react-three/drei";
+import TestMovableDiv from "./testMovableDiv";
 
 
 interface Message {
@@ -215,7 +216,7 @@ const ChatApp = () => {
 
     return (
         <>
-            <div>
+            <div><TestMovableDiv/>
                 {showChat &&
                     <Canvas style={{ width: "100vw", height: "100vh" }} camera={{ position: [0, 0, 0.1] }}>
                         {/* OrbitControls för att möjliggöra interaktivitet */}
