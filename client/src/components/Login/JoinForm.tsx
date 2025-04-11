@@ -28,7 +28,6 @@ const JoinForm = () => {
         localStorage.setItem("chatRoom", room);
         localStorage.setItem("ticketNumber", ticketNumber);
 
-        socket.emit("enterRoom", { name, room });
 
         // Ladda om sidan för att visa ChatApp
         window.location.reload();
