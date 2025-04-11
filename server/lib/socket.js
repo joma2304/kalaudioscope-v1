@@ -24,37 +24,33 @@ const io = new Server(server, {
 });
 
 io.on('connection', socket => {
-    console.log(`User ${socket.id} connected`)
+    console.log(`User ${socket.id} connected`);
 
     // Användaren ansluter till ett rum
     socket.on('enterRoom', ({ name, room }) => {
         console.log(`User ${name} with socket ID ${socket.id} joined room ${room}`);
+
+        // Kontrollera om användaren redan finns i samma rum
         const existingUser = UsersState.users.find(u => u.name === name && u.room === room);
-    
+
         if (existingUser) {
-            console.log(`User ${name} refreshed in room ${room}, skipping duplicate message`);
+            console.log(`User ${name} refreshed in room ${room}, skipping duplicate join message`);
             socket.join(room);
             return; // Användaren är redan i rummet, så vi undviker dubbla meddelanden
         }
-    
-        const prevUser = getUser(socket.id);
-        if (prevUser) {
-            const prevRoom = prevUser.room;
-            socket.leave(prevRoom);
-            io.to(prevRoom).emit('message', buildMsg(ADMIN, `${prevUser.name} har lämnat rummet`));
-            io.to(prevRoom).emit('userList', { users: getUsersInRoom(prevRoom) });
-        }
-    
+
+        // Aktivera användaren i det nya rummet
         const user = activateUser(socket.id, name, room);
         socket.join(user.room);
-    
+
+        // Skicka meddelanden om att användaren gått med i rummet
         socket.emit('message', buildMsg(ADMIN, `Ansluten till rum ${user.room}`));
         socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} har gått med i rummet`));
-    
+
+        // Uppdatera användarlistan och rumslistan
         io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) });
         io.emit('roomList', { rooms: getAllActiveRooms() });
     });
-
 
     // När användaren kopplar bort sig
     socket.on('disconnect', () => {
@@ -81,7 +77,6 @@ io.on('connection', socket => {
 
     // När användaren lämnar ett rum
     socket.on('leaveRoom', ({ name, room }) => {
-
         console.log(`Received leaveRoom event: ${name} is leaving room ${room}`);
 
         const user = getUser(socket.id);
@@ -101,17 +96,17 @@ io.on('connection', socket => {
 
     // När ett meddelande skickas
     socket.on('message', ({ name, text }) => {
-        const room = getUser(socket.id)?.room
+        const room = getUser(socket.id)?.room;
         if (room) {
-            io.to(room).emit('message', buildMsg(name, text))
+            io.to(room).emit('message', buildMsg(name, text));
         }
     });
 
     // När en användare skriver
     socket.on('activity', (name) => {
-        const room = getUser(socket.id)?.room
+        const room = getUser(socket.id)?.room;
         if (room) {
-            socket.broadcast.to(room).emit('activity', name)
+            socket.broadcast.to(room).emit('activity', name);
         }
     });
 });
