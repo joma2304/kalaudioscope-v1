@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { useSocket } from "../../context/SocketContext";
 import "./JoinForm.css";
 
 const JoinForm = () => {
-    const socket = useSocket();
 
     const [name, setName] = useState("");
     const [ticketNumber, setTicketNumber] = useState("");
