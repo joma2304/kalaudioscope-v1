@@ -50,6 +50,15 @@ io.on('connection', socket => {
         // Uppdatera användarlistan och rumslistan
         io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) });
         io.emit('roomList', { rooms: getAllActiveRooms() });
+
+        // Skicka initial video state till den nya användaren
+        const userState = getUser(socket.id);
+        if (userState) {
+            socket.emit('initialState', {
+                currentTime: userState.videoTime || 0,
+                isPlaying: userState.isPlaying || false
+            });
+        }
     });
 
     // När användaren kopplar bort sig
@@ -94,20 +103,25 @@ io.on('connection', socket => {
         }
     });
 
-    // När ett meddelande skickas
-    socket.on('message', ({ name, text }) => {
-        const room = getUser(socket.id)?.room;
-        if (room) {
-            io.to(room).emit('message', buildMsg(name, text));
+    // När användaren skickar en uppdatering av videons tid
+    socket.on('syncTime', (time) => {
+        const user = getUser(socket.id);
+        if (user) {
+            // Skicka tiden till alla andra användare i samma rum
+            user.videoTime = time;
+            socket.broadcast.to(user.room).emit('syncTime', time);
         }
     });
 
-    // När en användare skriver
-    socket.on('activity', (name) => {
-        const room = getUser(socket.id)?.room;
-        if (room) {
-            socket.broadcast.to(room).emit('activity', name);
+    // Skicka play/pause-meddelande till alla andra klienter
+    socket.on('togglePlayPause', (isPlaying) => {
+        const user = getUser(socket.id);
+        if (user) {
+            user.isPlaying = isPlaying;
         }
+
+        // Skicka till alla andra än den som skickade
+        socket.broadcast.emit('togglePlayPause', isPlaying);
     });
 });
 

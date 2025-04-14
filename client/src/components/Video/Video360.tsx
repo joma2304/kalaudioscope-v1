@@ -1,22 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useVideoTexture } from "@react-three/drei";
 
 interface Video360Props {
-    videoSrc: string; // "/videon.mp4", alltså från public-mappen
+    videoSrc: string;
+    videoRef: React.MutableRefObject<HTMLVideoElement | null>;
 }
 
-const Video360: React.FC<Video360Props> = ({ videoSrc }) => {
-    // Skapa videotekstur från källan
+const Video360: React.FC<Video360Props> = ({ videoSrc, videoRef }) => {
     const videoTexture = useVideoTexture(videoSrc, {
         loop: true,
         muted: true,
         autoplay: true,
-        crossOrigin: "anonymous", // Viktigt om man kör från public
+        crossOrigin: "anonymous",
     });
+
+    useEffect(() => {
+        if (videoRef && videoTexture?.image instanceof HTMLVideoElement) {
+            videoRef.current = videoTexture.image;
+        }
+    }, [videoTexture, videoRef]);
 
     return (
         <mesh scale={[-1, 1, 1]}>
-            {/* Sfären inverteras med scale för att visa insidan */}
             <sphereGeometry args={[500, 60, 40]} />
             <meshBasicMaterial map={videoTexture} side={2} />
         </mesh>
@@ -24,4 +29,3 @@ const Video360: React.FC<Video360Props> = ({ videoSrc }) => {
 };
 
 export default Video360;
-
