@@ -103,6 +103,23 @@ io.on('connection', socket => {
         }
     });
 
+    // När ett meddelande skickas
+    socket.on('message', ({ name, text }) => {
+        const room = getUser(socket.id)?.room;
+        if (room) {
+            io.to(room).emit('message', buildMsg(name, text)); // Skickar meddelandet till alla användare i rummet
+        }
+    });
+
+    // När en användare skriver
+    socket.on('activity', (name) => {
+        const room = getUser(socket.id)?.room;
+        if (room) {
+            socket.broadcast.to(room).emit('activity', name); // Skickar till alla andra i rummet
+        }
+    });
+
+
     // När användaren skickar en uppdatering av videons tid
     socket.on('syncTime', (time) => {
         const user = getUser(socket.id);
