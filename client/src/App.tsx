@@ -51,6 +51,7 @@ const App = () => {
         { label: "Vinkel 1", url: "/videos/angle1.mp4" },
         { label: "Vinkel 2", url: "/videos/angle2.mp4" },
         { label: "Vinkel 3", url: "/videos/angle3.mp4" },
+        { label: "Vinkel 4", url: "/videos/angle4.mp4" }
     ];
 
     return (
