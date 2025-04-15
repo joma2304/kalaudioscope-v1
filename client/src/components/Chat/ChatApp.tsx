@@ -123,6 +123,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
         localStorage.removeItem("chatName");
         localStorage.removeItem("chatRoom");
         localStorage.removeItem("ticketNumber");
+        localStorage.removeItem("videoTimestamp");
 
         setMessages([]);
         setUsers([]);
