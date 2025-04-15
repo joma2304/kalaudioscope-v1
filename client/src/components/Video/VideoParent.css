@@ -17,3 +17,8 @@
 .seek-bar:hover {
 cursor: pointer;
 }
+
+
+body {
+    background-color: rgb(140, 42, 201);
+}
