@@ -90,7 +90,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
     // Hantera scrollning av chattfönstret
     const chatRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
-        
+
 
         if (chatRef.current) {
             chatRef.current.scrollTop = chatRef.current.scrollHeight;

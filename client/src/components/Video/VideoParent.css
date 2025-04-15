@@ -1,18 +1,36 @@
 .video-controls {
     position: absolute;
     bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.4);
-    padding: 10px 20px;
+    width: 90%;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px;
     border-radius: 10px;
     color: white;
     display: flex;
-    align-items: center;
-    gap: 15px;
-    z-index: 10;
-    width: 80%;
+    flex-direction: column;
+    gap: 10px;
+    font-family: sans-serif;
 }
+
+.controller-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.time-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.controller-info {
+    opacity: 0.8;
+}
+
 
 .seek-bar:hover {
 cursor: pointer;
