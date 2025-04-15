@@ -20,5 +20,6 @@ cursor: pointer;
 
 
 body {
-    background-color: rgb(140, 42, 201);
+    background: url('/curtains.jpg') no-repeat center center fixed; /* Bakgrundsbild */
+    background-size: cover; /* Gör så att bilden täcker hela bakgrunden */
 }
