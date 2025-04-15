@@ -172,6 +172,7 @@ const VideoParent = () => {
                 </button>
 
                 <input
+                className="seek-bar"
                     type="range"
                     min={0}
                     max={duration || 0}
