@@ -10,62 +10,47 @@ body {
 
 .stream-viewer {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  height: 100%;
-  /* Anpassa höjden till hela sidan */
+  flex-direction: row; /* Placera huvudvideon till höger och vinklarna till vänster */
+  height: 100vh;
+  width: 100vw;
+  background: url('/curtains.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+.main-video-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 1rem;
 }
 
-.video-container {
-  position: relative;
-  width: 100%;
-  height: 70vh;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-/* Grundstil för alla videor */
 .main-video {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
-  background: #000;
+  max-width: 90%;
+  max-height: 90%;
   border-radius: 12px;
-  opacity: 0;
-  transition: opacity 0.6s ease-in-out;
-  pointer-events: none;
-  z-index: 1;
+  background: #000;
+  object-fit: contain;
 }
 
-/* Den aktiva videon som är synlig */
-.main-video.visible {
-  opacity: 1;
-  pointer-events: auto;
-  z-index: 2;
-}
-
-/* Inaktiv video – hålls igång men osynlig */
 .main-video.hidden {
-  opacity: 0;
-  pointer-events: none;
-  z-index: 1;
+  display: none;
 }
-
 
 .stream-thumbnails {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 1rem;
+  padding: 1rem;
+  width: 150px;
+  overflow-y: auto;
 }
 
 .thumbnail-button {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  /* Placera innehållet vertikalt */
   align-items: center;
   border: 2px solid transparent;
   background: none;
@@ -80,16 +65,13 @@ body {
 .thumbnail-video {
   width: 100%;
   height: auto;
-  max-height: 120px;
-  object-fit: cover;
   border-radius: 8px;
+  object-fit: cover;
 }
 
 .label {
   margin-top: 0.5rem;
-  /* Lägg till lite avstånd ovanför texten */
   font-size: 0.9rem;
   color: #fff;
-  /* Gör texten vit för bättre kontrast */
   text-align: center;
 }

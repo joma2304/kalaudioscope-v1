@@ -62,26 +62,27 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources }) => {
     if (allReady) setIsReady(true);
   };
 
+  // Byt videokälla
   const switchSource = async (newIndex: number) => {
     const activeVideo = videoRefs.current[currentSourceIndex];
     const newVideo = videoRefs.current[newIndex];
-  
+
     if (!activeVideo || !newVideo) return;
-  
+
     const time = activeVideo.currentTime;
     setCurrentTime(time);
     localStorage.setItem("videoTimestamp", time.toString());
-  
+
     // Sätt nya videons tid och spela i bakgrunden
     try {
       newVideo.currentTime = time;
-  
+
       // Vänta tills videon är redo att spela (buffrat)
       const playPromise = newVideo.play();
       if (playPromise !== undefined) {
         await playPromise;
       }
-  
+
       // Vänta lite extra för säkerhets skull
       setTimeout(() => {
         setCurrentSourceIndex(newIndex);
@@ -90,14 +91,31 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources }) => {
       console.error("Kunde inte spela upp ny video:", err);
     }
   };
-  
-  
-  
 
   return (
     <div className="stream-viewer">
-      {/* Alla videos, men bara en är synlig och har ljud */}
-      <div className="video-container">
+      {/* Vinklarna */}
+      <div className="stream-thumbnails">
+        {sources.map((source, index) => (
+          <button
+            key={index}
+            className={`thumbnail-button ${currentSourceIndex === index ? "active" : ""}`}
+            onClick={() => switchSource(index)}
+          >
+            <video
+              className="thumbnail-video"
+              src={source.url}
+              muted
+              playsInline
+              preload="metadata"
+            />
+            <span className="label">{source.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Huvudvideon */}
+      <div className="main-video-container">
         {sources.map((source, index) => (
           <video
             key={index}
@@ -115,26 +133,6 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources }) => {
             onLoadedMetadata={handleLoadedMetadata}
             onTimeUpdate={index === currentSourceIndex ? handleTimeUpdate : undefined}
           />
-        ))}
-      </div>
-
-      {/* Miniatyrknappar för att byta vinkel */}
-      <div className="stream-thumbnails">
-        {sources.map((source, index) => (
-          <button
-            key={index}
-            className={`thumbnail-button ${currentSourceIndex === index ? "active" : ""}`}
-            onClick={() => switchSource(index)}
-          >
-            <video
-              className="thumbnail-video"
-              src={source.url}
-              muted
-              playsInline
-              preload="metadata"
-            />
-            <span className="label">{source.label}</span>
-          </button>
         ))}
       </div>
     </div>
