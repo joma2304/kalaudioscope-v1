@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import "./JoinForm.css";
 
-const JoinForm = () => {
+interface JoinFormProps {
+    onLogin: (name: string, ticketNumber: string) => void;
+}
 
+const JoinForm: React.FC<JoinFormProps> = ({ onLogin }) => {
     const [name, setName] = useState("");
     const [ticketNumber, setTicketNumber] = useState("");
     const [error, setError] = useState("");
@@ -20,15 +23,8 @@ const JoinForm = () => {
             return;
         }
 
-        const room = ticketNumber.slice(0, 4);
-
-        localStorage.setItem("chatName", name);
-        localStorage.setItem("chatRoom", room);
-        localStorage.setItem("ticketNumber", ticketNumber);
-
-
-        // Ladda om sidan för att visa ChatApp
-        window.location.reload();
+        // Anropa onLogin för att uppdatera applikationens tillstånd
+        onLogin(name, ticketNumber);
     };
 
     return (

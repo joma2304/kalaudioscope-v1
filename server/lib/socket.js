@@ -28,6 +28,29 @@ const roomControllers = {}; // Key: room, Value: socket ID of controller
 io.on('connection', socket => {
     console.log(`User ${socket.id} connected`);
 
+    // Skapa ett nytt rum
+    socket.on("createRoom", (roomName, callback) => {
+        if (!roomName || roomName.trim() === "") {
+            return callback(false); // Skicka tillbaka misslyckande
+        }
+
+        const existingRooms = getAllActiveRooms();
+        if (existingRooms.includes(roomName)) {
+            return callback(false); // Skicka tillbaka misslyckande om rummet redan finns
+        }
+
+        // Skapa rummet
+        socket.join(roomName);
+        activateUser(socket.id, "Admin", roomName); // Lägg till användaren som skapade rummet
+        callback(true); // Skicka tillbaka framgång
+
+        // Uppdatera rumslistan
+        io.emit("roomList", getAllActiveRooms().map((room) => ({
+            name: room,
+            userCount: getUsersInRoom(room).length,
+        })));
+    });
+
     // Användaren ansluter till ett rum
     socket.on('enterRoom', ({ name, room }) => {
         console.log(`User ${name} with socket ID ${socket.id} joined room ${room}`);
@@ -51,7 +74,10 @@ io.on('connection', socket => {
 
         // Uppdatera användarlistan och rumslistan
         io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) });
-        io.emit('roomList', { rooms: getAllActiveRooms() });
+        io.emit('roomList', getAllActiveRooms().map((room) => ({
+            name: room,
+            userCount: getUsersInRoom(room).length,
+        })));
 
         // Skicka initial video state till den nya användaren
         const userState = getUser(socket.id);
@@ -62,7 +88,7 @@ io.on('connection', socket => {
             });
         }
 
-        // Skicka nuvarande kontrollansvarig till användaren
+        // Skicka nuvarande kontrollansvarig till den nya användaren
         const controllerId = roomControllers[user.room];
         if (controllerId === socket.id) {
             socket.emit('youAreNowController');
@@ -104,7 +130,7 @@ io.on('connection', socket => {
             rooms: getAllActiveRooms(),
         });
 
-        // // Om användaren som lämnar var kontrollansvarig, ge kontrollen till en annan användare
+        // Om användaren som lämnar var kontrollansvarig, ge kontrollen till en annan användare
         if (user.isController) {
             const others = getUsersInRoom(user.room).filter(u => u.id !== user.id);
             if (others.length > 0) {
@@ -124,10 +150,8 @@ io.on('connection', socket => {
         }
 
         console.log(`User ${socket.id} disconnected`);
-
     });
 
-    // När användaren lämnar ett rum
     socket.on('leaveRoom', ({ name, room }) => {
         console.log(`Received leaveRoom event: ${name} is leaving room ${room}`);
 
@@ -182,7 +206,14 @@ io.on('connection', socket => {
         }
     });
 
-    // När användaren skickar en uppdatering av videons tid
+    socket.on("getRoomList", () => {
+        const rooms = getAllActiveRooms().map((room) => ({
+            name: room,
+            userCount: getUsersInRoom(room).length,
+        }));
+        socket.emit("roomList", rooms); // Skicka en array direkt
+    });
+
     socket.on('syncTime', (time) => {
         const user = getUser(socket.id);
         if (user && user.isController) { // Endast kontrollansvarig kan synkronisera tiden
@@ -191,7 +222,6 @@ io.on('connection', socket => {
         }
     });
 
-    // Skicka play/pause-meddelande till alla andra klienter (bara kontrollansvarig kan skicka detta)
     socket.on('togglePlayPause', (isPlaying) => {
         const user = getUser(socket.id);
         if (user && user.isController) {

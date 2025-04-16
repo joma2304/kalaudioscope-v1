@@ -4,20 +4,29 @@ import ChatApp from "./components/Chat/ChatApp";
 import JoinForm from "./components/Login/JoinForm";
 import DraggableWrapper from "./components/DraggableWrapper";
 import VideoParent from "./components/Video/VideoParent";
+import Lobby from "./components/Lobby/Lobby";
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [videoExists, setVideoExists] = useState(false);
+    const [roomSelected, setRoomSelected] = useState(false);
+
+    useEffect(() => {
+        const storedRoom = localStorage.getItem("chatRoom");
+        setRoomSelected(!!storedRoom); // Sätt till true om ett rum är valt
+    }, []);
 
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
         const storedRoom = localStorage.getItem("chatRoom");
         const storedTicketNumber = localStorage.getItem("ticketNumber");
 
-        if (storedName && storedRoom && storedTicketNumber) {
+        // Kontrollera om användaren är inloggad
+        if (storedName && storedTicketNumber) {
             setIsLoggedIn(true);
         } else {
             setIsLoggedIn(false);
+            setRoomSelected(false); // Återställ till lobbyn om något saknas
         }
 
         // Kontrollera om huvudvideon finns
@@ -44,19 +53,35 @@ const App = () => {
         localStorage.removeItem("chatRoom");
         localStorage.removeItem("ticketNumber");
         setIsLoggedIn(false);
+        setRoomSelected(false); // Återgå till lobbyn
+    };
+
+    const handleRoomSelect = (roomName: string) => {
+        localStorage.setItem("chatRoom", roomName);
+        setRoomSelected(true); // Markera att ett rum har valts
+    };
+
+    const handleLogin = (name: string, ticketNumber: string) => {
+        localStorage.setItem("chatName", name);
+        localStorage.setItem("ticketNumber", ticketNumber);
+        setIsLoggedIn(true); // Markera att användaren är inloggad
     };
 
     return (
         <SocketProvider>
             {isLoggedIn ? (
-                <>
-                    <DraggableWrapper>
-                        <ChatApp onLeave={handleLogout} />
-                    </DraggableWrapper>
-                    {videoExists && <VideoParent />}
-                </>
+                roomSelected ? (
+                    <>
+                        <DraggableWrapper>
+                            <ChatApp onLeave={handleLogout} />
+                        </DraggableWrapper>
+                        {videoExists && <VideoParent />}
+                    </>
+                ) : (
+                    <Lobby onRoomSelect={handleRoomSelect} />
+                )
             ) : (
-                <JoinForm />
+                <JoinForm onLogin={handleLogin} />
             )}
         </SocketProvider>
     );
