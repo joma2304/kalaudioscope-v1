@@ -49,10 +49,7 @@ const App = () => {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem("chatName");
-        localStorage.removeItem("chatRoom");
-        localStorage.removeItem("ticketNumber");
-        setIsLoggedIn(false);
+        localStorage.removeItem("chatRoom"); // Ta bort rumsinformationen
         setRoomSelected(false); // Återgå till lobbyn
     };
 
@@ -69,21 +66,21 @@ const App = () => {
 
     return (
         <SocketProvider>
-            {isLoggedIn ? (
-                roomSelected ? (
-                    <>
-                        <DraggableWrapper>
-                            <ChatApp onLeave={handleLogout} />
-                        </DraggableWrapper>
-                        {videoExists && <VideoParent />}
-                    </>
-                ) : (
-                    <Lobby onRoomSelect={handleRoomSelect} />
-                )
+        {isLoggedIn ? (
+            roomSelected ? (
+                <>
+                    <DraggableWrapper>
+                        <ChatApp onLeave={handleLogout} />
+                    </DraggableWrapper>
+                    {videoExists && <VideoParent />}
+                </>
             ) : (
-                <JoinForm onLogin={handleLogin} />
-            )}
-        </SocketProvider>
+                <Lobby onRoomSelect={handleRoomSelect} />
+            )
+        ) : (
+            <JoinForm onLogin={handleLogin} />
+        )}
+    </SocketProvider>
     );
 };
 
