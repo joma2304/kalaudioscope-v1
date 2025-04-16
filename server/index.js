@@ -8,6 +8,7 @@ import cors from 'cors'
 
 import messageRoutes from './routes/messages.route.js';
 
+
 dotenv.config();
 app.use(express.json());
 
