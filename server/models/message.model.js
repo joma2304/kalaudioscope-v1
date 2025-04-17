@@ -6,10 +6,6 @@ const messageSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        ticketNumber: {
-            type: String,
-            required: true,
-        },
         roomId: {
             type: String,
             required: true,

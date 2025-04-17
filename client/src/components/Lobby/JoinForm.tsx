@@ -4,7 +4,7 @@ import "./JoinForm.css";
 const JoinForm = () => {
 
     const [name, setName] = useState("");
-    const [ticketNumber, setTicketNumber] = useState("");
+    const [room, setRoom] = useState("");
     const [error, setError] = useState("");
 
     const joinRoom = (e: React.FormEvent) => {
@@ -15,16 +15,12 @@ const JoinForm = () => {
             return;
         }
 
-        if (ticketNumber.length !== 10) {
-            setError("Biljettnumret måste vara exakt 10 siffror!");
-            return;
-        }
 
-        const room = ticketNumber.slice(0, 4);
+        
 
         localStorage.setItem("chatName", name);
         localStorage.setItem("chatRoom", room);
-        localStorage.setItem("ticketNumber", ticketNumber);
+        
 
 
         // Ladda om sidan för att visa ChatApp
@@ -43,14 +39,10 @@ const JoinForm = () => {
                 />
                 <input
                     type="text"
-                    placeholder="Biljettnummer (10 siffror)"
-                    value={ticketNumber}
-                    onChange={(e) => {
-                        if (/^\d*$/.test(e.target.value)) {
-                            setTicketNumber(e.target.value);
-                        }
-                    }}
-                    maxLength={10}
+                    placeholder="Chattrum"
+                    value={room}
+                    onChange={(e) => 
+                        setRoom(e.target.value)}
                     required
                 />
                 {error && <p className="error-message">{error}</p>}

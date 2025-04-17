@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { SocketProvider } from "./context/SocketContext";
 import ChatApp from "./components/Chat/ChatApp";
-import JoinForm from "./components/Login/JoinForm";
+import JoinForm from "./components/Lobby/JoinForm";
 import DraggableWrapper from "./components/DraggableWrapper";
 import StreamViewer from "./components/Stream/StreamViewer";
+import RoomList from "./components/Lobby/RoomList";
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -12,9 +13,8 @@ const App = () => {
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
         const storedRoom = localStorage.getItem("chatRoom");
-        const storedTicketNumber = localStorage.getItem("ticketNumber");
 
-        if (storedName && storedRoom && storedTicketNumber) {
+        if (storedName && storedRoom) {
             setIsLoggedIn(true);
         } else {
             setIsLoggedIn(false);
@@ -42,7 +42,6 @@ const App = () => {
     const handleLogout = () => {
         localStorage.removeItem("chatName");
         localStorage.removeItem("chatRoom");
-        localStorage.removeItem("ticketNumber");
         setIsLoggedIn(false);
     };
 
@@ -63,8 +62,10 @@ const App = () => {
                     </DraggableWrapper>
                     {videoExists && <StreamViewer sources={testStreams} />}
                 </>
-            ) : (
+            ) : (<>
                 <JoinForm />
+                <RoomList socketUrl="http://localhost:3500" />
+                </>
             )}
         </SocketProvider>
     );

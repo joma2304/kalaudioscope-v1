@@ -26,7 +26,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
 
     const socket = useSocket();
     const [name, setName] = useState("");
-    const [ticketNumber, setTicketNumber] = useState("");
     const [room, setRoom] = useState("");
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
@@ -44,12 +43,10 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
         const storedRoom = localStorage.getItem("chatRoom");
-        const storedTicketNumber = localStorage.getItem("ticketNumber");
 
         if (storedName && storedRoom) {
             setName(storedName);
             setRoom(storedRoom);
-            setTicketNumber(storedTicketNumber || ""); // Sätt ticketNumber från localStorage
 
 
             socket.emit("enterRoom", { name: storedName, room: storedRoom });
@@ -122,7 +119,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
 
         localStorage.removeItem("chatName");
         localStorage.removeItem("chatRoom");
-        localStorage.removeItem("ticketNumber");
         localStorage.removeItem("videoTimestamp");
 
         setMessages([]);
@@ -132,7 +128,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
         setShowHeader(true);
         setName("");
         setRoom("");
-        setTicketNumber("");
 
         setLastLeftTime(Date.now());
         setHasLeft(true);
