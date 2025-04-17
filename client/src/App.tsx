@@ -64,7 +64,7 @@ const App = () => {
                 </>
             ) : (<>
                 <JoinForm />
-                <RoomList socketUrl="http://localhost:3500" />
+                <RoomList  />
                 </>
             )}
         </SocketProvider>
