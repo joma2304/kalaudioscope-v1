@@ -1,38 +1,29 @@
 import { useState, useEffect } from "react";
 import { SocketProvider } from "./context/SocketContext";
 import ChatApp from "./components/Chat/ChatApp";
-import JoinForm from "./components/Login/JoinForm";
+import JoinForm from "./components/Lobby/JoinForm";
 import DraggableWrapper from "./components/DraggableWrapper";
+import RoomList from "./components/Lobby/RoomList";
 import VideoParent from "./components/Video/VideoParent";
-import Lobby from "./components/Lobby/Lobby";
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [videoExists, setVideoExists] = useState(false);
-    const [roomSelected, setRoomSelected] = useState(false);
-
-    useEffect(() => {
-        const storedRoom = localStorage.getItem("chatRoom");
-        setRoomSelected(!!storedRoom); // Sätt till true om ett rum är valt
-    }, []);
 
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
         const storedRoom = localStorage.getItem("chatRoom");
-        const storedTicketNumber = localStorage.getItem("ticketNumber");
 
-        // Kontrollera om användaren är inloggad
-        if (storedName && storedTicketNumber) {
+        if (storedName && storedRoom) {
             setIsLoggedIn(true);
         } else {
             setIsLoggedIn(false);
-            setRoomSelected(false); // Återställ till lobbyn om något saknas
         }
 
         // Kontrollera om huvudvideon finns
         const checkVideoFile = async () => {
             try {
-                const response = await fetch("/Malmolive360_Fb360_360-1.mp4");
+                const response = await fetch("/videos/angle1.mp4");
                 if (response.ok && response.headers.get("content-type") !== "text/html") {
                     setVideoExists(true);
                 } else {
@@ -49,38 +40,27 @@ const App = () => {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem("chatRoom"); // Ta bort rumsinformationen
-        setRoomSelected(false); // Återgå till lobbyn
+        localStorage.removeItem("chatName");
+        localStorage.removeItem("chatRoom");
+        setIsLoggedIn(false);
     };
 
-    const handleRoomSelect = (roomName: string) => {
-        localStorage.setItem("chatRoom", roomName);
-        setRoomSelected(true); // Markera att ett rum har valts
-    };
-
-    const handleLogin = (name: string, ticketNumber: string) => {
-        localStorage.setItem("chatName", name);
-        localStorage.setItem("ticketNumber", ticketNumber);
-        setIsLoggedIn(true); // Markera att användaren är inloggad
-    };
 
     return (
         <SocketProvider>
-        {isLoggedIn ? (
-            roomSelected ? (
+            {isLoggedIn ? (
                 <>
                     <DraggableWrapper>
                         <ChatApp onLeave={handleLogout} />
                     </DraggableWrapper>
                     {videoExists && <VideoParent />}
                 </>
-            ) : (
-                <Lobby onRoomSelect={handleRoomSelect} />
-            )
-        ) : (
-            <JoinForm onLogin={handleLogin} />
-        )}
-    </SocketProvider>
+            ) : (<>
+                <JoinForm />
+                <RoomList />
+                </>
+            )}
+        </SocketProvider>
     );
 };
 

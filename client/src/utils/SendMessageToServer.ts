@@ -20,7 +20,6 @@ export const sendMessageToServer = async ({
             body: JSON.stringify({
                 name,
                 text,
-                ticketNumber: localStorage.getItem("ticketNumber"),
                 roomId: localStorage.getItem("chatRoom"),
             }),
         });

@@ -1,25 +1,56 @@
-import React from "react";
+import React, { useEffect, useState } from 'react';
+import { useSocket } from '../../context/SocketContext'; // Importera useSocket
 
 interface Room {
     name: string;
     userCount: number;
 }
 
-interface RoomListProps {
-    rooms: Room[];
-    onJoinRoom: (roomName: string) => void;
-}
+const RoomList: React.FC = () => {
+    const socket = useSocket();
+    const [rooms, setRooms] = useState<Room[]>([]);
 
-const RoomList: React.FC<RoomListProps> = ({ rooms, onJoinRoom }) => {
+    useEffect(() => {
+        const handleRoomList = (rooms: Room[]) => {
+            setRooms(rooms);
+        };
+
+        socket.on("roomList", handleRoomList);
+
+        // Begär uppdaterad rumslista
+        socket.emit("getRoomList");
+
+        return () => {
+            socket.off("roomList", handleRoomList);
+        };
+    }, [socket]);
+
+    const handleJoinRoom = (roomName: string) => {
+        socket.emit("joinRoom", roomName);
+        console.log(`Joining room: ${roomName}`);
+        // Du kan också lägga till navigation här om du har routes per rum
+    };
+
     return (
-        <ul className="room-list">
-            {rooms.map((room) => (
-                <li key={room.name} className="room-item">
-                    <span>{room.name} ({room.userCount} användare)</span>
-                    <button onClick={() => onJoinRoom(room.name)}>Gå med</button>
-                </li>
-            ))}
-        </ul>
+        <div className="room-list">
+            <h3>Aktiva rum</h3>
+            {rooms.length > 0 ? (
+                <ul>
+                    {rooms.map((room, index) => (
+                        <li key={index}>
+                            <button
+                                onClick={() => handleJoinRoom(room.name)}
+                                className="text-blue-600 hover:underline"
+                            >
+                                {room.name} ({room.userCount} användare)
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>Inga aktiva rum</p>
+            )}
+        </div>
     );
 };
 
