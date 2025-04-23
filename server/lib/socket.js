@@ -69,8 +69,8 @@ io.on('connection', socket => {
         socket.join(user.room);
 
         // Skicka meddelanden om att användaren gått med i rummet
-        socket.emit('message', buildMsg(ADMIN, `Ansluten till rum ${user.room}`));
-        socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} har gått med i rummet`));
+        socket.emit('message', buildMsg(ADMIN, `Connected to room ${user.room}`));
+        socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined`));
 
         // Uppdatera användarlistan och rumslistan
         io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) });
@@ -101,6 +101,30 @@ io.on('connection', socket => {
         }
     });
 
+        // Handle room request with auto-generated name
+        socket.on("requestRoom", ({ name }, callback) => {
+            const existingRooms = getAllActiveRooms();
+            let roomName = "0";
+    
+            // Generate the next available room name
+            while (existingRooms.includes(roomName)) {
+                roomName = (parseInt(roomName) + 1).toString();
+            }
+    
+            // Join the user to the generated room
+            socket.join(roomName);
+            activateUser(socket.id, name, roomName);
+    
+            // Notify the client of the room name
+            callback({ success: true, roomName });
+    
+            // Update the room list for all clients
+            io.emit("roomList", getAllActiveRooms().map((room) => ({
+                name: room,
+                userCount: getUsersInRoom(room).length,
+            })));
+        });
+
     // När en användare blir kontrollansvarig
     socket.on('youAreNowController', (username) => {
         const user = getUserBySocketId(socket.id);  // Hämtar användare baserat på socket-id
@@ -121,7 +145,7 @@ io.on('connection', socket => {
 
         userLeavesApp(socket.id);
 
-        io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} har lämnat rummet`));
+        io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has left`));
         io.to(user.room).emit('userList', {
             users: getUsersInRoom(user.room),
         });
@@ -139,7 +163,7 @@ io.on('connection', socket => {
                 roomControllers[user.room] = newController.id; // Uppdatera kontrollansvarig
 
                 // Skicka meddelande om att kontrollen har överförts
-                io.to(user.room).emit('message', buildMsg(ADMIN, `${newController.name} har nu kontrollen.`));
+                io.to(user.room).emit('message', buildMsg(ADMIN, `${newController.name} is now in controll.`));
 
                 // Skicka 'youAreNowController' till den nya kontrollansvarige
                 io.to(newController.id).emit('youAreNowController');
@@ -161,7 +185,7 @@ io.on('connection', socket => {
             userLeavesApp(socket.id);
             socket.leave(room);
 
-            io.to(room).emit('message', buildMsg(ADMIN, `${name} har lämnat rummet`));
+            io.to(room).emit('message', buildMsg(ADMIN, `${name} has left`));
             io.to(room).emit('userList', {
                 users: getUsersInRoom(room),
             });
@@ -175,7 +199,7 @@ io.on('connection', socket => {
                     roomControllers[room] = newController.id; // Uppdatera kontrollansvarig
 
                     // Skicka meddelande om att kontrollen har överförts
-                    io.to(room).emit('message', buildMsg(ADMIN, `${newController.name} har nu kontrollen.`));
+                    io.to(room).emit('message', buildMsg(ADMIN, `${newController.name} is in controll.`));
 
                     // Skicka 'youAreNowController' till den nya kontrollansvarige
                     io.to(newController.id).emit('youAreNowController');

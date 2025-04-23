@@ -178,7 +178,7 @@ const VideoParent = () => {
                 <div className="time-info">
                     <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
                     <span className="controller-info">
-                    {isController ? "Du är kontrollansvarig" : "Du är inte kontrollansvarig"}
+                    {isController ? "You are in controll" : "You are not in controll"}
 
                     </span>
                 </div>
@@ -186,7 +186,7 @@ const VideoParent = () => {
                 {isController && (
                     <div className="controller-actions">
                         <button onClick={togglePlay} style={{ padding: "5px 10px" }}>
-                            {isPlaying ? "⏸ Pausa" : "▶ Spela"}
+                            {isPlaying ? "⏸ Pause" : "▶ Play"}
                         </button>
 
                         <input

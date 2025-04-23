@@ -41,7 +41,7 @@ const Lobby: React.FC<LobbyProps> = ({ onRoomSelect }) => {
 
     const joinRoom = (roomName: string) => {
         if (!name.trim()) {
-            setError("Du måste ange ett namn!");
+            setError("You must input a name!");
             return;
         }
     
@@ -63,7 +63,7 @@ const Lobby: React.FC<LobbyProps> = ({ onRoomSelect }) => {
             if (success) {
                 joinRoom(newRoomName); // Gå automatiskt in i det skapade rummet
             } else {
-                setError("Kunde inte skapa rummet. Försök igen.");
+                setError("Could not create room. Please try again.");
             }
         });
 
@@ -76,7 +76,7 @@ const Lobby: React.FC<LobbyProps> = ({ onRoomSelect }) => {
             <div className="name-input">
                 <input
                     type="text"
-                    placeholder="Ditt namn"
+                    placeholder="Your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
@@ -90,7 +90,7 @@ const Lobby: React.FC<LobbyProps> = ({ onRoomSelect }) => {
                             className="room-item"
                             onClick={() => joinRoom(room.name)}
                         >
-                            <span>{room.name} ({room.userCount} anslutna)</span>
+                            <span>{room.name} ({room.userCount} connected)</span>
                         </div>
                     ))
                 ) : (
@@ -100,12 +100,12 @@ const Lobby: React.FC<LobbyProps> = ({ onRoomSelect }) => {
             <form onSubmit={createRoom} className="create-room-form">
                 <input
                     type="text"
-                    placeholder="Skapa nytt rum"
+                    placeholder="Create room"
                     value={newRoomName}
                     onChange={(e) => setNewRoomName(e.target.value)}
                     required
                 />
-                <button type="submit">Skapa rum</button>
+                <button type="submit">Create room</button>
             </form>
             {error && <p className="error-message">{error}</p>}
         </div>

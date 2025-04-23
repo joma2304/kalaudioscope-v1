@@ -70,7 +70,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
         };
 
         const handleActivity = (name: string | null) => {
-            setActivity(name ? `${name} skriver...` : "");
+            setActivity(name ? `${name} is writing...` : "");
         };
 
         socket.on("message", handleMessage);
@@ -163,9 +163,9 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
                     {showChat && (
                         <button onClick={() => setDisplayChat(!displayChat)} className="toggle-chat">
                             {displayChat ? (
-                                <> <CircleX />Dölj chatt</>
+                                <> <CircleX />Hide chat</>
                             ) : (
-                                <><MessageSquareIcon />Visa chatt</>
+                                <><MessageSquareIcon />Show chat</>
                             )}
                         </button>
                     )}
@@ -174,7 +174,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
 
             {displayChat && (
                 <div>
-                    {!showChat && <p>Ansluter till rummet...</p>}
+                    {!showChat && <p>Connecting to room...</p>}
 
                     {showChat && (
                         <>

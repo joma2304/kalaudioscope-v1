@@ -1,21 +1,28 @@
 import { useState, useEffect } from "react";
-import { SocketProvider } from "./context/SocketContext";
+import { SocketProvider, useSocket } from "./context/SocketContext";
 import ChatApp from "./components/Chat/ChatApp";
 import JoinForm from "./components/Lobby/JoinForm";
 import DraggableWrapper from "./components/DraggableWrapper";
 import RoomList from "./components/Lobby/RoomList";
 import VideoParent from "./components/Video/VideoParent";
 
+
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [videoExists, setVideoExists] = useState(false);
+    const [currentRoom, setCurrentRoom] = useState<string | null>(null);
+    const [name, setName] = useState(""); // Nytt state för användarnamnet
+    const socket = useSocket();
 
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
         const storedRoom = localStorage.getItem("chatRoom");
+        
 
         if (storedName && storedRoom) {
             setIsLoggedIn(true);
+            setCurrentRoom(storedRoom);
+            setName(storedName); // Sätt det sparade namnet
         } else {
             setIsLoggedIn(false);
         }
@@ -39,11 +46,26 @@ const App = () => {
         checkVideoFile();
     }, []);
 
+    const handleJoinRoom = (roomName: string) => {
+        if (!name.trim()) {
+            console.error("Name is required to join a room.");
+            return;
+        }
+
+        socket.emit("enterRoom", { name, room: roomName });
+        localStorage.setItem("chatName", name);
+        localStorage.setItem("chatRoom", roomName);
+        setCurrentRoom(roomName);
+        setIsLoggedIn(true);
+    };
+
     const handleLogout = () => {
         localStorage.removeItem("chatName");
         localStorage.removeItem("chatRoom");
         setIsLoggedIn(false);
+        setCurrentRoom(null);
     };
+
 
 
     return (
@@ -56,8 +78,8 @@ const App = () => {
                     {videoExists && <VideoParent />}
                 </>
             ) : (<>
-                <JoinForm />
-                <RoomList />
+                <JoinForm name={name} setName={setName} />
+                <RoomList onJoinRoom={handleJoinRoom} />
                 </>
             )}
         </SocketProvider>

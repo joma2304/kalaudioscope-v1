@@ -12,13 +12,13 @@ const MessageForm: React.FC<MessageFormProps> = ({ message, setMessage, sendMess
         <form onSubmit={sendMessage}>
             <input
                 type="text"
-                placeholder="Ditt meddelande"
+                placeholder="Your message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleTyping}
                 required
             />
-            <button type="submit"><SendHorizonal size={18} /> <span>Skicka</span></button>
+            <button type="submit"><SendHorizonal size={18} /> <span>Send</span></button>
         </form>
     );
 };
