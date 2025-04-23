@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 const socket = io("ws://localhost:3500", { autoConnect: false });
@@ -7,24 +7,27 @@ export const SocketContext = createContext(socket);
 export const useSocket = () => useContext(SocketContext);
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
+    const [connected, setConnected] = useState(false);
+
     useEffect(() => {
-        console.log("Connecting socket...");
         socket.connect();
 
         socket.on("connect", () => {
-            console.log("Connected to server with ID:", socket.id);
+            setConnected(true);
         });
 
         socket.on("disconnect", () => {
-            console.log("Disconnected from server");
+            setConnected(false);
         });
-    
 
         return () => {
-            console.log("Disconnecting socket...");
             socket.disconnect();
         };
     }, []);
 
-    return <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>;
+    return (
+        <SocketContext.Provider value={socket}>
+            {connected ? children : <div>Connecting to server...</div>}
+        </SocketContext.Provider>
+    );
 };

@@ -80,7 +80,10 @@ const App = () => {
                 </>
             ) : (
                 <div className="lobby-view">
-                    <JoinForm name={name} setName={setName} />
+                    <JoinForm name={name} setName={setName} onJoinSuccess={(roomName) => {
+                        setCurrentRoom(roomName);
+                        setIsLoggedIn(true);
+                    }} />
                     <RoomList onJoinRoom={handleJoinRoom} />
                 </div>
             )}
