@@ -185,11 +185,12 @@ const VideoParent = () => {
 
                 {isController && (
                     <div className="controller-actions">
-                        <button onClick={togglePlay} style={{ padding: "5px 10px" }}>
+                        <button className="controller-button" onClick={togglePlay} style={{ padding: "5px 10px" }}>
                             {isPlaying ? "⏸ Pause" : "▶ Play"}
                         </button>
 
                         <input
+                        className="seek-bar"
                             type="range"
                             min={0}
                             max={duration || 0}

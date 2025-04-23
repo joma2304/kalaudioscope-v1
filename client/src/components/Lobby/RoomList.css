@@ -1,0 +1,67 @@
+/* Container för rumslistan */
+.room-list-container {
+    padding: 1.5rem;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 0 auto; /* Centrerar containern */
+}
+
+/* Rubrik för rumslistan */
+.room-list-header {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+}
+
+/* Lista för rummen */
+.room-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+/* Enskild lista för rum */
+.room-item {
+    margin-bottom: 1rem;
+}
+
+/* Knappen för att gå med i rum */
+.room-button {
+    background: linear-gradient(135deg, #1fa354, #08ae34);
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    width: 100%;
+    text-align: left;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between; /* Placerar text och eventuellt ikoner snyggt */
+    align-items: center; /* Ser till att ikoner och text ligger rätt */
+}
+
+/* Hover-effekt för knappen */
+.room-button:hover {
+    transform: translateY(-2px); /* Liten lyftande effekt */
+}
+
+/* Om rummet är fullt */
+.room-button-full {
+    color: #ffffff;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Meddelande om inga rum finns */
+.no-rooms-message {
+    color: #adb5bd;
+    font-style: italic;
+    text-align: center;
+    font-size: 16px;
+}

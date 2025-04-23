@@ -1,63 +1,66 @@
 import React, { useEffect, useState } from "react";
 import { useSocket } from "../../context/SocketContext";
+import "./RoomList.css"; // Importera CSS för RoomList
 
 interface Room {
-  name: string;
-  userCount: number;
-  maxUsers?: number; // Lägg till maxUsers för att indikera maxgränsen
+    name: string;
+    userCount: number;
+    maxUsers?: number; // Lägg till maxUsers för att indikera maxgränsen
 }
 
 interface RoomListProps {
-  onJoinRoom: (roomName: string) => void; // Prop för att hantera rumsinträde
+    onJoinRoom: (roomName: string) => void; // Prop för att hantera rumsinträde
 }
 
 const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
-  const socket = useSocket();
-  const [rooms, setRooms] = useState<Room[]>([]);
+    const socket = useSocket();
+    const [rooms, setRooms] = useState<Room[]>([]);
+    const [error, setError] = useState<string | null>(null); // State för felmeddelande
 
-  useEffect(() => {
-    const handleRoomList = (rooms: Room[]) => {
-      setRooms(rooms);
-    };
 
-    socket.on("roomList", handleRoomList);
+    useEffect(() => {
+        const handleRoomList = (rooms: Room[]) => {
+            setRooms(rooms);
+        };
 
-    // Begär uppdaterad rumslista
-    socket.emit("getRoomList");
+        socket.on("roomList", handleRoomList);
 
-    return () => {
-      socket.off("roomList", handleRoomList);
-    };
-  }, [socket]);
+        // Begär uppdaterad rumslista
+        socket.emit("getRoomList");
 
-  return (
-    <div className="room-list">
-      <h3>Active rooms</h3>
-      {rooms.length > 0 ? (
-        <ul>
-          {rooms.map((room, index) => {
-            const isFull = room.maxUsers !== undefined && room.userCount >= room.maxUsers; // Kontrollera om rummet är fullt
+        return () => {
+            socket.off("roomList", handleRoomList);
+        };
+    }, [socket]);
 
-            return (
-              <li key={index}>
-                <button
-                  onClick={() => !isFull && onJoinRoom(room.name)} // Förhindra klick om rummet är fullt
-                  className={`text-blue-600 hover:underline ${isFull ? "text-gray-400 cursor-not-allowed" : ""}`}
-                  disabled={isFull} // Inaktivera knappen om rummet är fullt
-                >
-                  {room.name} ({room.userCount} user(s)
-                  {room.maxUsers ? ` / ${room.maxUsers}` : ""})
-                  {isFull && " - Full"} {/* Visa "Full" om rummet är fullt */}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <p>No active rooms</p>
-      )}
-    </div>
-  );
+    return (
+        <div className="room-list-container">
+            <h3 className="room-list-header">Join an active room</h3>
+            {rooms.length > 0 ? (
+                <ul className="room-list">
+                    {rooms.map((room, index) => {
+                        const isFull = room.maxUsers !== undefined && room.userCount >= room.maxUsers;
+
+                        return (
+                            <li key={index} className="room-item">
+                                <button
+                                    onClick={() => !isFull && onJoinRoom(room.name)}
+                                    className={`room-button ${isFull ? "room-button-full" : ""}`}
+                                    disabled={isFull}
+                                >
+                                    {room.name} ({room.userCount}
+                                    {room.maxUsers ? ` / ${room.maxUsers} users` : ""})
+                                    {isFull && " - Room is full"}
+                                </button>
+                            </li>
+                        );
+                    })}
+                </ul>
+            ) : (
+                <p className="no-rooms-message">No active rooms</p>
+            )}
+        </div>
+    );
 };
 
 export default RoomList;

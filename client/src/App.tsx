@@ -5,19 +5,19 @@ import JoinForm from "./components/Lobby/JoinForm";
 import DraggableWrapper from "./components/DraggableWrapper";
 import RoomList from "./components/Lobby/RoomList";
 import VideoParent from "./components/Video/VideoParent";
-
+import "./App.css"; // Importera CSS för App
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [videoExists, setVideoExists] = useState(false);
     const [currentRoom, setCurrentRoom] = useState<string | null>(null);
     const [name, setName] = useState(""); // Nytt state för användarnamnet
+    const [error, setError] = useState<string | null>(null); // Nytt state för felmeddelande
     const socket = useSocket();
 
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
         const storedRoom = localStorage.getItem("chatRoom");
-        
 
         if (storedName && storedRoom) {
             setIsLoggedIn(true);
@@ -48,10 +48,11 @@ const App = () => {
 
     const handleJoinRoom = (roomName: string) => {
         if (!name.trim()) {
-            console.error("Name is required to join a room.");
+            setError("Name is required to join a room."); // Sätt felmeddelandet
             return;
         }
 
+        setError(null); // Rensa felmeddelandet om allt är korrekt
         socket.emit("enterRoom", { name, room: roomName });
         localStorage.setItem("chatName", name);
         localStorage.setItem("chatRoom", roomName);
@@ -66,8 +67,6 @@ const App = () => {
         setCurrentRoom(null);
     };
 
-
-
     return (
         <SocketProvider>
             {isLoggedIn ? (
@@ -77,9 +76,11 @@ const App = () => {
                     </DraggableWrapper>
                     {videoExists && <VideoParent />}
                 </>
-            ) : (<>
-                <JoinForm name={name} setName={setName} />
-                <RoomList onJoinRoom={handleJoinRoom} />
+            ) : (
+                <>
+                    <JoinForm name={name} setName={setName} />
+                    {error && <p className="join-error-message">{error}</p>} {/* Visa felmeddelandet */}
+                    <RoomList onJoinRoom={handleJoinRoom} />
                 </>
             )}
         </SocketProvider>

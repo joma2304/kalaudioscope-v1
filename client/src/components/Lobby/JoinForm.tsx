@@ -1,5 +1,6 @@
 import React from "react";
 import { useSocket } from "../../context/SocketContext";
+import "./JoinForm.css"; // Importera CSS för JoinForm
 
 interface JoinFormProps {
     name: string;
@@ -44,26 +45,28 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName }) => {
       };
 
     return (
-        <div className="join-form">
-            <form onSubmit={joinRoom}>
-                <input
-                    type="text"
-                    placeholder="Your name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-                <input
-                    type="number"
-                    placeholder="Max users (optional)"
-                    value={maxUsers || ""}
-                    onChange={(e) => setMaxUsers(Number(e.target.value) || null)}
-                    min="1"
-                />
-                {error && <p className="error-message">{error}</p>}
-                <button type="submit">Create chatroom</button>
-            </form>
-        </div>
+        <div className="create-room-container">
+        <form className="create-room-form" onSubmit={joinRoom}>
+            <input
+                className="create-room-input"
+                type="text"
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+            />
+            <input
+                className="create-room-input"
+                type="number"
+                placeholder="Max users (optional)"
+                value={maxUsers || ""}
+                onChange={(e) => setMaxUsers(Number(e.target.value) || null)}
+                min="1"
+            />
+            {error && <p className="create-room-error-message">{error}</p>}
+            <button className="create-room-button" type="submit">Create chatroom</button>
+        </form>
+    </div>
     );
 };
 

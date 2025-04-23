@@ -36,8 +36,27 @@
 cursor: pointer;
 }
 
+.controller-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: none;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    flex-shrink: 0;
+    font-size: 0.9em;
+}
+
+.controller-button:hover {
+    background: linear-gradient(135deg, #0056b3, #004494);
+    transform: scale(1.05);
+}
 
 body {
-    background: url('/curtains.jpg') no-repeat center center fixed; /* Bakgrundsbild */
-    background-size: cover; /* Gör så att bilden täcker hela bakgrunden */
+background-color: rgb(189, 210, 229);
 }

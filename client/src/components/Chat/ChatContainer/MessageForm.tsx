@@ -10,7 +10,7 @@ interface MessageFormProps {
 const MessageForm: React.FC<MessageFormProps> = ({ message, setMessage, sendMessage, handleTyping }) => {
     return (
         <form onSubmit={sendMessage}>
-            <input
+            <input className="message-input"
                 type="text"
                 placeholder="Your message"
                 value={message}
@@ -18,7 +18,7 @@ const MessageForm: React.FC<MessageFormProps> = ({ message, setMessage, sendMess
                 onKeyDown={handleTyping}
                 required
             />
-            <button type="submit"><SendHorizonal size={18} /> <span>Send</span></button>
+            <button className="send-button" type="submit"><SendHorizonal size={18} /> <span>Send</span></button>
         </form>
     );
 };
