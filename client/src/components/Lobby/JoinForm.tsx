@@ -1,55 +1,53 @@
-import React, { useState } from "react";
+import React from "react";
+import { useSocket } from "../../context/SocketContext";
 import "./JoinForm.css";
 
-const JoinForm = () => {
+interface JoinFormProps {
+  name: string;
+  setName: React.Dispatch<React.SetStateAction<string>>;
+}
 
-    const [name, setName] = useState("");
-    const [room, setRoom] = useState("");
-    const [error, setError] = useState("");
+const JoinForm: React.FC<JoinFormProps> = ({ name, setName }) => {
+  const [error, setError] = React.useState("");
+  const socket = useSocket();
 
-    const joinRoom = (e: React.FormEvent) => {
-        e.preventDefault();
+  const joinRoom = (e: React.FormEvent) => {
+    e.preventDefault();
 
-        if (!name.trim()) {
-            setError("Du måste ange ett namn!");
-            return;
-        }
+    if (!name.trim()) {
+      setError("You must enter a name!");
+      return;
+    }
 
-
-        
-
+    // Emit an event to request a room with an auto-generated name
+    socket.emit("requestRoom", { name }, (response: { success: boolean; roomName?: string }) => {
+      if (response.success && response.roomName) {
         localStorage.setItem("chatName", name);
-        localStorage.setItem("chatRoom", room);
-        
+        localStorage.setItem("chatRoom", response.roomName);
 
-
-        // Ladda om sidan för att visa ChatApp
+        // Reload the page to show ChatApp
         window.location.reload();
-    };
+      } else {
+        setError("Failed to join or create a room. Please try again.");
+      }
+    });
+  };
 
-    return (
-        <div className="join-form">
-            <form onSubmit={joinRoom}>
-                <input
-                    type="text"
-                    placeholder="Your name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-                <input
-                    type="text"
-                    placeholder="Chat room"
-                    value={room}
-                    onChange={(e) => 
-                        setRoom(e.target.value)}
-                    required
-                />
-                {error && <p className="error-message">{error}</p>}
-                <button type="submit">Connect to show</button>
-            </form>
-        </div>
-    );
+  return (
+    <div className="join-form">
+      <form onSubmit={joinRoom}>
+        <input
+          type="text"
+          placeholder="Your name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        {error && <p className="error-message">{error}</p>}
+        <button type="submit">Connect to show</button>
+      </form>
+    </div>
+  );
 };
 
 export default JoinForm;

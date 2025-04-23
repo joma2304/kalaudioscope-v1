@@ -1,14 +1,24 @@
 import { useState, useEffect } from "react";
-import { SocketProvider } from "./context/SocketContext";
+import { SocketProvider, useSocket } from "./context/SocketContext";
 import ChatApp from "./components/Chat/ChatApp";
 import JoinForm from "./components/Lobby/JoinForm";
+import RoomList from "./components/Lobby/RoomList";
 import DraggableWrapper from "./components/DraggableWrapper";
 import StreamViewer from "./components/Stream/StreamViewer";
-import RoomList from "./components/Lobby/RoomList";
+
+const testStreams = [
+    { label: "Angle 1", url: "/videos/angle1.mp4" },
+    { label: "Angle 2", url: "/videos/angle2.mp4" },
+    { label: "Angle 3", url: "/videos/angle3.mp4" },
+    { label: "Angle 4", url: "/videos/angle4.mp4" }
+];
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [currentRoom, setCurrentRoom] = useState<string | null>(null);
     const [videoExists, setVideoExists] = useState(false);
+    const [name, setName] = useState(""); // Nytt state för användarnamnet
+    const socket = useSocket();
 
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
@@ -16,6 +26,8 @@ const App = () => {
 
         if (storedName && storedRoom) {
             setIsLoggedIn(true);
+            setCurrentRoom(storedRoom);
+            setName(storedName); // Sätt det sparade namnet
         } else {
             setIsLoggedIn(false);
         }
@@ -27,11 +39,9 @@ const App = () => {
                 if (response.ok && response.headers.get("content-type") !== "text/html") {
                     setVideoExists(true);
                 } else {
-                    console.log("Video file does not exist.");
                     setVideoExists(false);
                 }
             } catch (error) {
-                console.error("Error checking video file:", error);
                 setVideoExists(false);
             }
         };
@@ -39,33 +49,40 @@ const App = () => {
         checkVideoFile();
     }, []);
 
+    const handleJoinRoom = (roomName: string) => {
+        if (!name.trim()) {
+            console.error("Name is required to join a room.");
+            return;
+        }
+
+        socket.emit("enterRoom", { name, room: roomName });
+        localStorage.setItem("chatName", name);
+        localStorage.setItem("chatRoom", roomName);
+        setCurrentRoom(roomName);
+        setIsLoggedIn(true);
+    };
+
     const handleLogout = () => {
         localStorage.removeItem("chatName");
         localStorage.removeItem("chatRoom");
         setIsLoggedIn(false);
+        setCurrentRoom(null);
     };
-
-    // Tillfälliga testvideor
-    const testStreams = [
-        { label: "Camera 1", url: "/videos/angle1.mp4" },
-        { label: "Camera 2", url: "/videos/angle2.mp4" },
-        { label: "Camera 3", url: "/videos/angle3.mp4" },
-        { label: "Camera 4", url: "/videos/angle4.mp4" }
-    ];
 
     return (
         <SocketProvider>
-            {isLoggedIn ? (
+            {isLoggedIn && currentRoom ? (
                 <>
                     <DraggableWrapper>
                         <ChatApp onLeave={handleLogout} />
                     </DraggableWrapper>
                     {videoExists && <StreamViewer sources={testStreams} />}
                 </>
-            ) : (<>
-                <JoinForm />
-                <RoomList  />
-                </>
+            ) : (
+                <div className="lobby-view">
+                    <JoinForm name={name} setName={setName} />
+                    <RoomList onJoinRoom={handleJoinRoom} />
+                </div>
             )}
         </SocketProvider>
     );

@@ -25,8 +25,27 @@ const io = new Server(server, {
 // Håller reda på kontrollansvarig per rum
 const roomControllers = {}; // Key: room, Value: socket ID of controller
 
-io.on('connection', socket => {
+io.on("connection", (socket) => {
     console.log(`User ${socket.id} connected`);
+
+    socket.on("enterRoom", ({ name, room }) => {
+        console.log(`User ${name} is joining room ${room}`);
+        socket.join(room);
+
+        // Lägg till användaren i rummet
+        activateUser(socket.id, name, room);
+
+        // Skicka uppdaterad användarlista till rummet
+        io.to(room).emit("userList", { users: getUsersInRoom(room) });
+
+        // Uppdatera rumslistan för alla klienter
+        io.emit("roomList", getAllActiveRooms().map((room) => ({
+            name: room,
+            userCount: getUsersInRoom(room).length,
+        })));
+    });
+
+    // Hantera andra händelser...
 
     // Skapa ett nytt rum
     socket.on("createRoom", (roomName, callback) => {
@@ -45,6 +64,30 @@ io.on('connection', socket => {
         callback(true); // Skicka tillbaka framgång
 
         // Uppdatera rumslistan
+        io.emit("roomList", getAllActiveRooms().map((room) => ({
+            name: room,
+            userCount: getUsersInRoom(room).length,
+        })));
+    });
+
+    // Handle room request with auto-generated name
+    socket.on("requestRoom", ({ name }, callback) => {
+        const existingRooms = getAllActiveRooms();
+        let roomName = "0";
+
+        // Generate the next available room name
+        while (existingRooms.includes(roomName)) {
+            roomName = (parseInt(roomName) + 1).toString();
+        }
+
+        // Join the user to the generated room
+        socket.join(roomName);
+        activateUser(socket.id, name, roomName);
+
+        // Notify the client of the room name
+        callback({ success: true, roomName });
+
+        // Update the room list for all clients
         io.emit("roomList", getAllActiveRooms().map((room) => ({
             name: room,
             userCount: getUsersInRoom(room).length,
