@@ -4,6 +4,7 @@ import { useSocket } from "../../context/SocketContext";
 interface Room {
   name: string;
   userCount: number;
+  maxUsers?: number; // Lägg till maxUsers för att indikera maxgränsen
 }
 
 interface RoomListProps {
@@ -34,16 +35,23 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
       <h3>Active rooms</h3>
       {rooms.length > 0 ? (
         <ul>
-          {rooms.map((room, index) => (
-            <li key={index}>
-              <button
-                onClick={() => onJoinRoom(room.name)} // Anropa onJoinRoom när ett rum klickas
-                className="text-blue-600 hover:underline"
-              >
-                {room.name} ({room.userCount} user(s))
-              </button>
-            </li>
-          ))}
+          {rooms.map((room, index) => {
+            const isFull = room.maxUsers !== undefined && room.userCount >= room.maxUsers; // Kontrollera om rummet är fullt
+
+            return (
+              <li key={index}>
+                <button
+                  onClick={() => !isFull && onJoinRoom(room.name)} // Förhindra klick om rummet är fullt
+                  className={`text-blue-600 hover:underline ${isFull ? "text-gray-400 cursor-not-allowed" : ""}`}
+                  disabled={isFull} // Inaktivera knappen om rummet är fullt
+                >
+                  {room.name} ({room.userCount} user(s)
+                  {room.maxUsers ? ` / ${room.maxUsers}` : ""})
+                  {isFull && " - Full"} {/* Visa "Full" om rummet är fullt */}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <p>No active rooms</p>

@@ -24,28 +24,25 @@ const io = new Server(server, {
 
 // Håller reda på kontrollansvarig per rum
 const roomControllers = {}; // Key: room, Value: socket ID of controller
+const roomMaxLimits = {}; // Key: room, Value: max user limit
 
-io.on("connection", (socket) => {
+io.on('connection', socket => {
     console.log(`User ${socket.id} connected`);
 
-    socket.on("enterRoom", ({ name, room }) => {
-        console.log(`User ${name} is joining room ${room}`);
-        socket.join(room);
+    socket.on("setRoomLimit", ({ room, maxUsers }, callback) => {
+        const user = getUser(socket.id);
 
-        // Lägg till användaren i rummet
-        activateUser(socket.id, name, room);
+        if (!user || user.room !== room) {
+            return callback({ success: false, message: "You are not in this room." });
+        }
 
-        // Skicka uppdaterad användarlista till rummet
-        io.to(room).emit("userList", { users: getUsersInRoom(room) });
+        if (maxUsers <= 0) {
+            return callback({ success: false, message: "Max users must be greater than 0." });
+        }
 
-        // Uppdatera rumslistan för alla klienter
-        io.emit("roomList", getAllActiveRooms().map((room) => ({
-            name: room,
-            userCount: getUsersInRoom(room).length,
-        })));
+        roomMaxLimits[room] = maxUsers;
+        callback({ success: true, message: `Max user limit set to ${maxUsers} for room ${room}.` });
     });
-
-    // Hantera andra händelser...
 
     // Skapa ett nytt rum
     socket.on("createRoom", (roomName, callback) => {
@@ -63,39 +60,26 @@ io.on("connection", (socket) => {
         activateUser(socket.id, "Admin", roomName); // Lägg till användaren som skapade rummet
         callback(true); // Skicka tillbaka framgång
 
-        // Uppdatera rumslistan
+        // Uppdatera rumslistan för alla klienter
         io.emit("roomList", getAllActiveRooms().map((room) => ({
             name: room,
             userCount: getUsersInRoom(room).length,
-        })));
-    });
-
-    // Handle room request with auto-generated name
-    socket.on("requestRoom", ({ name }, callback) => {
-        const existingRooms = getAllActiveRooms();
-        let roomName = "0";
-
-        // Generate the next available room name
-        while (existingRooms.includes(roomName)) {
-            roomName = (parseInt(roomName) + 1).toString();
-        }
-
-        // Join the user to the generated room
-        socket.join(roomName);
-        activateUser(socket.id, name, roomName);
-
-        // Notify the client of the room name
-        callback({ success: true, roomName });
-
-        // Update the room list for all clients
-        io.emit("roomList", getAllActiveRooms().map((room) => ({
-            name: room,
-            userCount: getUsersInRoom(room).length,
+            maxUsers: roomMaxLimits[room] || null, // Lägg till maxgränsen om den finns
         })));
     });
 
     // Användaren ansluter till ett rum
-    socket.on('enterRoom', ({ name, room }) => {
+    socket.on('enterRoom', ({ name, room }, callback) => {
+
+        const currentUsers = getUsersInRoom(room).length;
+        const maxUsers = roomMaxLimits[room];
+
+        // Kontrollera om rummet är fullt
+        if (maxUsers && currentUsers >= maxUsers) {
+            console.log(`Room ${room} is full. User ${name} cannot join.`);
+            return callback && callback({ success: false, message: "Room is full." });
+        }
+
         console.log(`User ${name} with socket ID ${socket.id} joined room ${room}`);
 
         // Kontrollera om användaren redan finns i samma rum
@@ -104,22 +88,27 @@ io.on("connection", (socket) => {
         if (existingUser) {
             console.log(`User ${name} refreshed in room ${room}, skipping duplicate join message`);
             socket.join(room);
-            return; // Användaren är redan i rummet, så vi undviker dubbla meddelanden
+            return callback && callback({ success: true, message: "Reconnected to the room." });
         }
 
         // Aktivera användaren i det nya rummet
         const user = activateUser(socket.id, name, room);
         socket.join(user.room);
 
+        // Uppdatera användarlistan för alla i rummet
+        io.to(user.room).emit('userList', {
+            users: getUsersInRoom(user.room),
+        });
+
         // Skicka meddelanden om att användaren gått med i rummet
         socket.emit('message', buildMsg(ADMIN, `Connected to room ${user.room}`));
-        socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} joined the room`));
+        socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined`));
 
-        // Uppdatera användarlistan och rumslistan
-        io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) });
-        io.emit('roomList', getAllActiveRooms().map((room) => ({
+        // Uppdatera rumslistan för alla klienter
+        io.emit("roomList", getAllActiveRooms().map((room) => ({
             name: room,
             userCount: getUsersInRoom(room).length,
+            maxUsers: roomMaxLimits[room] || null, // Lägg till maxgränsen om den finns
         })));
 
         // Skicka initial video state till den nya användaren
@@ -142,6 +131,42 @@ io.on("connection", (socket) => {
             roomControllers[user.room] = socket.id; // Den här användaren blir kontrollansvarig
             socket.emit('youAreNowController');
         }
+
+        // Anropa callback för att indikera framgång
+        return callback && callback({ success: true, message: "Joined the room successfully." });
+    });
+
+    socket.on("requestRoom", ({ name }, callback) => {
+        const existingRooms = getAllActiveRooms();
+        let roomName = "0";
+
+        // Generate the next available room name
+        while (existingRooms.includes(roomName)) {
+            roomName = (parseInt(roomName) + 1).toString();
+        }
+
+        // Kontrollera om rummet är fullt
+        const currentUsers = getUsersInRoom(roomName).length;
+        const maxUsers = roomMaxLimits[roomName];
+
+        if (maxUsers && currentUsers >= maxUsers) {
+            console.log(`Room ${roomName} is full. User ${name} cannot join.`);
+            return callback({ success: false, message: "Room is full." });
+        }
+
+        // Join the user to the generated room
+        socket.join(roomName);
+        activateUser(socket.id, name, roomName);
+
+        // Notify the client of the room name
+        callback({ success: true, roomName });
+
+        // Update the room list for all clients
+        io.emit("roomList", getAllActiveRooms().map((room) => ({
+            name: room,
+            userCount: getUsersInRoom(room).length,
+            maxUsers: roomMaxLimits[room] || null, // Lägg till maxgränsen om den finns
+        })));
     });
 
     // När en användare blir kontrollansvarig
@@ -164,7 +189,7 @@ io.on("connection", (socket) => {
 
         userLeavesApp(socket.id);
 
-        io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has left the room`));
+        io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has left`));
         io.to(user.room).emit('userList', {
             users: getUsersInRoom(user.room),
         });
@@ -182,7 +207,7 @@ io.on("connection", (socket) => {
                 roomControllers[user.room] = newController.id; // Uppdatera kontrollansvarig
 
                 // Skicka meddelande om att kontrollen har överförts
-                io.to(user.room).emit('message', buildMsg(ADMIN, `${newController.name} is now in control.`));
+                io.to(user.room).emit('message', buildMsg(ADMIN, `${newController.name} is now in controll.`));
 
                 // Skicka 'youAreNowController' till den nya kontrollansvarige
                 io.to(newController.id).emit('youAreNowController');
@@ -190,6 +215,20 @@ io.on("connection", (socket) => {
                 // Om ingen annan är kvar i rummet, ta bort kontrollansvaret
                 delete roomControllers[user.room];
             }
+        }
+
+        // Uppdatera rumslistan för alla klienter
+        io.emit("roomList", getAllActiveRooms().map((room) => ({
+            name: room,
+            userCount: getUsersInRoom(room).length,
+            maxUsers: roomMaxLimits[room] || null, // Lägg till maxgränsen om den finns
+        })));
+
+        // Uppdatera användarlistan för alla i rummet
+        if (user) {
+            io.to(user.room).emit('userList', {
+                users: getUsersInRoom(user.room),
+            });
         }
 
         console.log(`User ${socket.id} disconnected`);
@@ -204,7 +243,7 @@ io.on("connection", (socket) => {
             userLeavesApp(socket.id);
             socket.leave(room);
 
-            io.to(room).emit('message', buildMsg(ADMIN, `${name} has left the room`));
+            io.to(room).emit('message', buildMsg(ADMIN, `${name} has left`));
             io.to(room).emit('userList', {
                 users: getUsersInRoom(room),
             });
@@ -218,7 +257,7 @@ io.on("connection", (socket) => {
                     roomControllers[room] = newController.id; // Uppdatera kontrollansvarig
 
                     // Skicka meddelande om att kontrollen har överförts
-                    io.to(room).emit('message', buildMsg(ADMIN, `${newController.name} is now in control.`));
+                    io.to(room).emit('message', buildMsg(ADMIN, `${newController.name} is in controll.`));
 
                     // Skicka 'youAreNowController' till den nya kontrollansvarige
                     io.to(newController.id).emit('youAreNowController');
@@ -227,6 +266,18 @@ io.on("connection", (socket) => {
                     delete roomControllers[room];
                 }
             }
+
+            // Uppdatera rumslistan för alla klienter
+            io.emit("roomList", getAllActiveRooms().map((room) => ({
+                name: room,
+                userCount: getUsersInRoom(room).length,
+                maxUsers: roomMaxLimits[room] || null, // Lägg till maxgränsen om den finns
+            })));
+
+            // Uppdatera användarlistan för alla i rummet
+            io.to(room).emit('userList', {
+                users: getUsersInRoom(room),
+            });
 
             console.log(`User ${name} left room ${room}`);
         }
@@ -253,6 +304,7 @@ io.on("connection", (socket) => {
         const rooms = getAllActiveRooms().map((room) => ({
             name: room,
             userCount: getUsersInRoom(room).length,
+            maxUsers: roomMaxLimits[room] || null, // Lägg till maxgränsen om den finns
         }));
         socket.emit("roomList", rooms); // Skicka en array direkt
     });

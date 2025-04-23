@@ -1,6 +1,5 @@
 import React from "react";
 import { useSocket } from "../../context/SocketContext";
-import "./JoinForm.css";
 
 interface JoinFormProps {
   name: string;
@@ -10,6 +9,8 @@ interface JoinFormProps {
 const JoinForm: React.FC<JoinFormProps> = ({ name, setName }) => {
   const [error, setError] = React.useState("");
   const socket = useSocket();
+  const [maxUsers, setMaxUsers] = React.useState<number | null>(null);
+
 
   const joinRoom = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +25,15 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName }) => {
       if (response.success && response.roomName) {
         localStorage.setItem("chatName", name);
         localStorage.setItem("chatRoom", response.roomName);
+
+        // If maxUsers is set, emit an event to set the room limit
+        if (maxUsers) {
+          socket.emit("setRoomLimit", { room: response.roomName, maxUsers }, (limitResponse: { success: boolean; message: string }) => {
+            if (!limitResponse.success) {
+              console.error(limitResponse.message);
+            }
+          });
+        }
 
         // Reload the page to show ChatApp
         window.location.reload();
@@ -43,8 +53,16 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName }) => {
           onChange={(e) => setName(e.target.value)}
           required
         />
+        <input
+          type="number"
+          placeholder="Max users"
+          value={maxUsers || ""}
+          onChange={(e) => setMaxUsers(Number(e.target.value))}
+          required
+          min="1"
+        />
         {error && <p className="error-message">{error}</p>}
-        <button type="submit">Connect to show</button>
+        <button type="submit">Create chatroom</button>
       </form>
     </div>
   );
