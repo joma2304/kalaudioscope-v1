@@ -33,7 +33,7 @@ const RoomList: React.FC = () => {
 
     return (
         <div className="room-list">
-            <h3>Aktiva rum</h3>
+            <h3>Active rooms</h3>
             {rooms.length > 0 ? (
                 <ul>
                     {rooms.map((room, index) => (
@@ -48,7 +48,7 @@ const RoomList: React.FC = () => {
                     ))}
                 </ul>
             ) : (
-                <p>Inga aktiva rum</p>
+                <p>No active rooms</p>
             )}
         </div>
     );

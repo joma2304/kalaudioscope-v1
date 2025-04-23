@@ -5,7 +5,7 @@ interface UserListProps {
 const UserList: React.FC<UserListProps> = ({ users }) => {
     return (
         <p className="users-in-room">
-            Användare i rummet: <strong>{users.join(", ")}</strong>
+            Users in the room: <strong>{users.join(", ")}</strong>
         </p>
     );
 };

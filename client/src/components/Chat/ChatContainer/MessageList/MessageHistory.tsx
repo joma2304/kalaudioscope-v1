@@ -43,7 +43,7 @@ const MessageHistory = ({ roomId }: { roomId: string }) => {
                     </div>
                 ))}
                 {messages.length > 0 && 
-                <p className="chat-history-title">Skrolla upp för chatthistorik</p>
+                <p className="chat-history-title">Scroll up for chat history</p>
 }
             </div>
         </div>

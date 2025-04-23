@@ -163,9 +163,9 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
                     {showChat && (
                         <button onClick={() => setDisplayChat(!displayChat)} className="toggle-chat">
                             {displayChat ? (
-                                <> <CircleX />Dölj chatt</>
+                                <> <CircleX />Hide Chat</>
                             ) : (
-                                <><MessageSquareIcon />Visa chatt</>
+                                <><MessageSquareIcon />Show Chat</>
                             )}
                         </button>
                     )}
@@ -174,7 +174,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave }) => {
 
             {displayChat && (
                 <div>
-                    {!showChat && <p>Ansluter till rummet...</p>}
+                    {!showChat && <p>Connecting to Room...</p>}
 
                     {showChat && (
                         <>

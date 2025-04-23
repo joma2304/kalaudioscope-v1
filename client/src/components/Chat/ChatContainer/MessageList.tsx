@@ -17,7 +17,7 @@ interface MessageListProps {
 const MessageList: React.FC<MessageListProps> = ({ messages, name, chatRef, roomId }) => {
     return (
         <div className="chat-display" ref={chatRef}>
-            <div className="chat-title">Välkommen!</div>
+            <div className="chat-title">Welcome!</div>
 
             <MessageHistory roomId={roomId} />
 

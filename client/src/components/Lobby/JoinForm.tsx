@@ -32,21 +32,21 @@ const JoinForm = () => {
             <form onSubmit={joinRoom}>
                 <input
                     type="text"
-                    placeholder="Ditt namn"
+                    placeholder="Your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                 />
                 <input
                     type="text"
-                    placeholder="Chattrum"
+                    placeholder="Chat room"
                     value={room}
                     onChange={(e) => 
                         setRoom(e.target.value)}
                     required
                 />
                 {error && <p className="error-message">{error}</p>}
-                <button type="submit">Anslut till föreställning</button>
+                <button type="submit">Connect to show</button>
             </form>
         </div>
     );
