@@ -43,6 +43,11 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
       if (response.success && response.roomName) {
         localStorage.setItem("chatName", name);
         localStorage.setItem("chatRoom", response.roomName);
+        if (password && password.length > 0) {
+            localStorage.setItem("chatRoomPassword", password);
+        } else {
+            localStorage.removeItem("chatRoomPassword");
+        }
         onJoinSuccess(response.roomName, password); // Skicka med password
       } else {
         setError("Failed to join or create a room. Please try again.");

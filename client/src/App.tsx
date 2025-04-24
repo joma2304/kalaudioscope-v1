@@ -17,18 +17,20 @@ const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentRoom, setCurrentRoom] = useState<string | null>(null);
     const [videoExists, setVideoExists] = useState(false);
-    const [name, setName] = useState(""); // Nytt state för användarnamnet
+    const [name, setName] = useState("");
     const [roomPassword, setRoomPassword] = useState<string | undefined>();
     const socket = useSocket();
 
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
         const storedRoom = localStorage.getItem("chatRoom");
+        const storedPassword = localStorage.getItem("chatRoomPassword");
 
         if (storedName && storedRoom) {
             setIsLoggedIn(true);
             setCurrentRoom(storedRoom);
             setName(storedName);
+            setRoomPassword(storedPassword || undefined);
         } else {
             setIsLoggedIn(false);
         }
@@ -56,8 +58,14 @@ const App = () => {
         socket.emit("enterRoom", { name, room: roomName, password }, (response: { success: boolean; message?: string }) => {
             if (response.success) {
                 setCurrentRoom(roomName);
-                setRoomPassword(password);
                 setIsLoggedIn(true);
+                if (password) {
+                    setRoomPassword(password);
+                    localStorage.setItem("chatRoomPassword", password);
+                } else {
+                    setRoomPassword(undefined);
+                    localStorage.removeItem("chatRoomPassword");
+                }
             } else {
                 alert(response.message || "Failed to join the room.");
             }
@@ -67,15 +75,22 @@ const App = () => {
     // När man skapar ett nytt rum (från JoinForm)
     const handleJoinSuccess = (roomName: string, password?: string) => {
         setCurrentRoom(roomName);
-        setRoomPassword(password); // Spara även här!
         setIsLoggedIn(true);
         setName(localStorage.getItem("chatName") || name);
+        if (password) {
+            setRoomPassword(password);
+            localStorage.setItem("chatRoomPassword", password);
+        } else {
+            setRoomPassword(undefined);
+            localStorage.removeItem("chatRoomPassword");
+        }
     };
 
     const handleLogout = () => {
         setIsLoggedIn(false);
         setCurrentRoom(null);
         setRoomPassword(undefined);
+        localStorage.removeItem("chatRoomPassword");
     };
 
     return (
