@@ -66,6 +66,9 @@ const App = () => {
                     setRoomPassword(undefined);
                     localStorage.removeItem("chatRoomPassword");
                 }
+                // Lägg till dessa två rader:
+                localStorage.setItem("chatName", name);
+                localStorage.setItem("chatRoom", roomName);
             } else {
                 alert(response.message || "Failed to join the room.");
             }
@@ -91,6 +94,8 @@ const App = () => {
         setCurrentRoom(null);
         setRoomPassword(undefined);
         localStorage.removeItem("chatRoomPassword");
+        localStorage.removeItem("chatName");
+        localStorage.removeItem("chatRoom");
     };
 
     return (

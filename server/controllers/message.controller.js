@@ -1,13 +1,11 @@
 import Message from "../models/message.model.js";
 
-
 export const sendMessage = async (req, res) => {
     try {
-        const { name, text, ticketNumber, roomId } = req.body;
+        const { name, text, roomId } = req.body;
 
         const newMessage = new Message({
             senderName: name,
-            ticketNumber,
             roomId,
             text
         });
