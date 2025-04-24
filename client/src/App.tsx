@@ -89,6 +89,8 @@ const App = () => {
         setCurrentRoom(null);
         setRoomPassword(undefined);
         localStorage.removeItem("chatRoomPassword");
+        localStorage.removeItem("chatRoom");
+        localStorage.removeItem("chatName");
     };
 
     return (
