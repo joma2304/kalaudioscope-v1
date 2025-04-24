@@ -42,7 +42,13 @@ io.on('connection', socket => {
         activateUser(socket.id, name, roomName);
 
         if (maxUsers) roomMaxLimits[roomName] = maxUsers;
-        if (password) roomPasswords[roomName] = password;
+
+        // Spara bara lösenord om det finns, annars ta bort gammalt
+        if (typeof password === "string" && password.length > 0) {
+            roomPasswords[roomName] = password;
+        } else {
+            delete roomPasswords[roomName];
+        }
 
         callback({ success: true, roomName });
 
@@ -69,13 +75,21 @@ io.on('connection', socket => {
         const existingUser = UsersState.users.find(u => u.name === name && u.room === room);
         if (existingUser) {
             socket.join(room);
-            return callback({ success: true, message: "Reconnected to the room." });
+            // Skicka med users även vid reconnect
+            return callback({
+                success: true,
+                message: "Reconnected to the room.",
+                users: getUsersInRoom(room)
+            });
         }
 
         const user = activateUser(socket.id, name, room);
         socket.join(user.room);
 
-        io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) });
+        const usersInRoom = getUsersInRoom(user.room);
+
+        io.to(user.room).emit('userList', { users: usersInRoom });
+        socket.emit('userList', { users: usersInRoom });
         io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined`));
 
         io.emit("roomList", getAllActiveRooms().map((room) => ({
@@ -103,7 +117,11 @@ io.on('connection', socket => {
             });
         }
 
-        return callback({ success: true, message: "Joined the room successfully." });
+        return callback({
+            success: true,
+            message: "Joined the room successfully.",
+            users: usersInRoom // <-- Skicka med users!
+        });
     });
 
     // Sätt maxgräns för rum
@@ -152,6 +170,12 @@ io.on('connection', socket => {
                 } else {
                     delete roomControllers[room];
                 }
+            }
+
+            // Rensa lösenord och maxUsers om rummet är tomt
+            if (getUsersInRoom(room).length === 0) {
+                delete roomPasswords[room];
+                delete roomMaxLimits[room];
             }
 
             io.emit("roomList", getAllActiveRooms().map((room) => ({

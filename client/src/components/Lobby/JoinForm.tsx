@@ -4,13 +4,13 @@ import { useSocket } from "../../context/SocketContext";
 interface JoinFormProps {
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
-  onJoinSuccess: (roomName: string) => void;
+  onJoinSuccess: (roomName: string, password?: string) => void; // Skicka med password
 }
 
 const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => {
   const [error, setError] = React.useState("");
   const socket = useSocket();
-  const [maxUsers, setMaxUsers] = React.useState<number | null>(null);
+  const [maxUsers, setMaxUsers] = React.useState<number>(6); // Default är 6
   const [password, setPassword] = React.useState("");
   const [connected, setConnected] = React.useState(socket.connected);
 
@@ -36,11 +36,14 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
       return;
     }
 
-    socket.emit("requestRoom", { name, maxUsers, password }, (response: { success: boolean; roomName?: string }) => {
+    const payload: any = { name, maxUsers };
+    if (password && password.length > 0) payload.password = password;
+
+    socket.emit("requestRoom", payload, (response: { success: boolean; roomName?: string }) => {
       if (response.success && response.roomName) {
         localStorage.setItem("chatName", name);
         localStorage.setItem("chatRoom", response.roomName);
-        onJoinSuccess(response.roomName);
+        onJoinSuccess(response.roomName, password); // Skicka med password
       } else {
         setError("Failed to join or create a room. Please try again.");
       }
@@ -64,10 +67,12 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
         <input
           type="number"
           placeholder="Max users"
-          value={maxUsers || ""}
+          value={maxUsers}
           onChange={(e) => setMaxUsers(Number(e.target.value))}
+          min={1}
+          max={99}
+          step={1}
           required
-          min="1"
         />
         <input
           type="password"
