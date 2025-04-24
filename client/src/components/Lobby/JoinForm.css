@@ -1,10 +1,60 @@
 .join-form {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    background: #1e1e1e;
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    flex-wrap: wrap;
+  background: #fff;
+  border-radius: 12px;
+  padding: 2.2rem 2rem 2rem 2rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  max-width: 410px;
+  margin: 2rem auto;
+}
+
+.join-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.join-form input[type="text"],
+.join-form input[type="number"],
+.join-form input[type="password"] {
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 1em;
+  background: #f7f7fa;
+  color: #222;
+  transition: border 0.2s, background 0.2s;
+}
+
+.join-form input:focus {
+  border: 1.5px solid #007bff;
+  background: #e9f3ff;
+  outline: none;
+}
+
+.join-form button[type="submit"] {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.2rem;
+  font-size: 1.08em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.join-form button[type="submit"]:hover {
+  background: linear-gradient(135deg, #0056b3, #004494);
+  transform: scale(1.05);
+}
+
+.error-message {
+  color: #ff4d4f;
+  background: #fff0f0;
+  border-radius: 6px;
+  padding: 0.7rem 1.2rem;
+  text-align: center;
+  font-weight: 500;
+  font-size: 1.05em;
 }

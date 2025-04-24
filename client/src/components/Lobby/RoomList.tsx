@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSocket } from "../../context/SocketContext";
+import "./RoomList.css"; // Importera CSS-filen för stilning
 
 interface Room {
   name: string;
@@ -61,30 +62,38 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
 
   return (
     <div className="room-list">
-      <h3>Active rooms</h3>
-      {rooms.length > 0 ? (
+      <form className="room-list-form">
         <ul>
-          {rooms.map((room, index) => {
-            const isFull = room.maxUsers !== undefined && room.userCount >= room.maxUsers;
-            return (
-              <li key={index}>
-                <button
-                  onClick={() => !isFull && handleJoin(room)}
-                  className={`text-blue-600 hover:underline ${isFull ? "text-gray-400 cursor-not-allowed" : ""}`}
-                  disabled={isFull}
-                >
-                  {room.name} ({room.userCount}
-                  {room.maxUsers ? ` / ${room.maxUsers}` : ""})
-                  {room.hasPassword && " 🔒"}
-                  {isFull && " - Full"}
-                </button>
-              </li>
-            );
-          })}
+          {rooms.length > 0 ? (
+            rooms.map((room) => {
+              const isFull = room.maxUsers !== undefined && room.userCount >= room.maxUsers;
+              return (
+                <li key={room.name} className={`room-list-item${isFull ? " full" : ""}`}>
+                  <div className="room-info">
+                    <span className="room-title">{`Box ${room.name}`}</span>
+                    {room.hasPassword && <span className="room-lock">🔒</span>}
+                  </div>
+                  <div className="room-meta">
+                    <span className="room-users">
+                      <span className="user-icon" role="img" aria-label="users">👤</span>
+                      {room.userCount}/{room.maxUsers || "∞"}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={isFull}
+                      onClick={() => handleJoin(room)}
+                    >
+                      Join
+                    </button>
+                  </div>
+                </li>
+              );
+            })
+          ) : (
+            <div className="room-list-empty">No rooms available</div>
+          )}
         </ul>
-      ) : (
-        <p>No active rooms</p>
-      )}
+      </form>
     </div>
   );
 };

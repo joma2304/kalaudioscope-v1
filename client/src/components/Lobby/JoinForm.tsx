@@ -1,5 +1,6 @@
 import React from "react";
 import { useSocket } from "../../context/SocketContext";
+import "./JoinForm.css"; // Importera CSS-filen för stilning
 
 interface JoinFormProps {
   name: string;
@@ -44,9 +45,9 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
         localStorage.setItem("chatName", name);
         localStorage.setItem("chatRoom", response.roomName);
         if (password && password.length > 0) {
-            localStorage.setItem("chatRoomPassword", password);
+          localStorage.setItem("chatRoomPassword", password);
         } else {
-            localStorage.removeItem("chatRoomPassword");
+          localStorage.removeItem("chatRoomPassword");
         }
         onJoinSuccess(response.roomName, password); // Skicka med password
       } else {
@@ -69,7 +70,11 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
           onChange={(e) => setName(e.target.value)}
           required
         />
+        <label htmlFor="max-users" style={{ fontWeight: 500, marginBottom: 4 }}>
+          Max users in box:
+        </label>
         <input
+          id="max-users"
           type="number"
           placeholder="Max users"
           value={maxUsers}
@@ -86,7 +91,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
           onChange={e => setPassword(e.target.value)}
         />
         {error && <p className="error-message">{error}</p>}
-        <button type="submit">Create chatroom</button>
+        <button type="submit">Create Box</button>
       </form>
     </div>
   );

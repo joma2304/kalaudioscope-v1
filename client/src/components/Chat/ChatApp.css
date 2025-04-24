@@ -49,7 +49,7 @@ form {
 }
 
 /* Övrig styling av chattkomponenter */
-input {
+.message-input {
     flex-grow: 1;
     border: none;
     padding: 0.75rem;
@@ -57,20 +57,21 @@ input {
     background: rgba(30, 30, 30, 0.5);
     /* Genomskinlig bakgrund för hela chatten */
     color: #fff;
+    max-width: 60%;
 }
 
 
-input::placeholder {
+.message-input::placeholder {
     color: #d7d7d7;
 }
 
-input:focus {
+.message-input:focus {
     outline: 2px solid #007bff;
     background: #383838;
 }
 
 /* Knappstil */
-button {
+.send-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -86,7 +87,7 @@ button {
     font-size: 0.9em;
 }
 
-button:hover {
+.send-button:hover {
     background: linear-gradient(135deg, #0056b3, #004494);
     transform: scale(1.05);
 }
@@ -94,28 +95,37 @@ button:hover {
 /* Knapp för att lämna chatt */
 .leave-chat {
     background: linear-gradient(135deg, #555, #777);
-    max-width: 200px;
-    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: none;
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    flex-shrink: 0;
     font-size: 0.9em;
 }
 
 .leave-chat:hover {
     background: linear-gradient(135deg, #444, #666);
+    transform: scale(1.05);
 }
 
 /* Visa/dölj chatt-knapp */
 .toggle-chat-container {
     margin-top: 1rem;
     position: fixed;
-    /* Fixera hela containern på skärmen */
     top: 0;
-    /* Justera för att placera containern lite ner från toppen */
     right: 20px;
-    /* Justera för att placera den till höger */
     z-index: 1000;
-    /* Se till att knappen ligger ovanpå annat innehåll */
+    display: flex;
+    align-items: center; /* Justera vertikalt för att få texten och ikonen i linje */
 }
 
+/* Knappen för att visa/dölj chatt */
 .toggle-chat {
     background: transparent;
     color: #007bff;
@@ -127,6 +137,12 @@ button:hover {
     outline: none;
     padding: 0.2em;
     z-index: 1000;
+    display: flex;
+    align-items: center; /* Gör att både ikonen och texten ligger i linje */
+}
+
+.toggle-chat svg, .toggle-chat i {
+    margin-right: 3px; /* Lägger ett litet avstånd mellan ikonen och texten */
 }
 
 .toggle-chat:hover {
