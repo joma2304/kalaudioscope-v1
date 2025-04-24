@@ -48,7 +48,8 @@
 
 /* Hover-effekt för knappen */
 .room-button:hover {
-    transform: translateY(-2px); /* Liten lyftande effekt */
+    transform: translateY(-2px); 
+    background: linear-gradient(135deg, #1aa150, #06962d);
 }
 
 /* Om rummet är fullt */

@@ -11,7 +11,7 @@ interface JoinFormProps {
 const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => {
     const [error, setError] = React.useState("");
     const socket = useSocket();
-    const [maxUsers, setMaxUsers] = React.useState<number>(6); // Default är 6
+    const [maxUsers, setMaxUsers] = React.useState<number | null>(null);
     const [password, setPassword] = React.useState("");
     const [connected, setConnected] = React.useState(socket.connected);
 
@@ -31,6 +31,11 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
     const joinRoom = (e: React.FormEvent) => {
         e.preventDefault();
         if (!connected) return;
+
+        if (maxUsers === null || maxUsers < 1 || maxUsers > 30) {
+            setError("You must choose a valid max number of users (1–30).");
+            return;
+        }
 
         if (!name.trim()) {
             setError("You must enter a name!");
@@ -65,26 +70,35 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
     return (
         <div className="create-room-container">
             <form className="create-room-form" onSubmit={joinRoom}>
+                <h3 className="create-room-header">Create a new chatroom</h3>
+                <p className="create-room-description">You must always enter your name, even when you are joining an existing room.</p>
+                <label className="create-room-label">Name:</label>
                 <input
                     className="create-room-input"
                     type="text"
                     placeholder="Your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    required
+                    
                 />
+                <label className="create-room-label">Max amount of users:</label>
                 <input
                     className="create-room-input"
                     type="number"
-                    placeholder="Max users (1-99)"
-                    value={maxUsers}
-                    onChange={(e) => setMaxUsers(Number(e.target.value))}
+                    placeholder="Max users (1-30)"
+                    value={maxUsers !== null ? maxUsers : ""}
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        setMaxUsers(value === "" ? null : Number(value));
+                    }}
                     min="1"
-                    max={99}
+                    max={30}
                     step={1}
-                    required
+                    
                 />
+                <label className="create-room-label">Password:</label>
                 <input
+                    className="create-room-input"
                     type="password"
                     placeholder="Password (optional)"
                     value={password}

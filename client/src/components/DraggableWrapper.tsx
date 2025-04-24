@@ -39,7 +39,7 @@ const DraggableWrapper: React.FC<DraggableWrapperProps> = ({ children }) => {
                 const maxTop = window.innerHeight - el.offsetHeight - buffer;
 
                 el.style.left = `${Math.max(buffer, Math.min(newLeft, maxLeft))}px`;
-                el.style.top = `${Math.max(buffer, Math.min(newTop, maxTop - 40))}px`;
+                el.style.top = `${Math.max(buffer, Math.min(newTop, maxTop - 50))}px`;
             }
         };
 

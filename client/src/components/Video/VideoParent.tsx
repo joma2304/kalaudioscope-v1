@@ -178,7 +178,7 @@ const VideoParent = () => {
                 <div className="time-info">
                     <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
                     <span className="controller-info">
-                    {isController ? "You are in controll" : "You are not in controll"}
+                    {isController ? "You are in control" : "You are not in control"}
 
                     </span>
                 </div>
