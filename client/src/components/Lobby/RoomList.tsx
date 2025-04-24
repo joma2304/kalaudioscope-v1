@@ -15,7 +15,6 @@ interface RoomListProps {
 const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
     const socket = useSocket();
     const [rooms, setRooms] = useState<Room[]>([]);
-    const [error, setError] = useState<string | null>(null); // State för felmeddelande
 
 
     useEffect(() => {

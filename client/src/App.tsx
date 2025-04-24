@@ -2,17 +2,17 @@ import { useState, useEffect } from "react";
 import { SocketProvider, useSocket } from "./context/SocketContext";
 import ChatApp from "./components/Chat/ChatApp";
 import JoinForm from "./components/Lobby/JoinForm";
-import DraggableWrapper from "./components/DraggableWrapper";
 import RoomList from "./components/Lobby/RoomList";
-import VideoParent from "./components/Video/VideoParent";
+import DraggableWrapper from "./components/DraggableWrapper";
 import "./App.css"; // Importera CSS för App
+import VideoParent from "./components/Video/VideoParent";
+
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [videoExists, setVideoExists] = useState(false);
     const [currentRoom, setCurrentRoom] = useState<string | null>(null);
+    const [videoExists, setVideoExists] = useState(false);
     const [name, setName] = useState(""); // Nytt state för användarnamnet
-    const [error, setError] = useState<string | null>(null); // Nytt state för felmeddelande
     const socket = useSocket();
 
     useEffect(() => {
@@ -34,11 +34,9 @@ const App = () => {
                 if (response.ok && response.headers.get("content-type") !== "text/html") {
                     setVideoExists(true);
                 } else {
-                    console.log("Video file does not exist.");
                     setVideoExists(false);
                 }
             } catch (error) {
-                console.error("Error checking video file:", error);
                 setVideoExists(false);
             }
         };
@@ -48,11 +46,10 @@ const App = () => {
 
     const handleJoinRoom = (roomName: string) => {
         if (!name.trim()) {
-            setError("Name is required to join a room."); // Sätt felmeddelandet
+            console.error("Name is required to join a room.");
             return;
         }
 
-        setError(null); // Rensa felmeddelandet om allt är korrekt
         socket.emit("enterRoom", { name, room: roomName });
         localStorage.setItem("chatName", name);
         localStorage.setItem("chatRoom", roomName);
@@ -69,19 +66,31 @@ const App = () => {
 
     return (
         <SocketProvider>
-            {isLoggedIn ? (
+            {isLoggedIn && currentRoom ? (
                 <>
                     <DraggableWrapper>
-                        <ChatApp onLeave={handleLogout} />
+                        <ChatApp
+                            onLeave={handleLogout}
+                            name={name}
+                            room={currentRoom}
+                        />
                     </DraggableWrapper>
                     {videoExists && <VideoParent />}
                 </>
             ) : (
-                <>
-                    <JoinForm name={name} setName={setName} />
-                    {error && <p className="join-error-message">{error}</p>} {/* Visa felmeddelandet */}
+                <div className="lobby-view">
+                    <JoinForm
+                        name={name}
+                        setName={setName}
+                        onJoinSuccess={(roomName) => {
+                            setCurrentRoom(roomName);
+                            setIsLoggedIn(true);
+                            // Sätt även name i state om det inte redan är satt
+                            setName(localStorage.getItem("chatName") || name);
+                        }}
+                    />
                     <RoomList onJoinRoom={handleJoinRoom} />
-                </>
+                </div>
             )}
         </SocketProvider>
     );
