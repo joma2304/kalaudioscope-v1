@@ -76,8 +76,7 @@ io.on('connection', socket => {
         socket.join(user.room);
 
         io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) });
-        socket.emit('message', buildMsg(ADMIN, `Connected to room ${user.room}`));
-        socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined`));
+        io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined`));
 
         io.emit("roomList", getAllActiveRooms().map((room) => ({
             name: room,

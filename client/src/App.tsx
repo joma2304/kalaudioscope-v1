@@ -74,16 +74,26 @@ const App = () => {
             {isLoggedIn && currentRoom ? (
                 <>
                     <DraggableWrapper>
-                        <ChatApp onLeave={handleLogout} />
+                        <ChatApp
+                            onLeave={handleLogout}
+                            name={name}
+                            room={currentRoom}
+                        />
                     </DraggableWrapper>
                     {videoExists && <StreamViewer sources={testStreams} />}
                 </>
             ) : (
                 <div className="lobby-view">
-                    <JoinForm name={name} setName={setName} onJoinSuccess={(roomName) => {
-                        setCurrentRoom(roomName);
-                        setIsLoggedIn(true);
-                    }} />
+                    <JoinForm
+                        name={name}
+                        setName={setName}
+                        onJoinSuccess={(roomName) => {
+                            setCurrentRoom(roomName);
+                            setIsLoggedIn(true);
+                            // Sätt även name i state om det inte redan är satt
+                            setName(localStorage.getItem("chatName") || name);
+                        }}
+                    />
                     <RoomList onJoinRoom={handleJoinRoom} />
                 </div>
             )}
