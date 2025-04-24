@@ -38,35 +38,11 @@ io.on('connection', socket => {
             roomName = (parseInt(roomName) + 1).toString();
         }
 
-        socket.join(roomName);
-        const user = activateUser(socket.id, name, roomName);
-
-        // Kontrollansvarig-hantering
-        const controllerId = roomControllers[user.room];
-        if (!controllerId) {
-            // Om ingen controller finns, sätt den första användaren som controller
-            roomControllers[user.room] = socket.id;
-            socket.emit('youAreNowController'); // Direkt notifiering för den första användaren
-        } else if (controllerId === socket.id) {
-            // Om användaren redan är controller
-            socket.emit('youAreNowController');
-        }
-
-        // Skicka initial video state till den nya användaren
-        const userState = getUser(socket.id);
-        if (userState) {
-            socket.emit('initialState', {
-                currentTime: userState.videoTime || 0,
-                isPlaying: userState.isPlaying || false
-            });
-        }
-
-        // Skicka ruminformation till alla andra användare om rummet har skapats
-        io.to(user.room).emit('controllerChanged', { controller: user.name });
+        // Skapa rummet, men gör INGET controller-hantering här!
+        // socket.join(roomName);
+        // activateUser(socket.id, name, roomName);
 
         if (maxUsers) roomMaxLimits[roomName] = maxUsers;
-
-        // Spara bara lösenord om det finns, annars ta bort gammalt
         if (typeof password === "string" && password.length > 0) {
             roomPasswords[roomName] = password;
         } else {
@@ -128,10 +104,14 @@ io.on('connection', socket => {
         if (!controllerId) {
             // Om ingen controller finns, sätt den första användaren som controller
             roomControllers[user.room] = socket.id;
-            socket.emit('youAreNowController'); // Direkt notifiering för den första användaren
+            user.isController = true; // Viktigt: markera användaren som controller!
+            socket.emit('youAreNowController', user.name);
         } else if (controllerId === socket.id) {
             // Om användaren redan är controller
-            socket.emit('youAreNowController');
+            user.isController = true;
+            socket.emit('youAreNowController', user.name);
+        } else {
+            user.isController = false;
         }
 
         // Skicka initial video state till den nya användaren
@@ -139,10 +119,12 @@ io.on('connection', socket => {
         if (userState) {
             socket.emit('initialState', {
                 currentTime: userState.videoTime || 0,
-                isPlaying: userState.isPlaying || false
+                isPlaying: userState.isPlaying || false,
+                isController: userState.isController || false
             });
         }
 
+        socket.emit('getInitialState');
 
         return callback({
             success: true,
@@ -193,7 +175,7 @@ io.on('connection', socket => {
                     newController.isController = true;
                     roomControllers[room] = newController.id;
                     io.to(room).emit('message', buildMsg(ADMIN, `${newController.name} is in control.`));
-                    io.to(newController.id).emit('youAreNowController');
+                    io.to(newController.id).emit('youAreNowController', newController.name);
                 } else {
                     delete roomControllers[room];
                 }
@@ -234,7 +216,7 @@ io.on('connection', socket => {
                 newController.isController = true;
                 roomControllers[user.room] = newController.id;
                 io.to(user.room).emit('message', buildMsg(ADMIN, `${newController.name} is now in control.`));
-                io.to(newController.id).emit('youAreNowController');
+                io.to(newController.id).emit('youAreNowController', newController.name);
             } else {
                 delete roomControllers[user.room];
             }
@@ -281,6 +263,17 @@ io.on('connection', socket => {
         if (user && user.isController) {
             user.isPlaying = isPlaying;
             socket.broadcast.to(user.room).emit('togglePlayPause', isPlaying);
+        }
+    });
+
+    socket.on('getInitialState', () => {
+        const userState = getUser(socket.id);
+        if (userState) {
+            socket.emit('initialState', {
+                currentTime: userState.videoTime || 0,
+                isPlaying: userState.isPlaying || false,
+                isController: userState.isController || false
+            });
         }
     });
 

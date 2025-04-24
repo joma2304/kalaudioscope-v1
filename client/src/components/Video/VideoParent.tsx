@@ -96,6 +96,7 @@ const VideoParent = () => {
         });
 
         socket.on('initialState', ({ currentTime, isPlaying, isController }) => {
+            setIsController(isController); // <-- Kör alltid denna, oavsett video!
             const video = videoRef.current;
             if (video) {
                 video.currentTime = currentTime;
@@ -107,12 +108,11 @@ const VideoParent = () => {
                 } else {
                     video.pause();
                 }
-
-                setIsController(isController);
             }
         });
 
         socket.on('youAreNowController', (username: string) => {
+            console.log("youAreNowController", username);
             setControllerName(username);  // Uppdatera namn på kontrollansvarig
             setIsController(true);
         });
@@ -129,6 +129,10 @@ const VideoParent = () => {
             socket.off('youAreNowController');
             socket.off('youAreNoLongerController');
         };
+    }, [socket]);
+
+    useEffect(() => {
+        socket.emit('getInitialState');
     }, [socket]);
 
     const togglePlay = () => {

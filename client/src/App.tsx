@@ -64,6 +64,8 @@ const App = () => {
                 localStorage.setItem("chatName", name);
                 localStorage.setItem("chatRoom", roomName);
 
+                // Lägg till denna rad:
+                socket.emit('getInitialState');
             } else {
                 alert(response.message || "Failed to join the room.");
             }
@@ -82,6 +84,16 @@ const App = () => {
             setRoomPassword(undefined);
             localStorage.removeItem("chatRoomPassword");
         }
+        // Viktigt: Gå med i rummet direkt efter att det skapats!
+        socket.emit(
+            "enterRoom",
+            { name: localStorage.getItem("chatName") || name, room: roomName, password },
+            (response: { success: boolean; message?: string }) => {
+                if (!response.success) {
+                    alert(response.message || "Failed to join the room.");
+                }
+            }
+        );
     };
 
     const handleLogout = () => {

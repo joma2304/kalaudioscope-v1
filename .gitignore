@@ -3,3 +3,7 @@ node_modules/
 package-lock.json
 .env
 client/public/Malmolive360_Fb360_360-1.mp4
+client/public/videos/angle1.mp4
+client/public/videos/angle2.mp4
+client/public/videos/angle3.mp4
+client/public/videos/angle4.mp4
