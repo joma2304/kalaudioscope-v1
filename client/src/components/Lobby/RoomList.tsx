@@ -5,32 +5,61 @@ import "./RoomList.css"; // Importera CSS för RoomList
 interface Room {
     name: string;
     userCount: number;
-    maxUsers?: number; // Lägg till maxUsers för att indikera maxgränsen
-}
-
-interface RoomListProps {
-    onJoinRoom: (roomName: string) => void; // Prop för att hantera rumsinträde
-}
-
-const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
+    maxUsers?: number;
+    hasPassword?: boolean;
+  }
+  
+  interface RoomListProps {
+    onJoinRoom: (roomName: string, password?: string) => void;
+  }
+  
+  const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
     const socket = useSocket();
     const [rooms, setRooms] = useState<Room[]>([]);
-
-
+    const [connected, setConnected] = useState(socket.connected);
+  
     useEffect(() => {
-        const handleRoomList = (rooms: Room[]) => {
-            setRooms(rooms);
-        };
-
-        socket.on("roomList", handleRoomList);
-
-        // Begär uppdaterad rumslista
-        socket.emit("getRoomList");
-
-        return () => {
-            socket.off("roomList", handleRoomList);
-        };
+      const handleConnect = () => setConnected(true);
+      const handleDisconnect = () => setConnected(false);
+  
+      socket.on("connect", handleConnect);
+      socket.on("disconnect", handleDisconnect);
+  
+      return () => {
+        socket.off("connect", handleConnect);
+        socket.off("disconnect", handleDisconnect);
+      };
     }, [socket]);
+  
+    useEffect(() => {
+      if (!connected) return;
+  
+      const handleRoomList = (rooms: Room[]) => {
+        setRooms(rooms);
+      };
+  
+      socket.on("roomList", handleRoomList);
+      socket.emit("getRoomList");
+  
+      return () => {
+        socket.off("roomList", handleRoomList);
+      };
+    }, [socket, connected]);
+  
+    const handleJoin = (room: Room) => {
+      if (!connected) return;
+      if (room.hasPassword) {
+        const password = prompt("Enter room password:");
+        onJoinRoom(room.name, password || "");
+      } else {
+        onJoinRoom(room.name);
+      }
+    };
+  
+    if (!connected) {
+      return <div>Connecting to server...</div>;
+    }
+  
 
     return (
         <div className="room-list-container">
@@ -43,13 +72,15 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
                         return (
                             <li key={index} className="room-item">
                                 <button
-                                    onClick={() => !isFull && onJoinRoom(room.name)}
+                                    onClick={() => !isFull && handleJoin(room)}
                                     className={`room-button ${isFull ? "room-button-full" : ""}`}
                                     disabled={isFull}
                                 >
                                     {room.name} ({room.userCount}
                                     {room.maxUsers ? ` / ${room.maxUsers} users` : ""})
                                     {isFull && " - Room is full"}
+                                    {room.hasPassword && " - Password required 🔒"}
+                                    
                                 </button>
                             </li>
                         );

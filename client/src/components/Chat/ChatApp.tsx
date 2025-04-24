@@ -19,9 +19,10 @@ interface ChatAppProps {
     onLeave: () => void;
     name: string;
     room: string;
+    password?: string; // Lägg till denna
 }
 
-const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room }) => {
+const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
     const socket = useSocket();
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
@@ -32,22 +33,10 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room }) => {
     const [showHeader, setShowHeader] = useState(true);
     const [lastLeftTime, setLastLeftTime] = useState<number | null>(null);
     const [hasLeft, setHasLeft] = useState(false);
+    const [error, setError] = useState("");
     const [displayChat, setDisplayChat] = useState(true);
 
-    // Anslut till rummet när komponenten mountas eller när name/room ändras
-    useEffect(() => {
-        if (name && room) {
-            socket.emit("enterRoom", { name, room });
-            setShowChat(true);
-            setShowHeader(false);
-
-            if (lastLeftTime && Date.now() - lastLeftTime < 60000) {
-                setHasLeft(false);
-            }
-        }
-        // eslint-disable-next-line
-    }, [socket, name, room]);
-
+    // Sätt alltid upp listeners först!
     useEffect(() => {
         const handleMessage = (data: Message) => {
             setMessages((prev) => [...prev, data]);
@@ -55,6 +44,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room }) => {
         };
 
         const handleUserList = ({ users }: { users: { name: string }[] }) => {
+            console.log("userList received:", users);
             setUsers(users.map((user) => user.name));
         };
 
@@ -63,15 +53,45 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room }) => {
         };
 
         socket.on("message", handleMessage);
-        socket.on("roomUsers", handleUserList);
+        socket.on("userList", handleUserList);
         socket.on("activity", handleActivity);
+
+        console.log("Listeners set up for userList, message, activity");
 
         return () => {
             socket.off("message", handleMessage);
-            socket.off("roomUsers", handleUserList);
+            socket.off("userList", handleUserList);
             socket.off("activity", handleActivity);
+            console.log("Listeners cleaned up");
         };
     }, [socket]);
+
+    // Join rummet EFTER att listeners är uppe
+    useEffect(() => {
+        if (name && room) {
+            setShowChat(false);
+            setShowHeader(true);
+            socket.emit(
+                "enterRoom",
+                { name, room, password },
+                (response: { success: boolean; message?: string; users?: { name: string }[] }) => {
+                    if (response?.success) {
+                        setShowChat(true);
+                        setShowHeader(false);
+                        if (response.users) {
+                            setUsers(response.users.map(u => u.name));
+                        }
+                    } else {
+                        setError(response?.message || "Failed to join room.");
+                    }
+                }
+            );
+
+            if (lastLeftTime && Date.now() - lastLeftTime < 60000) {
+                setHasLeft(false);
+            }
+        }
+    }, [socket, name, room, password]);
 
     // Hantera scrollning av chattfönstret
     const chatRef = useRef<HTMLDivElement>(null);

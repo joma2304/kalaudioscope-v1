@@ -27,97 +27,104 @@ const roomControllers = {}; // Key: room, Value: socket ID of controller
 const roomMaxLimits = {};   // Key: room, Value: max user limit
 const roomPasswords = {};   // Key: room, Value: password
 
-// Funktion för att uppdatera och skicka rumsstatus
-const updateRoomList = () => {
-    const roomList = getAllActiveRooms().map((room) => ({
-        name: room,
-        userCount: getUsersInRoom(room).length,
-        maxUsers: roomMaxLimits[room] || null,
-        hasPassword: !!roomPasswords[room],
-    }));
-    io.emit('roomList', roomList);
-};
-
-// Funktion för att hantera rumsrelaterade händelser
-const handleRoomEvents = (socket, user, room) => {
-    socket.emit('message', buildMsg(ADMIN, `Welcome ${user.name}`));
-    socket.broadcast.to(room).emit('message', buildMsg(ADMIN, `${user.name} has connected`));
-
-    // Uppdatera användarlistan för alla användare i rummet
-    io.to(room).emit('roomUsers', {
-        users: getUsersInRoom(room).map(u => ({ name: u.name }))
-    });
-
-    updateRoomList();
-};
-
-// När en användare ansluter
-io.on('connection', (socket) => {
+io.on('connection', socket => {
     console.log(`User ${socket.id} connected`);
 
+    // Skapa rum (används av React-klienten)
     socket.on("requestRoom", ({ name, maxUsers, password }, callback) => {
         const existingRooms = getAllActiveRooms();
         let roomName = "0";
-
-        // Generera ett unikt rumsnamn
         while (existingRooms.includes(roomName)) {
             roomName = (parseInt(roomName) + 1).toString();
         }
 
-        // Kontrollera om rummet redan är fullt
-        const userCount = getUsersInRoom(roomName).length;
-        if (maxUsers && userCount >= maxUsers) {
-            callback({ success: false, message: "Room is full" });
-            return;
-        }
+        socket.join(roomName);
+        activateUser(socket.id, name, roomName);
 
-        // Skapa rummet och aktivera användaren
-        socket.join(roomName, name);
-        const user = activateUser(socket.id, name, roomName);
-
-        // Lägg till eventuella gränser för användare och lösenord
         if (maxUsers) roomMaxLimits[roomName] = maxUsers;
-        if (password) roomPasswords[roomName] = password;
+
+        // Spara bara lösenord om det finns, annars ta bort gammalt
+        if (typeof password === "string" && password.length > 0) {
+            roomPasswords[roomName] = password;
+        } else {
+            delete roomPasswords[roomName];
+        }
 
         callback({ success: true, roomName });
-        updateRoomList();
 
-        // Skicka meddelande om att ett nytt rum har skapats
-        io.to(roomName).emit('message', buildMsg(ADMIN, `${name} has created the room.`));
-
-        // Gör användaren till kontrollansvarig om de är den första i rummet
-        if (user.isController) {
-            socket.emit('youAreNowController');
-        }
+        io.emit("roomList", getAllActiveRooms().map((room) => ({
+            name: room,
+            userCount: getUsersInRoom(room).length,
+            maxUsers: roomMaxLimits[room] || null,
+            hasPassword: !!roomPasswords[room],
+        })));
     });
 
-    socket.on('enterRoom', ({ name, room, password }) => {
-        const existingUser = getUser(socket.id);
-        if (existingUser) return;
+    // Användaren ansluter till ett rum
+    socket.on('enterRoom', ({ name, room, password }, callback = () => {}) => {
+        const currentUsers = getUsersInRoom(room).length;
+        const maxUsers = roomMaxLimits[room];
 
-        // Kontrollera lösenord om nödvändigt
+        if (maxUsers && currentUsers >= maxUsers) {
+            return callback({ success: false, message: "Room is full." });
+        }
         if (roomPasswords[room] && roomPasswords[room] !== password) {
-            socket.emit('message', buildMsg(ADMIN, 'Incorrect password.'));
-            return;
+            return callback({ success: false, message: "Incorrect password." });
+        }
+
+        const existingUser = UsersState.users.find(u => u.name === name && u.room === room);
+        if (existingUser) {
+            socket.join(room);
+            // Skicka med users även vid reconnect
+            return callback({
+                success: true,
+                message: "Reconnected to the room.",
+                users: getUsersInRoom(room)
+            });
         }
 
         const user = activateUser(socket.id, name, room);
         socket.join(user.room);
 
-        // Hantera användaranslutning
-        handleRoomEvents(socket, user, user.room);
+        const usersInRoom = getUsersInRoom(user.room);
 
-        // Uppdatera användarlistan omedelbart
-        io.to(room).emit('roomUsers', {
-            users: getUsersInRoom(room).map(u => ({ name: u.name }))
-        });
+        io.to(user.room).emit('userList', { users: usersInRoom });
+        socket.emit('userList', { users: usersInRoom });
+        io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined`));
 
-        // Meddela om kontrollansvarig
-        if (user.isController) {
+        io.emit("roomList", getAllActiveRooms().map((room) => ({
+            name: room,
+            userCount: getUsersInRoom(room).length,
+            maxUsers: roomMaxLimits[room] || null,
+            hasPassword: !!roomPasswords[room],
+        })));
+
+        // Kontrollansvarig-hantering
+        const controllerId = roomControllers[user.room];
+        if (!controllerId) {
+            roomControllers[user.room] = socket.id;
+            socket.emit('youAreNowController');
+        } else if (controllerId === socket.id) {
             socket.emit('youAreNowController');
         }
+
+        // Skicka initial video state till den nya användaren
+        const userState = getUser(socket.id);
+        if (userState) {
+            socket.emit('initialState', {
+                currentTime: userState.videoTime || 0,
+                isPlaying: userState.isPlaying || false
+            });
+        }
+
+        return callback({
+            success: true,
+            message: "Joined the room successfully.",
+            users: usersInRoom // <-- Skicka med users!
+        });
     });
 
+    // Sätt maxgräns för rum
     socket.on("setRoomLimit", ({ room, maxUsers }, callback) => {
         const user = getUser(socket.id);
         if (!user || user.room !== room) {
@@ -130,55 +137,94 @@ io.on('connection', (socket) => {
         callback({ success: true, message: `Max user limit set to ${maxUsers} for room ${room}.` });
     });
 
+    // Hämta rumslista
     socket.on("getRoomList", () => {
-        updateRoomList();
+        const rooms = getAllActiveRooms().map((room) => ({
+            name: room,
+            userCount: getUsersInRoom(room).length,
+            maxUsers: roomMaxLimits[room] || null,
+            hasPassword: !!roomPasswords[room],
+        }));
+        socket.emit("roomList", rooms);
     });
 
+    // Lämna rum
     socket.on('leaveRoom', ({ name, room }) => {
         const user = getUser(socket.id);
         if (user) {
-            const newController = userLeavesApp(socket.id);
-
+            userLeavesApp(socket.id);
             socket.leave(room);
 
-            // Skicka meddelande om att användaren har lämnat
-            io.to(room).emit('message', buildMsg(ADMIN, `${name} has left.`));
+            io.to(room).emit('message', buildMsg(ADMIN, `${name} has left`));
+            io.to(room).emit('userList', { users: getUsersInRoom(room) });
 
-            // Uppdatera användarlistan för alla kvarvarande användare
-            io.to(user.room).emit('roomUsers', {
-                users: getUsersInRoom(user.room).map(user => ({ name: user.name }))
-            });
-
-            updateRoomList();
-
-            // Om användaren var kontrollansvarig, överför kontroll till en annan användare
-            if (newController) {
-                io.to(newController.id).emit('youAreNowController');
-                io.to(room).emit('message', buildMsg(ADMIN, `${newController.name} is now in control.`));
+            // Kontrollansvarig-hantering
+            if (user.isController) {
+                const others = getUsersInRoom(room).filter(u => u.id !== user.id);
+                if (others.length > 0) {
+                    const newController = others[0];
+                    newController.isController = true;
+                    roomControllers[room] = newController.id;
+                    io.to(room).emit('message', buildMsg(ADMIN, `${newController.name} is in controll.`));
+                    io.to(newController.id).emit('youAreNowController');
+                } else {
+                    delete roomControllers[room];
+                }
             }
+
+            // Rensa lösenord och maxUsers om rummet är tomt
+            if (getUsersInRoom(room).length === 0) {
+                delete roomPasswords[room];
+                delete roomMaxLimits[room];
+            }
+
+            io.emit("roomList", getAllActiveRooms().map((room) => ({
+                name: room,
+                userCount: getUsersInRoom(room).length,
+                maxUsers: roomMaxLimits[room] || null,
+                hasPassword: !!roomPasswords[room],
+            })));
+
+            io.to(room).emit('userList', { users: getUsersInRoom(room) });
         }
     });
 
+    // Koppla bort användare
     socket.on('disconnect', () => {
         const user = getUser(socket.id);
         if (!user) return;
 
         userLeavesApp(socket.id);
 
-        socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has left`));
-        io.to(user.room).emit('roomUsers', {
-            users: getUsersInRoom(user.room).map(u => ({ name: u.name }))
-        });
+        io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has left`));
+        io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) });
 
-        updateRoomList();
-
-        const users = getUsersInRoom(user.room);
-        const newController = users.find(u => u.isController);
-        if (newController) {
-            io.to(newController.id).emit('youAreNowController');
+        // Kontrollansvarig-hantering
+        if (user.isController) {
+            const others = getUsersInRoom(user.room).filter(u => u.id !== user.id);
+            if (others.length > 0) {
+                const newController = others[0];
+                newController.isController = true;
+                roomControllers[user.room] = newController.id;
+                io.to(user.room).emit('message', buildMsg(ADMIN, `${newController.name} is now in controll.`));
+                io.to(newController.id).emit('youAreNowController');
+            } else {
+                delete roomControllers[user.room];
+            }
         }
+
+        io.emit("roomList", getAllActiveRooms().map((room) => ({
+            name: room,
+            userCount: getUsersInRoom(room).length,
+            maxUsers: roomMaxLimits[room] || null,
+            hasPassword: !!roomPasswords[room],
+        })));
+
+        io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) });
+        console.log(`User ${socket.id} disconnected`);
     });
 
+    // Meddelandehantering
     socket.on('message', ({ name, text }) => {
         const room = getUser(socket.id)?.room;
         if (room) {
@@ -186,6 +232,7 @@ io.on('connection', (socket) => {
         }
     });
 
+    // Aktivitetshantering
     socket.on('activity', (name) => {
         const room = getUser(socket.id)?.room;
         if (room) {

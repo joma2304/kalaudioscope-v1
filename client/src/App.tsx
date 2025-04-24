@@ -12,17 +12,20 @@ const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentRoom, setCurrentRoom] = useState<string | null>(null);
     const [videoExists, setVideoExists] = useState(false);
-    const [name, setName] = useState(""); // Nytt state för användarnamnet
+    const [name, setName] = useState("");
+    const [roomPassword, setRoomPassword] = useState<string | undefined>();
     const socket = useSocket();
 
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
         const storedRoom = localStorage.getItem("chatRoom");
+        const storedPassword = localStorage.getItem("chatRoomPassword");
 
         if (storedName && storedRoom) {
             setIsLoggedIn(true);
             setCurrentRoom(storedRoom);
-            setName(storedName); // Sätt det sparade namnet
+            setName(storedName);
+            setRoomPassword(storedPassword || undefined);
         } else {
             setIsLoggedIn(false);
         }
@@ -44,24 +47,48 @@ const App = () => {
         checkVideoFile();
     }, []);
 
-    const handleJoinRoom = (roomName: string) => {
-        if (!name.trim()) {
-            console.error("Name is required to join a room.");
-            return;
-        }
+    // När man joinar ett befintligt rum (från RoomList)
+    const handleJoinRoom = (roomName: string, password?: string) => {
+        if (!name.trim()) return;
+        socket.emit("enterRoom", { name, room: roomName, password }, (response: { success: boolean; message?: string }) => {
+            if (response.success) {
+                setCurrentRoom(roomName);
+                setIsLoggedIn(true);
+                if (password) {
+                    setRoomPassword(password);
+                    localStorage.setItem("chatRoomPassword", password);
+                } else {
+                    setRoomPassword(undefined);
+                    localStorage.removeItem("chatRoomPassword");
+                }
+                localStorage.setItem("chatName", name);
+                localStorage.setItem("chatRoom", roomName);
 
-        socket.emit("enterRoom", { name, room: roomName });
-        localStorage.setItem("chatName", name);
-        localStorage.setItem("chatRoom", roomName);
+            } else {
+                alert(response.message || "Failed to join the room.");
+            }
+        });
+    };
+
+    // När man skapar ett nytt rum (från JoinForm)
+    const handleJoinSuccess = (roomName: string, password?: string) => {
         setCurrentRoom(roomName);
         setIsLoggedIn(true);
+        setName(localStorage.getItem("chatName") || name);
+        if (password) {
+            setRoomPassword(password);
+            localStorage.setItem("chatRoomPassword", password);
+        } else {
+            setRoomPassword(undefined);
+            localStorage.removeItem("chatRoomPassword");
+        }
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("chatName");
-        localStorage.removeItem("chatRoom");
         setIsLoggedIn(false);
         setCurrentRoom(null);
+        setRoomPassword(undefined);
+        localStorage.removeItem("chatRoomPassword");
     };
 
     return (
@@ -73,6 +100,7 @@ const App = () => {
                             onLeave={handleLogout}
                             name={name}
                             room={currentRoom}
+                            password={roomPassword}
                         />
                     </DraggableWrapper>
                     {videoExists && <VideoParent />}
@@ -82,12 +110,7 @@ const App = () => {
                     <JoinForm
                         name={name}
                         setName={setName}
-                        onJoinSuccess={(roomName) => {
-                            setCurrentRoom(roomName);
-                            setIsLoggedIn(true);
-                            // Sätt även name i state om det inte redan är satt
-                            setName(localStorage.getItem("chatName") || name);
-                        }}
+                        onJoinSuccess={handleJoinSuccess}
                     />
                     <RoomList onJoinRoom={handleJoinRoom} />
                 </div>
