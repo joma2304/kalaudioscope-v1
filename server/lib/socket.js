@@ -56,6 +56,13 @@ io.on("connection", socket => {
     });
 
     socket.on("enterRoom", ({ name, room, password }, callback = () => { }) => {
+
+        // Återställ ev. borttagnings-timer om rummet används igen
+        if (roomCleanupTimers[room]) {
+            clearTimeout(roomCleanupTimers[room]);
+            delete roomCleanupTimers[room];
+        }
+
         const currentUsers = getUsersInRoom(room).length;
 
         if (roomMaxLimits[room] && currentUsers >= roomMaxLimits[room])
@@ -123,56 +130,56 @@ io.on("connection", socket => {
         tags: roomTags[room] || []
     }))));
 
-// När användaren lämnar rummet
-const handleUserLeave = (socketId, customMessage = null) => {
-    const user = getUser(socketId);
-    if (!user) return;
+    // När användaren lämnar rummet
+    const handleUserLeave = (socketId, customMessage = null) => {
+        const user = getUser(socketId);
+        if (!user) return;
 
-    userLeavesApp(socketId);
-    const room = user.room;
-    socket.leave(room);
+        userLeavesApp(socketId);
+        const room = user.room;
+        socket.leave(room);
 
-    io.to(room).emit("message", buildMsg(ADMIN, customMessage || `${user.name} has left`));
-    io.to(room).emit("userList", { users: getUsersInRoom(room) });
+        io.to(room).emit("message", buildMsg(ADMIN, customMessage || `${user.name} has left`));
+        io.to(room).emit("userList", { users: getUsersInRoom(room) });
 
-    // Kontrollansvarig omfördelas
-    if (user.isController) {
-        const others = getUsersInRoom(room).filter(u => u.id !== user.id);
-        if (others.length > 0) {
-            const newController = others[0];
-            newController.isController = true;
-            roomControllers[room] = newController.id;
-            io.to(room).emit("message", buildMsg(ADMIN, `${newController.name} is in control.`));
-            io.to(newController.id).emit("youAreNowController", newController.name);
-        } else {
-            delete roomControllers[room];
-        }
-    }
-
-    const remainingUsers = getUsersInRoom(room);
-    if (remainingUsers.length === 0) {
-        // Starta timer för att ta bort rummet efter 2 minuter
-        if (!roomCleanupTimers[room]) {
-            roomCleanupTimers[room] = setTimeout(() => {
-                delete roomPasswords[room];
-                delete roomMaxLimits[room];
+        // Kontrollansvarig omfördelas
+        if (user.isController) {
+            const others = getUsersInRoom(room).filter(u => u.id !== user.id);
+            if (others.length > 0) {
+                const newController = others[0];
+                newController.isController = true;
+                roomControllers[room] = newController.id;
+                io.to(room).emit("message", buildMsg(ADMIN, `${newController.name} is in control.`));
+                io.to(newController.id).emit("youAreNowController", newController.name);
+            } else {
                 delete roomControllers[room];
-                delete roomTags[room];
-                delete roomCleanupTimers[room];
-                emitRoomList();
-                console.log(`Room ${room} was removed after being empty for 2 minutes.`);
-            }, 2 * 60 * 1000); // 2 minuter
+            }
         }
-    } else {
-        // Om någon är kvar i rummet – avbryt eventuell timer
-        if (roomCleanupTimers[room]) {
-            clearTimeout(roomCleanupTimers[room]);
-            delete roomCleanupTimers[room];
-        }
-    }
 
-    emitRoomList();
-};
+        const remainingUsers = getUsersInRoom(room);
+        if (remainingUsers.length === 0) {
+            // Starta timer för att ta bort rummet efter 2 minuter
+            if (!roomCleanupTimers[room]) {
+                roomCleanupTimers[room] = setTimeout(() => {
+                    delete roomPasswords[room];
+                    delete roomMaxLimits[room];
+                    delete roomControllers[room];
+                    delete roomTags[room];
+                    delete roomCleanupTimers[room];
+                    emitRoomList();
+                    console.log(`Room ${room} was removed after being empty for 2 minutes.`);
+                }, 2 * 60 * 1000); // 2 minuter
+            }
+        } else {
+            // Om någon är kvar i rummet – avbryt eventuell timer
+            if (roomCleanupTimers[room]) {
+                clearTimeout(roomCleanupTimers[room]);
+                delete roomCleanupTimers[room];
+            }
+        }
+
+        emitRoomList();
+    };
 
 
     socket.on("leaveRoom", ({ name, room }) => handleUserLeave(socket.id));
