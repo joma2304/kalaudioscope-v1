@@ -7,6 +7,7 @@ interface Room {
   userCount: number;
   maxUsers?: number;
   hasPassword?: boolean;
+  tags?: string[];
 }
 
 interface RoomListProps {
@@ -72,6 +73,15 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
                   <div className="room-info">
                     <span className="room-title">{`Box ${room.name}`}</span>
                     {room.hasPassword && <span className="room-lock">🔒</span>}
+                    {room.tags && room.tags.length > 0 && (
+                      <span className="room-tags">
+                        {room.tags.map(tag => (
+                          <span key={tag} className="room-tag" data-tag={tag}>
+                            #{tag}
+                          </span>
+                        ))}
+                      </span>
+                    )}
                   </div>
                   <div className="room-meta">
                     <span className="room-users">

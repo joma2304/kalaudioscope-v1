@@ -168,3 +168,57 @@
   background: linear-gradient(135deg, #0056b3, #004494);
   transform: scale(1.05);
 }
+
+/* Lägg till i RoomList.css */
+.room-tags {
+  display: flex;
+  gap: 0.2em;
+  flex-wrap: wrap;
+}
+
+.room-tag {
+  display: inline-block;
+  margin-left: 4px;
+  margin-right: 2px;
+  border-radius: 16px;
+  padding: 0.18em 0.95em 0.18em 0.7em;
+  font-size: 0.93em;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  vertical-align: middle;
+  border: 1.5px solid;
+  background: #f5faff;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Unika färger för varje tagg */
+.room-tag[data-tag="First Timer"] {
+  background: #e3f6fc;
+  color: #0a6fae;
+  border-color: #0a6fae;
+}
+.room-tag[data-tag="Pro"] {
+  background: #f3e8ff;
+  color: #7c3aed;
+  border-color: #7c3aed;
+}
+.room-tag[data-tag="Please Be Quiet"] {
+  background: #fff4e6;
+  color: #e67e22;
+  border-color: #e67e22;
+}
+.room-tag[data-tag="Open Discussion"] {
+  background: #e6ffed;
+  color: #27ae60;
+  border-color: #27ae60;
+}
+.room-tag[data-tag="Strangers Welcome"] {
+  background: #fff0f6;
+  color: #d72660;
+  border-color: #d72660;
+}
+
+.room-tag:first-child {
+  margin-left: 0;
+}

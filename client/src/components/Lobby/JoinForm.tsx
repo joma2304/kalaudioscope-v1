@@ -14,6 +14,20 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
   const [maxUsers, setMaxUsers] = React.useState<number>(6); // Default är 6
   const [password, setPassword] = React.useState("");
   const [connected, setConnected] = React.useState(socket.connected);
+  const TAG_OPTIONS = [
+    "First Timer",
+    "Pro",
+    "Please Be Quiet",
+    "Open Discussion",
+    "Strangers Welcome"
+  ];
+  const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
+  };
 
   React.useEffect(() => {
     const handleConnect = () => setConnected(true);
@@ -37,7 +51,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
       return;
     }
 
-    const payload: any = { name, maxUsers };
+    const payload: any = { name, maxUsers, tags: selectedTags };
     if (password && password.length > 0) payload.password = password;
 
     socket.emit("requestRoom", payload, (response: { success: boolean; roomName?: string }) => {
@@ -90,6 +104,29 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
+        <div className="tag-select">
+          <label style={{ fontWeight: 500, marginBottom: 4 }}>Tags:</label>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {TAG_OPTIONS.map(tag => (
+              <button
+                type="button"
+                key={tag}
+                className={selectedTags.includes(tag) ? "tag-selected" : "tag"}
+                onClick={() => toggleTag(tag)}
+                style={{
+                  padding: "0.4em 1em",
+                  borderRadius: 16,
+                  border: "1px solid #007bff",
+                  background: selectedTags.includes(tag) ? "#007bff" : "#fff",
+                  color: selectedTags.includes(tag) ? "#fff" : "#007bff",
+                  cursor: "pointer"
+                }}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
         {error && <p className="error-message">{error}</p>}
         <button type="submit">Create Box</button>
       </form>
