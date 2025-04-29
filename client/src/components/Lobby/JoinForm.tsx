@@ -15,6 +15,17 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
     const [password, setPassword] = React.useState("");
     const [connected, setConnected] = React.useState(socket.connected);
 
+    // Lista med förbestämda taggar
+    const availableTags = ["Opera pro", "Quiet room", "Chatting", "Beginner", "Talk after show", "Meet new people"];
+    const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
+
+    // Funktion för att toggla taggar
+    const toggleTag = (tag: string) => {
+        setSelectedTags(prev =>
+            prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+        );
+    };
+
     React.useEffect(() => {
         const handleConnect = () => setConnected(true);
         const handleDisconnect = () => setConnected(false);
@@ -42,7 +53,8 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
             return;
         }
 
-        const payload: any = { name, maxUsers };
+        // Lägg till taggar i payload
+        const payload: any = { name, maxUsers, tags: selectedTags };
         if (password && password.length > 0) payload.password = password;
 
         socket.emit("requestRoom", payload, (response: { success: boolean; roomName?: string }) => {
@@ -65,13 +77,12 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
         return <div>Connecting to server...</div>;
     }
 
-
-
     return (
         <div className="create-room-container">
             <form className="create-room-form" onSubmit={joinRoom}>
                 <h3 className="create-room-header">Create a new chatroom</h3>
                 <p className="create-room-description">You must always enter your name, even when you are joining an existing room.</p>
+
                 <label className="create-room-label">Name:</label>
                 <input
                     className="create-room-input"
@@ -79,8 +90,8 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
                     placeholder="Your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    
                 />
+
                 <label className="create-room-label">Max amount of users:</label>
                 <input
                     className="create-room-input"
@@ -94,8 +105,8 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
                     min="1"
                     max={30}
                     step={1}
-                    
                 />
+
                 <label className="create-room-label">Password:</label>
                 <input
                     className="create-room-input"
@@ -104,12 +115,27 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                 />
+
+                {/*Val av taggar */}
+                <label className="create-room-label">Select tags for chatroom:</label>
+                <div className="create-room-tags">
+                    {availableTags.map(tag => (
+                        <label key={tag} className="tag-checkbox">
+                            <input
+                                type="checkbox"
+                                checked={selectedTags.includes(tag)}
+                                onChange={() => toggleTag(tag)}
+                            />
+                            {tag}
+                        </label>
+                    ))}
+                </div>
+
                 {error && <p className="create-room-error-message">{error}</p>}
                 <button className="create-room-button" type="submit">Create chatroom</button>
             </form>
         </div>
     );
 };
-
 
 export default JoinForm;

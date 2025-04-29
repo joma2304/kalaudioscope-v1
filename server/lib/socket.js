@@ -73,30 +73,30 @@ io.on('connection', socket => {
 
 
     // Användaren ansluter till ett rum
-    socket.on('enterRoom', ({ name, room, password }, callback = () => {}) => {
+    socket.on('enterRoom', ({ name, room, password }, callback = () => { }) => {
         // Räkna aktiva användare i vår egen UsersState
         const currentUsers = UsersState.users.filter(u => u.room === room).length;
         const maxUsers = roomMaxLimits[room];
-    
+
         if (maxUsers && currentUsers >= maxUsers) {
             return callback({ success: false, message: "Room is full." });
         }
-    
+
         if (roomPasswords[room] && roomPasswords[room] !== password) {
             return callback({ success: false, message: "Incorrect password." });
         }
-    
+
         // Hitta eller skapa användaren
         let user = UsersState.users.find(u => u.name === name && u.room === room);
-    
+
         if (!user) {
-            // Om användaren inte finns, skapa en ny
+            // Om användaren inte finns, skapa en ny användare
             user = activateUser(socket.id, name, room);
         }
-    
-        // Lägg till användaren till rummet
+
+        // Om användaren redan finns, anslut användaren på nytt
         socket.join(user.room);
-    
+
         // Kontrollansvarig hantering
         const controllerId = roomControllers[user.room];
         if (!controllerId) {
@@ -109,7 +109,7 @@ io.on('connection', socket => {
         } else {
             user.isController = false;
         }
-    
+
         // Skicka video state direkt till den nya användaren
         const userState = getUser(socket.id);
         if (userState) {
@@ -119,18 +119,16 @@ io.on('connection', socket => {
                 isController: userState.isController || false
             });
         }
-    
+
         socket.emit('getInitialState');
-    
+
         // Skicka användarlistan direkt till den nya användaren
         const usersInRoom = getUsersInRoom(user.room);
         socket.emit('userList', { users: usersInRoom });  // Skicka användarlistan till den nya användaren
-    
-        // Skicka chatmeddelande om användaren är ny
-        if (!UsersState.users.find(u => u.id === socket.id && u.name === name)) {
-            io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined`));
-        }
-    
+
+        // Uppdatera användarlistan för alla anslutna användare
+        io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) });
+
         // Skicka rumslista till alla användare
         io.emit("roomList", getAllActiveRooms().map((room) => ({
             name: room,
@@ -139,16 +137,15 @@ io.on('connection', socket => {
             hasPassword: !!roomPasswords[room],
             tags: roomTags[room] || []
         })));
-    
+
+        io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined`));
+
         return callback({
             success: true,
             message: "Joined the room successfully.",
             users: usersInRoom
         });
     });
-    
-    
-    
 
     // Sätt maxgräns för rum
     socket.on("setRoomLimit", ({ room, maxUsers }, callback) => {

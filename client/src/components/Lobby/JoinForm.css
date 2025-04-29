@@ -26,7 +26,7 @@
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 380px;
+    max-width: 520px;
     box-sizing: border-box;
     text-align: center;
     /* Centrera texten i formuläret */
@@ -85,4 +85,37 @@
     font-weight: 500;
     margin: 0 auto;
     margin-bottom: 20px;
+}
+
+.create-room-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.tag-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #f8f9fa;
+    padding: 6px 12px;
+    border-radius: 9999px; /* full pill shape */
+    cursor: pointer;
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s ease;
+    color: #004fa3;
+}
+
+.tag-checkbox:hover {
+    background-color: #e6f0ff;
+    border-color: #cce0ff;
+}
+
+.tag-checkbox input[type="checkbox"] {
+    accent-color: #0056b3;
+    cursor: pointer;
 }
