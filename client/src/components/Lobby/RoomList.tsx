@@ -87,9 +87,9 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
                   className={`room-button ${isFull ? "room-button-full" : ""}`}
                   disabled={isFull}
                 >
-                  ({room.userCount}
-                  {room.maxUsers ? ` / ${room.maxUsers} users` : ""})
-                  {isFull && " - Room is full"}
+                  {room.userCount}
+                  {room.maxUsers ? `/${room.maxUsers} Users in room` : ""} 
+                  {isFull && " (No spots available)"}
                   {room.hasPassword && " - Password required 🔒"}
                   {/* Visa taggarna här */}
                   {room.tags && room.tags.length > 0 && (

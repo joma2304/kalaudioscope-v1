@@ -16,7 +16,24 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
     const [connected, setConnected] = React.useState(socket.connected);
 
     // Lista med förbestämda taggar
-    const availableTags = ["Opera pro", "Quiet room", "Chatting", "Beginner", "Talk after show", "Meet new people"];
+    const availableTags = ["Opera pro",
+        "Quiet room",
+        "Chatting",
+        "Beginner",
+        "Talk after show",
+        "Meet new people",
+        "First-timers welcome",
+        "Discussion-focused",
+        "Silent viewers",
+        "Live reactions",
+        "Fans only",
+        "Casual hangout",
+        "Q&A after",
+        "Interpretation talk",
+        "Serious watchers",
+        "No spoilers",
+        "Relaxed vibe",
+        "Late joiners ok"];
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
 
     // Funktion för att toggla taggar
