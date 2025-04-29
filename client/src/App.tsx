@@ -73,7 +73,6 @@ const App = () => {
     };
 
     // När man skapar ett nytt rum (från JoinForm)
-    // När man skapar ett nytt rum (från JoinForm)
     const handleJoinSuccess = (roomName: string, password?: string) => {
         setCurrentRoom(roomName);
         setIsLoggedIn(true);

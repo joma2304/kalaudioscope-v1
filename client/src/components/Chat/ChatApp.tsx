@@ -30,7 +30,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
     const [activity, setActivity] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const [showChat, setShowChat] = useState(false);
-    const [showHeader, setShowHeader] = useState(true);
     const [lastLeftTime, setLastLeftTime] = useState<number | null>(null);
     const [hasLeft, setHasLeft] = useState(false);
     const [error, setError] = useState("");
@@ -70,14 +69,12 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
     useEffect(() => {
         if (name && room) {
             setShowChat(false);
-            setShowHeader(true);
             socket.emit(
                 "enterRoom",
                 { name, room, password },
                 (response: { success: boolean; message?: string; users?: { name: string }[] }) => {
                     if (response?.success) {
                         setShowChat(true);
-                        setShowHeader(false);
                         if (response.users) {
                             setUsers(response.users.map(u => u.name));
                         }
@@ -125,7 +122,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
         setUsers([]);
         setActivity("");
         setShowChat(false);
-        setShowHeader(true);
 
         setLastLeftTime(Date.now());
         setHasLeft(true);
