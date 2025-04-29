@@ -116,7 +116,9 @@ const App = () => {
                         setName={setName}
                         onJoinSuccess={handleJoinSuccess}
                     />
-                    <RoomList onJoinRoom={handleJoinRoom} />
+                    <RoomList onJoinRoom={handleJoinRoom}
+                        username={name} // Skicka användarnamnet som en prop
+                    />
                 </div>
             )}
         </SocketProvider>

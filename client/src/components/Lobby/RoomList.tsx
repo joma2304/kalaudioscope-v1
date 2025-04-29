@@ -7,18 +7,19 @@ interface Room {
   userCount: number;
   maxUsers?: number;
   hasPassword?: boolean;
-  tags?: string[]; //Taggar
-
+  tags?: string[]; // Taggar
 }
 
 interface RoomListProps {
   onJoinRoom: (roomName: string, password?: string) => void;
+  username: string; // Lägg till användarnamnet som en prop
 }
 
-const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
+const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
   const socket = useSocket();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [connected, setConnected] = useState(socket.connected);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // För felmeddelande
 
   useEffect(() => {
     const handleConnect = () => setConnected(true);
@@ -50,6 +51,15 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
 
   const handleJoin = (room: Room) => {
     if (!connected) return;
+    
+    // Kontrollera om användarnamnet är tomt
+    if (!username) {
+      setErrorMessage("Please enter a username before joining a room.");
+      return;
+    }
+
+    setErrorMessage(null); // Återställ felmeddelandet
+
     if (room.hasPassword) {
       const password = prompt("Enter room password:");
       onJoinRoom(room.name, password || "");
@@ -61,6 +71,10 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
   return (
     <div className="room-list-container">
       <h3 className="room-list-header">Join an active room</h3>
+      
+      {/* Visa felmeddelande om användarnamnet saknas */}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
+      
       {rooms.length > 0 ? (
         <ul className="room-list">
           {rooms.map((room, index) => {

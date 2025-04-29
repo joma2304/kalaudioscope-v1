@@ -7,31 +7,31 @@
     max-width: 520px;
     margin: 2rem auto;
     animation: fadeInUp 0.5s ease-out;
-  }
-  
-  /* Rubrik för rumslistan */
-  .room-list-header {
+}
+
+/* Rubrik för rumslistan */
+.room-list-header {
     font-size: 24px;
     font-weight: 600;
     color: #333333;
     margin-bottom: 1rem;
     text-align: center;
-  }
-  
-  /* Lista för rummen */
-  .room-list {
+}
+
+/* Lista för rummen */
+.room-list {
     list-style-type: none;
     padding: 0;
     margin: 0;
-  }
-  
-  /* Enskild lista för rum */
-  .room-item {
+}
+
+/* Enskild lista för rum */
+.room-item {
     margin-bottom: 1.2rem;
-  }
-  
-  /* Knappen för att gå med i rum */
-  .room-button {
+}
+
+/* Knappen för att gå med i rum */
+.room-button {
     background: linear-gradient(135deg, #bf61eb, #d496ef);
     color: #fff;
     font-weight: 500;
@@ -47,60 +47,69 @@
     gap: 0.5rem;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  
-  /* Hover-effekt för knappen */
-  .room-button:hover {
+}
+
+/* Hover-effekt för knappen */
+.room-button:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
     background: linear-gradient(135deg, #b955e8, #ce87ec);
-  }
-  
-  /* Om rummet är fullt */
-  .room-button-full {
+}
+
+/* Om rummet är fullt */
+.room-button-full {
     background: linear-gradient(135deg, #aaa, #999);
     cursor: not-allowed;
     opacity: 0.7;
-  }
-  
-  /* Meddelande om inga rum finns */
-  .no-rooms-message {
+}
+
+/* Meddelande om inga rum finns */
+.no-rooms-message {
     color: #adb5bd;
     font-style: italic;
     text-align: center;
     font-size: 1rem;
     padding: 1rem;
-  }
-  
-  /* Taggar */
-  .room-tags {
+}
+
+/* Taggar */
+.room-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-  }
-  
-  .room-tag {
+}
+
+.room-tag {
     background-color: #f1f3f5;
     color: #495057;
     padding: 4px 8px;
     font-size: 0.8rem;
     border-radius: 8px;
     transition: background-color 0.3s ease;
-  }
-  
-  .room-tag:hover {
+}
+
+.room-tag:hover {
     background-color: #e0e0e0;
-  }
-  
-  /* Enkel fade-in animation */
-  @keyframes fadeInUp {
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Enkel fade-in animation */
+@keyframes fadeInUp {
     0% {
-      opacity: 0;
-      transform: translateY(20px);
+        opacity: 0;
+        transform: translateY(20px);
     }
+
     100% {
-      opacity: 1;
-      transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0);
     }
-  }
-  
+}
