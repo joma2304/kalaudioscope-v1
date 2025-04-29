@@ -27,26 +27,34 @@ const roomControllers = {}; // Key: room, Value: socket ID of controller
 const roomMaxLimits = {};   // Key: room, Value: max user limit
 const roomPasswords = {};   // Key: room, Value: password
 
+// Rumstaggar
+const roomTags = {}; // Key: room, Value: array of tag strings
+const allowedTags = ["Opera pro", "Quiet room", "Chatting", "Beginner", "Talk after show", "Meet new people"];
+
 io.on('connection', socket => {
     console.log(`User ${socket.id} connected`);
 
     // Skapa rum (används av React-klienten)
-    socket.on("requestRoom", ({ name, maxUsers, password }, callback) => {
+    socket.on("requestRoom", ({ name, maxUsers, password, tags }, callback) => {
         const existingRooms = getAllActiveRooms();
         let roomName = "0";
         while (existingRooms.includes(roomName)) {
             roomName = (parseInt(roomName) + 1).toString();
         }
 
-        // Skapa rummet, men gör INGET controller-hantering här!
-        // socket.join(roomName);
-        // activateUser(socket.id, name, roomName);
-
         if (maxUsers) roomMaxLimits[roomName] = maxUsers;
+
         if (typeof password === "string" && password.length > 0) {
             roomPasswords[roomName] = password;
         } else {
             delete roomPasswords[roomName];
+        }
+
+        // Filtrera taggar så att bara tillåtna används
+        if (Array.isArray(tags)) {
+            roomTags[roomName] = tags.filter(tag => allowedTags.includes(tag));
+        } else {
+            roomTags[roomName] = [];
         }
 
         callback({ success: true, roomName });
@@ -56,6 +64,7 @@ io.on('connection', socket => {
             userCount: getUsersInRoom(room).length,
             maxUsers: roomMaxLimits[room] || null,
             hasPassword: !!roomPasswords[room],
+            tags: roomTags[room] || [],
         })));
     });
 
@@ -97,6 +106,7 @@ io.on('connection', socket => {
             userCount: getUsersInRoom(room).length,
             maxUsers: roomMaxLimits[room] || null,
             hasPassword: !!roomPasswords[room],
+            tags: roomTags[room] || []
         })));
 
         // Kontrollansvarig-hantering
@@ -153,6 +163,8 @@ io.on('connection', socket => {
             userCount: getUsersInRoom(room).length,
             maxUsers: roomMaxLimits[room] || null,
             hasPassword: !!roomPasswords[room],
+            tags: roomTags[room] || [] //Taggar tillr ummet
+
         }));
         socket.emit("roomList", rooms);
     });
@@ -192,6 +204,7 @@ io.on('connection', socket => {
                 userCount: getUsersInRoom(room).length,
                 maxUsers: roomMaxLimits[room] || null,
                 hasPassword: !!roomPasswords[room],
+                tags: roomTags[room] || []
             })));
 
             io.to(room).emit('userList', { users: getUsersInRoom(room) });
@@ -227,6 +240,7 @@ io.on('connection', socket => {
             userCount: getUsersInRoom(room).length,
             maxUsers: roomMaxLimits[room] || null,
             hasPassword: !!roomPasswords[room],
+            tags: roomTags[room] || []
         })));
 
         io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) });
