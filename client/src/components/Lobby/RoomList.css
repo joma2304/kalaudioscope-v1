@@ -11,7 +11,7 @@
 
 /* Rubrik för rumslistan */
 .room-list-header {
-    font-size: 24px;
+    font-size: 1.7rem;
     font-weight: 600;
     color: #333333;
     margin-bottom: 1rem;
@@ -32,35 +32,61 @@
 
 /* Knappen för att gå med i rum */
 .room-button {
-    background: linear-gradient(135deg, #bf61eb, #d496ef);
+    background: linear-gradient(135deg, #7661eb, #d496ef);
     color: #fff;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     border: none;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
+    padding: 18px 28px;
+    border-radius: 16px;
     width: 100%;
     text-align: left;
-    font-size: 1rem;
+    font-size: 1.1rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
 
-/* Hover-effekt för knappen */
-.room-button:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
-    background: linear-gradient(135deg, #b955e8, #ce87ec);
-}
+  }
+  
+  /* Glans-effekt med pseudo-element */
+  .room-button::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
+    transform: rotate(25deg);
+    transition: all 0.6s ease;
+  }
+  
+  /* Hover-effekter */
+  .room-button:hover::before {
+    top: -80%;
+    left: -80%;
+    transform: rotate(45deg);
+  }
+  
+  .room-button:hover {
+    transform: translateY(-4px) scale(1.02);
+    background: linear-gradient(135deg, #6f59e6, #ce87ec);
+  }
 
 /* Om rummet är fullt */
 .room-button-full {
     background: linear-gradient(135deg, #aaa, #999);
     cursor: not-allowed;
     opacity: 0.7;
+}
+
+.room-button-full:hover {
+    background: linear-gradient(135deg, #aaa, #999);
+    transform: none;
+    box-shadow: none;
 }
 
 /* Meddelande om inga rum finns */

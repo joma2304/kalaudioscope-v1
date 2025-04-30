@@ -63,7 +63,3 @@ cursor: pointer;
     background: linear-gradient(135deg, #0056b3, #004494);
     transform: scale(1.05);
 }
-
-body {
-background-color: rgb(189, 210, 229);
-}

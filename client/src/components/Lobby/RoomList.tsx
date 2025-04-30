@@ -59,7 +59,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
     }
 
     if (!username) {
-      toast.error("Please enter a username before joining a room."); // Visa toast för användarnamn
+      toast.error("Please enter your name before joining a room."); // Visa toast för användarnamn
       return;
     }
 

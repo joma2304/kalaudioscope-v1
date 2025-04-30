@@ -2,3 +2,13 @@
   margin: 0 auto;
   padding: 0;
 }
+
+body {
+  background: repeating-linear-gradient(
+    45deg,
+    #f7f7f7,
+    #f7f7f7 10px,
+    #f0f0f0 10px,
+    #f0f0f0 20px
+  );
+}
