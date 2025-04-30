@@ -1,26 +1,27 @@
 import React from "react";
 import { useSocket } from "../../context/SocketContext";
-import "./JoinForm.css"; // Importera CSS-filen för stilning
+import "./JoinForm.css";
 
 interface JoinFormProps {
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
-  onJoinSuccess: (roomName: string, password?: string) => void; // Skicka med password
+  onJoinSuccess: (roomName: string, password?: string) => void;
 }
+
+const TAG_OPTIONS = [
+  "First Timer",
+  "Pro",
+  "Please Be Quiet",
+  "Open Discussion",
+  "Strangers Welcome"
+];
 
 const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => {
   const [error, setError] = React.useState("");
   const socket = useSocket();
-  const [maxUsers, setMaxUsers] = React.useState<number>(6); // Default är 6
+  const [maxUsers, setMaxUsers] = React.useState<number>(6);
   const [password, setPassword] = React.useState("");
   const [connected, setConnected] = React.useState(socket.connected);
-  const TAG_OPTIONS = [
-    "First Timer",
-    "Pro",
-    "Please Be Quiet",
-    "Open Discussion",
-    "Strangers Welcome"
-  ];
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
 
   const toggleTag = (tag: string) => {
@@ -63,7 +64,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
         } else {
           localStorage.removeItem("chatRoomPassword");
         }
-        onJoinSuccess(response.roomName, password); // Skicka med password
+        onJoinSuccess(response.roomName, password);
       } else {
         setError("Failed to join or create a room. Please try again.");
       }
@@ -77,50 +78,51 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
   return (
     <div className="join-form">
       <form onSubmit={joinRoom}>
-        <input
-          type="text"
-          placeholder="Your name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <label htmlFor="max-users" style={{ fontWeight: 500, marginBottom: 4 }}>
-          Max users in box:
-        </label>
-        <input
-          id="max-users"
-          type="number"
-          placeholder="Max users"
-          value={maxUsers}
-          onChange={(e) => setMaxUsers(Number(e.target.value))}
-          min={1}
-          max={99}
-          step={1}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password (optional)"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
-        <div className="tag-select">
-          <label style={{ fontWeight: 500, marginBottom: 4 }}>Tags:</label>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <h2 className="join-form-title">Create a New Chat Room</h2>
+        <p className="join-form-desc">
+          Fill in the information below to create a new chat room.
+        </p>
+        <div className="form-group">
+          <label htmlFor="name">Your name</label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="max-users">Max users in room</label>
+          <input
+            id="max-users"
+            type="number"
+            value={maxUsers}
+            onChange={(e) => setMaxUsers(Number(e.target.value))}
+            min={1}
+            max={99}
+            step={1}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password (optional)</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Tags</label>
+          <div className="tag-select">
             {TAG_OPTIONS.map(tag => (
               <button
                 type="button"
                 key={tag}
-                className={selectedTags.includes(tag) ? "tag-selected" : "tag"}
+                className={`tag-btn${selectedTags.includes(tag) ? " selected" : ""}`}
                 onClick={() => toggleTag(tag)}
-                style={{
-                  padding: "0.4em 1em",
-                  borderRadius: 16,
-                  border: "1px solid #007bff",
-                  background: selectedTags.includes(tag) ? "#007bff" : "#fff",
-                  color: selectedTags.includes(tag) ? "#fff" : "#007bff",
-                  cursor: "pointer"
-                }}
               >
                 {tag}
               </button>
@@ -128,7 +130,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
           </div>
         </div>
         {error && <p className="error-message">{error}</p>}
-        <button type="submit">Create Box</button>
+        <button type="submit" className="create-room-btn">Create Room</button>
       </form>
     </div>
   );

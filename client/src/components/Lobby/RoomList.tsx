@@ -73,16 +73,8 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
                   <div className="room-info">
                     <span className="room-title">{`Box ${room.name}`}</span>
                     {room.hasPassword && <span className="room-lock">🔒</span>}
-                    {room.tags && room.tags.length > 0 && (
-                      <span className="room-tags">
-                        {room.tags.map(tag => (
-                          <span key={tag} className="room-tag" data-tag={tag}>
-                            #{tag}
-                          </span>
-                        ))}
-                      </span>
-                    )}
                   </div>
+                  
                   <div className="room-meta">
                     <span className="room-users">
                       <span className="user-icon" role="img" aria-label="users">👤</span>
@@ -95,7 +87,19 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom }) => {
                     >
                       Join
                     </button>
+                    
                   </div>
+                  {room.tags && room.tags.length > 0 && (
+                    <div className="room-tags-row">
+                      <span className="room-tags">
+                        {room.tags.map(tag => (
+                          <span key={tag} className="room-tag" data-tag={tag}>
+                            #{tag}
+                          </span>
+                        ))}
+                      </span>
+                    </div>
+                  )}
                 </li>
               );
             })

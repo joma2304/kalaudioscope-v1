@@ -1,10 +1,40 @@
 .join-form {
   background: #fff;
-  border-radius: 12px;
-  padding: 2.2rem 2rem 2rem 2rem;
+  border-radius: 14px;
+  padding: 2.5rem 2.2rem 2.2rem 2.2rem;
   box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-  max-width: 410px;
-  margin: 2rem auto;
+  max-width: 600px;
+  min-width: 320px;
+  width: 95vw;
+  margin: 2.5rem auto;
+}
+
+.join-form-title {
+  text-align: center;
+  margin-bottom: 0.5em;
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #222;
+}
+
+.join-form-desc {
+  text-align: center;
+  color: #555;
+  margin-bottom: 1.5em;
+  font-size: 1.08em;
+}
+
+.form-group {
+  margin-bottom: 1.3em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+}
+
+.form-group label {
+  font-weight: 500;
+  margin-bottom: 2px;
+  color: #222;
 }
 
 .join-form form {
@@ -16,37 +46,60 @@
 .join-form input[type="text"],
 .join-form input[type="number"],
 .join-form input[type="password"] {
-  padding: 0.9rem 1rem;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  font-size: 1em;
-  background: #f7f7fa;
-  color: #222;
-  transition: border 0.2s, background 0.2s;
+  width: 100%;
+  padding: 0.7em 1em;
+  border-radius: 7px;
+  border: 1.5px solid #bcd;
+  font-size: 1.08em;
+  background: #f8faff;
+  transition: border 0.2s;
 }
 
 .join-form input:focus {
-  border: 1.5px solid #007bff;
-  background: #e9f3ff;
+  border-color: #007bff;
   outline: none;
 }
 
-.join-form button[type="submit"] {
+.tag-select {
+  display: flex;
+  gap: 0.5em;
+  flex-wrap: wrap;
+  margin-top: 0.2em;
+}
+
+.tag-btn {
+  padding: 0.4em 1em;
+  border-radius: 16px;
+  border: 1.5px solid #007bff;
+  background: #fff;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tag-btn.selected {
+  background: #007bff;
+  color: #fff;
+}
+
+.create-room-btn {
+  width: 100%;
   background: linear-gradient(135deg, #007bff, #0056b3);
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 0.7rem 1.2rem;
-  font-size: 1.08em;
-  font-weight: 500;
+  border-radius: 7px;
+  padding: 0.85em 0;
+  font-size: 1.1em;
+  font-weight: 600;
   cursor: pointer;
+  margin-top: 0.5em;
   transition: background 0.2s, transform 0.2s;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
-.join-form button[type="submit"]:hover {
+.create-room-btn:hover {
   background: linear-gradient(135deg, #0056b3, #004494);
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
 .error-message {
@@ -57,4 +110,11 @@
   text-align: center;
   font-weight: 500;
   font-size: 1.05em;
+}
+
+@media (max-width: 700px) {
+  .join-form {
+    max-width: 99vw;
+    padding: 1.2rem 0.5rem 1rem 0.5rem;
+  }
 }
