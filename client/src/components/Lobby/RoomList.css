@@ -115,15 +115,6 @@
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
 }
 
-.error-message {
-    color: #e74c3c;
-    font-size: 16px;
-    font-weight: 500;
-    margin: 0 auto;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
 /* Enkel fade-in animation */
 @keyframes fadeInUp {
     0% {
