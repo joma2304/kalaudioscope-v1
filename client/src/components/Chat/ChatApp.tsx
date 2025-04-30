@@ -30,9 +30,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
     const [activity, setActivity] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const [showChat, setShowChat] = useState(false);
-    const [lastLeftTime, setLastLeftTime] = useState<number | null>(null);
-    const [hasLeft, setHasLeft] = useState(false);
-    const [error, setError] = useState("");
     const [displayChat, setDisplayChat] = useState(true);
 
     // Sätt alltid upp listeners först!
@@ -78,15 +75,9 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
                         if (response.users) {
                             setUsers(response.users.map(u => u.name));
                         }
-                    } else {
-                        setError(response?.message || "Failed to join room.");
                     }
                 }
             );
-
-            if (lastLeftTime && Date.now() - lastLeftTime < 60000) {
-                setHasLeft(false);
-            }
         }
     }, [socket, name, room, password]);
 
@@ -122,9 +113,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
         setUsers([]);
         setActivity("");
         setShowChat(false);
-
-        setLastLeftTime(Date.now());
-        setHasLeft(true);
 
         onLeave();
     };

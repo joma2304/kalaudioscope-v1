@@ -20,9 +20,7 @@ const VideoParent = () => {
     const [currentTime, setCurrentTime] = useState(0);
     const [isVideoReady, setIsVideoReady] = useState(false);
     const [isController, setIsController] = useState(false);
-    const [controllerName, setControllerName] = useState<string | null>(null);  // För att hålla reda på kontrollansvarig användares namn
 
-    // Hämta socket från contexten
     const socket = useSocket();
 
     useEffect(() => {
@@ -45,8 +43,6 @@ const VideoParent = () => {
         const updateTime = () => {
             setCurrentTime(video.currentTime);
             localStorage.setItem(STORAGE_KEY, video.currentTime.toString());
-
-            // Skicka uppdaterad tid till servern
             socket.emit('syncTime', video.currentTime);
         };
 
@@ -96,7 +92,7 @@ const VideoParent = () => {
         });
 
         socket.on('initialState', ({ currentTime, isPlaying, isController }) => {
-            setIsController(isController); // <-- Kör alltid denna, oavsett video!
+            setIsController(isController);
             const video = videoRef.current;
             if (video) {
                 video.currentTime = currentTime;
@@ -111,14 +107,11 @@ const VideoParent = () => {
             }
         });
 
-        socket.on('youAreNowController', (username: string) => {
-            console.log("youAreNowController", username);
-            setControllerName(username);  // Uppdatera namn på kontrollansvarig
+        socket.on('youAreNowController', () => {
             setIsController(true);
         });
 
         socket.on('youAreNoLongerController', () => {
-            setControllerName(null);  // Rensa kontrollansvarig namn
             setIsController(false);
         });
 
@@ -163,7 +156,6 @@ const VideoParent = () => {
         }
     };
 
-
     return (
         <div>
             <Canvas style={{ width: "100vw", height: "100vh" }} camera={{ position: [0, 0, 0.1] }}>
@@ -182,8 +174,7 @@ const VideoParent = () => {
                 <div className="time-info">
                     <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
                     <span className="controller-info">
-                    {isController ? "You are in control" : "You are not in control"}
-
+                        {isController ? "You are in control" : "You are not in control"}
                     </span>
                 </div>
 
@@ -194,7 +185,7 @@ const VideoParent = () => {
                         </button>
 
                         <input
-                        className="seek-bar"
+                            className="seek-bar"
                             type="range"
                             min={0}
                             max={duration || 0}
