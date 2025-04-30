@@ -6,6 +6,7 @@ import RoomList from "./components/Lobby/RoomList";
 import DraggableWrapper from "./components/DraggableWrapper";
 import StreamViewer from "./components/Stream/StreamViewer";
 import toast, { Toaster } from 'react-hot-toast';
+import NameInput from "./components/Lobby/NameInput";
 
 const testStreams = [
     { label: "Angle 1", url: "/videos/angle1.mp4" },
@@ -126,6 +127,7 @@ const App = () => {
                     </>
                 ) : (
                     <div className="lobby-view">
+                        <NameInput name={name} setName={setName} />
                         <JoinForm
                             name={name}
                             setName={setName}

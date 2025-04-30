@@ -83,6 +83,68 @@
   color: #fff;
 }
 
+/* Tag color classes */
+.tag-color-First-Timer {
+  background: #ffe082;
+  color: #7c5c00;
+  border-color: #ffe082;
+}
+.tag-color-Pro {
+  background: #b2f2ff;
+  color: #005c7c;
+  border-color: #b2f2ff;
+}
+.tag-color-Please-Be-Quiet {
+  background: #ffd6e0;
+  color: #7c003c;
+  border-color: #ffd6e0;
+}
+.tag-color-Open-Discussion {
+  background: #caffbf;
+  color: #2d7c00;
+  border-color: #caffbf;
+}
+.tag-color-Strangers-Welcome {
+  background: #e0c3fc;
+  color: #4b007c;
+  border-color: #e0c3fc;
+}
+
+/* First Timer */
+.tag-btn.tag-color-First-Timer.selected {
+  background: #ffca28;
+  color: #4e3900;
+  border-color: #b28704;
+}
+
+/* Pro */
+.tag-btn.tag-color-Pro.selected {
+  background: #29b6f6;
+  color: #00394d;
+  border-color: #0277bd;
+}
+
+/* Please Be Quiet */
+.tag-btn.tag-color-Please-Be-Quiet.selected {
+  background: #ff8fa3;
+  color: #4d0020;
+  border-color: #b3003c;
+}
+
+/* Open Discussion */
+.tag-btn.tag-color-Open-Discussion.selected {
+  background: #38d96c;
+  color: #114d00;
+  border-color: #1b5e20;
+}
+
+/* Strangers Welcome */
+.tag-btn.tag-color-Strangers-Welcome.selected {
+  background: #a259f7;
+  color: #2d005c;
+  border-color: #5e249c;
+}
+
 .create-room-btn {
   width: 100%;
   background: linear-gradient(135deg, #007bff, #0056b3);
@@ -110,6 +172,11 @@
   text-align: center;
   font-weight: 500;
   font-size: 1.05em;
+}
+
+.close-btn:hover {
+  color: #e74c3c !important;
+  background: none;
 }
 
 @media (max-width: 700px) {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSocket } from "../../context/SocketContext";
 import "./JoinForm.css";
 
@@ -23,6 +23,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
   const [password, setPassword] = React.useState("");
   const [connected, setConnected] = React.useState(socket.connected);
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
+  const [showForm, setShowForm] = useState(false);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
@@ -75,23 +76,47 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
     return <div>Connecting to server...</div>;
   }
 
+  if (!showForm) {
+    return (
+      <div className="join-form">
+        <button
+          className="create-room-btn"
+          style={{ width: "100%" }}
+          onClick={() => setShowForm(true)}
+          type="button"
+        >
+          Create new room
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="join-form">
+    <div className="join-form" style={{ position: "relative" }}>
+      {/* Kryss-knapp uppe till höger */}
+      <button
+        type="button"
+        className="close-btn"
+        onClick={() => setShowForm(false)}
+        aria-label="Close"
+        style={{
+          position: "absolute",
+          top: 8,
+          right: 10,
+          background: "none",
+          border: "none",
+          fontSize: "1.5rem",
+          cursor: "pointer",
+          color: "#888"
+        }}
+      >
+        &times;
+      </button>
       <form onSubmit={joinRoom}>
         <h2 className="join-form-title">Create a New Chat Room</h2>
         <p className="join-form-desc">
           Fill in the information below to create a new chat room.
         </p>
-        <div className="form-group">
-          <label htmlFor="name">Your name</label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
         <div className="form-group">
           <label htmlFor="max-users">Max users in room</label>
           <input
@@ -121,7 +146,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
               <button
                 type="button"
                 key={tag}
-                className={`tag-btn${selectedTags.includes(tag) ? " selected" : ""}`}
+                className={`tag-btn tag-color-${tag.replace(/ /g, "-")}${selectedTags.includes(tag) ? " selected" : ""}`}
                 onClick={() => toggleTag(tag)}
               >
                 {tag}
