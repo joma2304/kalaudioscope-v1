@@ -18,32 +18,34 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
     const [connected, setConnected] = React.useState(socket.connected);
     const [isFormVisible, setIsFormVisible] = React.useState(false); // Hantera formulärets synlighet
 
-    const availableTags = ["Opera pro",
-        "Quiet room",
-        "Chatting",
-        "Beginner",
-        "Talk after show",
-        "Meet new people",
-        "First-timers welcome",
-        "Discussion-focused",
-        "Silent viewers",
-        "Live reactions",
-        "Fans only",
-        "Casual hangout",
-        "Q&A after",
-        "Interpretation talk",
-        "Serious watchers",
-        "No spoilers",
-        "Relaxed vibe",
-        "Late joiners ok"];
-        
+    const availableTags = [
+  { name: "Opera pro", color: "#6366f1" },
+  { name: "Quiet room", color: "#10b981" },
+  { name: "Chatting", color: "#f59e0b" },
+  { name: "Beginner", color: "#3b82f6" },
+  { name: "Talk after show", color: "#ef4444" },
+  { name: "Meet new people", color: "#8b5cf6" },
+  { name: "First-timers welcome", color: "#22c55e" },
+  { name: "Discussion-focused", color: "#eab308" },
+  { name: "Silent viewers", color: "#6b7280" },
+  { name: "Live reactions", color: "#ec4899" },
+  { name: "Fans only", color: "#f43f5e" },
+  { name: "Casual hangout", color: "#0ea5e9" },
+  { name: "Q&A after", color: "#14b8a6" },
+  { name: "Interpretation talk", color: "#a855f7" },
+  { name: "Serious watchers", color: "#d946ef" },
+  { name: "No spoilers", color: "#f97316" },
+  { name: "Relaxed vibe", color: "#4ade80" },
+  { name: "Late joiners ok", color: "#60a5fa" },
+];
+
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
 
-    const toggleTag = (tag: string) => {
-        setSelectedTags((prev) =>
-            prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-        );
-    };
+    const toggleTag = (tagName: string) => {
+  setSelectedTags((prev) =>
+    prev.includes(tagName) ? prev.filter((t) => t !== tagName) : [...prev, tagName]
+  );
+};
 
     React.useEffect(() => {
         const handleConnect = () => setConnected(true);
@@ -153,16 +155,28 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
 
                         <label className="create-room-label">Select tags for chatroom:</label>
                         <div className="create-room-tags">
-                            {availableTags.map((tag) => (
-                                <label key={tag} className="tag-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedTags.includes(tag)}
-                                        onChange={() => toggleTag(tag)}
-                                    />
-                                    {tag}
-                                </label>
-                            ))}
+                          {availableTags.map((tag) => {
+                            const isSelected = selectedTags.includes(tag.name); // Kontrollera om taggen är vald
+                            return (
+                              <label
+                                key={tag.name}
+                                className="tag-checkbox"
+                                style={{
+                                  backgroundColor: isSelected ? "#fff" : tag.color, // Ändra bakgrundsfärg om vald
+                                  color: isSelected ? tag.color : "#fff", // Ändra textfärg om vald
+                                  border: isSelected ? ` solid 1px ${tag.color}` : "none", // Lägg till kantlinje om vald
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => toggleTag(tag.name)}
+                                  style={{ display: "none" }} // Dölj checkboxen
+                                />
+                                {tag.name}
+                              </label>
+                            );
+                          })}
                         </div>
 
                         <button className="create-room-button" type="submit">

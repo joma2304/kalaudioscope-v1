@@ -106,16 +106,13 @@
 }
 
 .room-tag {
-    background-color: #f1f3f5;
-    color: #495057;
-    padding: 4px 8px;
-    font-size: 0.8rem;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-}
-
-.room-tag:hover {
-    background-color: #e0e0e0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 5px;
+    margin: 2px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
 }
 
 .error-message {
