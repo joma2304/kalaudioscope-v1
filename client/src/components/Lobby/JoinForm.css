@@ -1,3 +1,12 @@
+body, .join-form, .form-group, .tag-btn, .password-input, .chair-count-label, .create-room-btn, .room-list, .room-list-item, label {
+  font-family: 'Lora', serif;
+}
+
+h1, h2, h3, .join-form-title {
+  font-family: 'Lugrasimo', cursive;
+  letter-spacing: 0.5px;
+}
+
 .join-form {
   background: #fff;
   border-radius: 14px;
@@ -29,6 +38,12 @@
   display: flex;
   flex-direction: column;
   gap: 0.4em;
+}
+
+/* Centrera label och innehåll i form-group för dessa fält */
+.form-group.centered {
+  align-items: center;
+  text-align: center;
 }
 
 .form-group label {
@@ -65,6 +80,7 @@
   gap: 0.5em;
   flex-wrap: wrap;
   margin-top: 0.2em;
+  justify-content: center;
 }
 
 .tag-btn {
@@ -147,7 +163,7 @@
 
 .create-room-btn {
   width: 100%;
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #b71c1c 0%, #a8324a 60%, #d46a6a 100%);
   color: #fff;
   border: none;
   border-radius: 7px;
@@ -156,12 +172,51 @@
   font-weight: 600;
   cursor: pointer;
   margin-top: 0.5em;
-  transition: background 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 12px #b71c1c33;
+  transition: background 0.5s cubic-bezier(0.4,0,0.2,1), 
+              transform 0.25s cubic-bezier(0.4,0,0.2,1), 
+              box-shadow 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+.create-room-btn::before {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -40%;
+  width: 60%;
+  height: 220%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%);
+  transform: skewX(-25deg);
+  transition: opacity 0.3s;
+  pointer-events: none;
 }
 
 .create-room-btn:hover {
-  background: linear-gradient(135deg, #0056b3, #004494);
-  transform: scale(1.03);
+  background: linear-gradient(135deg, #a8324a 0%, #b71c1c 60%, #fff0 100%);
+  transform: scale(1.04);
+  box-shadow: 0 4px 24px #b71c1c55;
+}
+
+.create-room-btn:hover::before {
+  animation: shine 0.8s forwards;
+  opacity: 1;
+}
+
+@keyframes shine {
+  0% {
+    left: -60%;
+    opacity: 0.2;
+  }
+  60% {
+    left: 110%;
+    opacity: 0.5;
+  }
+  100% {
+    left: 110%;
+    opacity: 0;
+  }
 }
 
 .error-message {
@@ -200,29 +255,30 @@ h2 {
   grid-template-rows: repeat(4, 2.2em);
   gap: 0.4em;
   margin: 0.5em 0 0.3em 0;
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 .chair-btn {
   background: none;
   border: none;
   font-size: 2em;
-  color: #bbb;
+  color: #bbb; /* tydlig grå för icke-valda */
   cursor: pointer;
-  transition: color 0.2s, filter 0.2s;
-  filter: grayscale(1) brightness(0.85);
+  transition: color 0.2s, filter 0.2s, text-shadow 0.2s;
+  filter: grayscale(1) brightness(1.1);
   padding: 0;
   outline: none;
+  text-shadow: 0 2px 8px #bbb3;
 }
 
 .chair-btn.selected {
-  color: #007bff;
+  
   filter: none;
-  text-shadow: 0 2px 8px #007bff33;
+
 }
 
 .chair-btn:focus {
-  outline: 2px solid #007bff;
+  outline: 2px solid #b71c1c;
 }
 
 .chair-count-label {
@@ -231,3 +287,108 @@ h2 {
   margin-top: 0.2em;
   margin-left: 0.1em;
 }
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.password-input {
+  width: 100%;
+  padding-right: 2.2em; /* plats för ikonen */
+  padding-left: 0.7em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-radius: 6px;
+  border: 1.5px solid #bcd;
+  font-size: 1.1em;
+  background: #f8fafd;
+  color: #222;
+  transition: border 0.2s;
+}
+
+.password-input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.password-icon {
+  position: absolute;
+  right: 0.7em;
+  font-size: 1.3em;
+  color: #bdbdbd;
+  pointer-events: none;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.name-input-box {
+  background: #fff;
+  border-radius: 14px;
+  padding: 2.5rem 2.2rem 2.2rem 2.2rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  max-width: 600px;
+  min-width: 320px;
+  width: 95vw;
+  margin: 1.5rem auto 1.5rem auto;
+}
+
+.name-input-box .form-group {
+  align-items: center;
+  text-align: center;
+}
+
+.name-input-box form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lobby-view {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.name-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  justify-content: center;
+}
+
+.name-input {
+  width: 100%;
+  padding-right: 2.2em; /* plats för ikonen */
+  padding-left: 0.7em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-radius: 6px;
+  border: 1.5px solid #bcd;
+  font-size: 1.1em;
+  background: #f8fafd;
+  color: #222;
+  transition: border 0.2s;
+  text-align: center;
+}
+
+.name-input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.name-icon {
+  position: absolute;
+  right: 0.7em;
+  font-size: 1.3em;
+  color: #bdbdbd;
+  pointer-events: none;
+  top: 50%;
+  transform: translateY(-50%);
+}
+

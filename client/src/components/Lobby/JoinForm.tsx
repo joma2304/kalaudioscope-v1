@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSocket } from "../../context/SocketContext";
 import "./JoinForm.css";
+import toast from 'react-hot-toast';
 
 interface JoinFormProps {
   name: string;
@@ -49,7 +50,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
     if (!connected) return;
 
     if (!name.trim()) {
-      setError("You must enter a name!");
+      toast.error("You must enter your name!");
       return;
     }
 
@@ -85,7 +86,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
           onClick={() => setShowForm(true)}
           type="button"
         >
-          Create new room
+          Create New Room
         </button>
       </div>
     );
@@ -117,7 +118,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
         <p className="join-form-desc">
           Fill in the information below to create a new chat room.
         </p>
-        <div className="form-group">
+        <div className="form-group centered">
           <label>Max users in room</label>
           <div className="chair-grid">
             {[...Array(16)].map((_, i) => (
@@ -137,16 +138,21 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
             {maxUsers} {maxUsers === 1 ? "user" : "users"}
           </div>
         </div>
-        <div className="form-group">
+        <div className="form-group centered">
           <label htmlFor="password">Password (optional)</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-          />
+          <div className="password-input-wrapper">
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              autoComplete="new-password"
+              className="password-input"
+            />
+            <span className="password-icon" role="img" aria-label="key">🔑</span>
+          </div>
         </div>
-        <div className="form-group">
+        <div className="form-group centered">
           <label>Tags</label>
           <div className="tag-select">
             {TAG_OPTIONS.map(tag => (

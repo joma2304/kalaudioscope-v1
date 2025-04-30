@@ -174,21 +174,49 @@
 
 .room-list-item button {
   margin-left: auto;
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #b71c1c, #a8324a);
   color: #fff;
   border: none;
-  border-radius: 6px;
-  padding: 0.55rem 1.1rem;
+  border-radius: 7px;
+  padding: 0.5em 1.2em;
   font-size: 1em;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
 .room-list-item button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0056b3, #004494);
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #a8324a, #7b1c1c);
+  transform: scale(1.04);
+}
+
+.room-list-item button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.room-info-row button {
+  background: linear-gradient(135deg, #b71c1c, #a8324a);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 0.5em 1.2em;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  margin-left: 0.7em;
+}
+
+.room-info-row button:hover:enabled {
+  background: linear-gradient(135deg, #a8324a, #7b1c1c);
+  transform: scale(1.04);
+}
+
+.room-info-row button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Lägg till i RoomList.css */

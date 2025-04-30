@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSocket } from "../../context/SocketContext";
 import "./RoomList.css";
 import PasswordModal from "./PasswordModal";
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 interface Room {
   name: string;
@@ -61,9 +61,9 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
 
   const handleJoin = (room: Room) => {
     if (!name.trim()) {
-            toast.error("You must enter your name!");
-            return;
-        }
+      toast.error("You must enter your name!");
+      return;
+    }
     if (!connected) return;
     if (room.hasPassword) {
       setSelectedRoom(room);

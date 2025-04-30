@@ -126,15 +126,17 @@ const App = () => {
                         {videoExists && <StreamViewer sources={testStreams} />}
                     </>
                 ) : (
-                    <div className="lobby-view">
+                    <>
                         <NameInput name={name} setName={setName} />
-                        <JoinForm
-                            name={name}
-                            setName={setName}
-                            onJoinSuccess={handleJoinSuccess}
-                        />
-                        <RoomList onJoinRoom={handleJoinRoom} name={name} />
-                    </div>
+                        <div className="lobby-view">
+                            <JoinForm
+                                name={name}
+                                setName={setName}
+                                onJoinSuccess={handleJoinSuccess}
+                            />
+                            <RoomList onJoinRoom={handleJoinRoom} name={name} />
+                        </div>
+                    </>
                 )}
             </>
         </SocketProvider>

@@ -2,3 +2,9 @@
   margin: 0 auto;
   padding: 0;
 }
+
+html, body {
+  height: auto;
+  min-height: 100vh;
+  overflow-y: auto;
+}

@@ -1,7 +1,7 @@
 body {
   margin: 0;
   padding: 0;
-  height: 100vh;
+  
   background: url('/curtains.jpg') no-repeat center center fixed;
   /* Bakgrundsbild */
   background-size: cover;
