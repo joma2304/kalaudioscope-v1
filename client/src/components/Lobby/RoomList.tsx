@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useSocket } from "../../context/SocketContext";
-import "./RoomList.css"; // Importera CSS för RoomList
+import PasswordModal from "./PasswordModal"; // Importera modal-komponenten
+import "./RoomList.css";
 
 interface Room {
   name: string;
   userCount: number;
   maxUsers?: number;
   hasPassword?: boolean;
-  tags?: string[]; // Taggar
+  tags?: string[];
 }
 
 interface RoomListProps {
   onJoinRoom: (roomName: string, password?: string) => void;
-  username: string; // Lägg till användarnamnet som en prop
+  username: string;
 }
 
 const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
   const socket = useSocket();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [connected, setConnected] = useState(socket.connected);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // För felmeddelande
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Hantera modalens öppning
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null); // Håll reda på valt rum
 
   useEffect(() => {
     const handleConnect = () => setConnected(true);
@@ -51,30 +54,43 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
 
   const handleJoin = (room: Room) => {
     if (!connected) return;
-    
-    // Kontrollera om användarnamnet är tomt
+
     if (!username) {
       setErrorMessage("Please enter a username before joining a room.");
       return;
     }
 
-    setErrorMessage(null); // Återställ felmeddelandet
+    setErrorMessage(null);
 
     if (room.hasPassword) {
-      const password = prompt("Enter room password:");
-      onJoinRoom(room.name, password || "");
+      setSelectedRoom(room); // Sätt valt rum
+      setIsModalOpen(true); // Öppna modalen
     } else {
       onJoinRoom(room.name);
     }
   };
 
+  const handleModalSubmit = async (password: string) => {
+    if (selectedRoom) {
+      return new Promise<boolean>((resolve) => {
+        socket.emit("enterRoom", { name: username, room: selectedRoom.name, password }, (response: { success: boolean; message: string }) => {
+          if (response.success) {
+            resolve(true); // Lösenordet är korrekt
+          } else {
+            resolve(false); // Lösenordet är felaktigt
+          }
+        });
+      });
+    }
+    return false;
+  };
+
   return (
     <div className="room-list-container">
       <h3 className="room-list-header">Join an active room</h3>
-      
-      {/* Visa felmeddelande om användarnamnet saknas */}
+
       {errorMessage && <p className="error-message">{errorMessage}</p>}
-      
+
       {rooms.length > 0 ? (
         <ul className="room-list">
           {rooms.map((room, index) => {
@@ -88,15 +104,14 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
                   disabled={isFull}
                 >
                   {room.userCount}
-                  {room.maxUsers ? `/${room.maxUsers} Users in room` : ""} 
+                  {room.maxUsers ? `/${room.maxUsers} Users in room` : ""}
                   {isFull && " (No spots available)"}
                   {room.hasPassword && " - Password required 🔒"}
-                  {/* Visa taggarna här */}
                   {room.tags && room.tags.length > 0 && (
                     <div className="room-tags">
-                      {room.tags.map((tags, i) => (
+                      {room.tags.map((tag, i) => (
                         <span key={i} className="room-tag">
-                          #{tags}
+                          #{tag}
                         </span>
                       ))}
                     </div>
@@ -109,6 +124,13 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
       ) : (
         <p className="no-rooms-message">No active rooms</p>
       )}
+
+      {/* Lösenordsmodalen */}
+      <PasswordModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleModalSubmit}
+      />
     </div>
   );
 };
