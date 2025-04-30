@@ -193,3 +193,41 @@ h2 {
   margin-bottom: 0.5em;
   text-align: center;
 }
+
+.chair-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 2.2em);
+  grid-template-rows: repeat(4, 2.2em);
+  gap: 0.4em;
+  margin: 0.5em 0 0.3em 0;
+  justify-content: flex-start;
+}
+
+.chair-btn {
+  background: none;
+  border: none;
+  font-size: 2em;
+  color: #bbb;
+  cursor: pointer;
+  transition: color 0.2s, filter 0.2s;
+  filter: grayscale(1) brightness(0.85);
+  padding: 0;
+  outline: none;
+}
+
+.chair-btn.selected {
+  color: #007bff;
+  filter: none;
+  text-shadow: 0 2px 8px #007bff33;
+}
+
+.chair-btn:focus {
+  outline: 2px solid #007bff;
+}
+
+.chair-count-label {
+  font-size: 1em;
+  color: #444;
+  margin-top: 0.2em;
+  margin-left: 0.1em;
+}

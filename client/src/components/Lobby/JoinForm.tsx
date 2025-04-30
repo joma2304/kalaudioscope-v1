@@ -118,17 +118,24 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
           Fill in the information below to create a new chat room.
         </p>
         <div className="form-group">
-          <label htmlFor="max-users">Max users in room</label>
-          <input
-            id="max-users"
-            type="number"
-            value={maxUsers}
-            onChange={(e) => setMaxUsers(Number(e.target.value))}
-            min={1}
-            max={99}
-            step={1}
-            required
-          />
+          <label>Max users in room</label>
+          <div className="chair-grid">
+            {[...Array(16)].map((_, i) => (
+              <button
+                type="button"
+                key={i}
+                className={`chair-btn${i < maxUsers ? " selected" : ""}`}
+                onClick={() => setMaxUsers(i + 1)}
+                aria-label={`Set max users to ${i + 1}`}
+                tabIndex={0}
+              >
+                <span role="img" aria-label="chair">🪑</span>
+              </button>
+            ))}
+          </div>
+          <div className="chair-count-label">
+            {maxUsers} {maxUsers === 1 ? "user" : "users"}
+          </div>
         </div>
         <div className="form-group">
           <label htmlFor="password">Password (optional)</label>
