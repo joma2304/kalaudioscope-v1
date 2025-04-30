@@ -8,6 +8,7 @@ interface NameInputProps {
 
 const NameInput: React.FC<NameInputProps> = ({ name, setName }) => (
   <div className="join-form" style={{ marginBottom: "1.5rem" }}>
+    <h2>Personal Information</h2>
     <form>
       <div className="form-group">
         <label htmlFor="name">Your name</label>

@@ -92,6 +92,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
 
   return (
     <div className="room-list">
+      <h2>Available Rooms</h2>
       <form className="room-list-form">
         <ul>
           {rooms.length > 0 ? (
