@@ -9,17 +9,17 @@ interface PasswordModalProps {
 
 const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Hantera felmeddelanden
+
 
   if (!isOpen) return null;
 
   const handleSubmit = async () => {
     const success = await onSubmit(password); // Vänta på resultat från onSubmit
     if (!success) {
-      setErrorMessage("Incorrect password. Please try again."); // Visa felmeddelande
+        setPassword(""); // Återställ lösenordet
+
     } else {
       setPassword(""); // Återställ lösenordet
-      setErrorMessage(null); // Återställ felmeddelandet
       onClose(); // Stäng modalen
     }
   };
@@ -34,7 +34,6 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose, onSubmit
     <div className="modal-overlay">
       <div className="modal-content">
         <h3>Enter Room Password</h3>
-        {errorMessage && <p className="modal-error-message">{errorMessage}</p>} {/* Visa felmeddelande */}
         <input
           type="password"
           placeholder="Password"

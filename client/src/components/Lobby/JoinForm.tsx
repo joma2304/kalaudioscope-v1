@@ -1,5 +1,6 @@
 import React from "react";
 import { useSocket } from "../../context/SocketContext";
+import { toast } from "react-hot-toast"; // Importera React Hot Toast
 import "./JoinForm.css"; // Importera CSS för JoinForm
 
 interface JoinFormProps {
@@ -9,7 +10,6 @@ interface JoinFormProps {
 }
 
 const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => {
-    const [error, setError] = React.useState("");
     const socket = useSocket();
     const [maxUsers, setMaxUsers] = React.useState<number | null>(null);
     const [password, setPassword] = React.useState("");
@@ -58,15 +58,18 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
 
     const joinRoom = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!connected) return;
+        if (!connected) {
+            toast.error("Not connected to the server."); // Visa toast för anslutningsfel
+            return;
+        }
 
         if (maxUsers === null || maxUsers < 1 || maxUsers > 30) {
-            setError("You must choose a valid max number of users (1–30).");
+            toast.error("You must choose a valid max amount of users (1–30)."); // Visa toast för maxUsers-fel
             return;
         }
 
         if (!name.trim()) {
-            setError("You must enter a name!");
+            toast.error("You must enter a name!"); // Visa toast för namnfel
             return;
         }
 
@@ -84,8 +87,9 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
                     localStorage.removeItem("chatRoomPassword");
                 }
                 onJoinSuccess(response.roomName, password); // Skicka med password
+                toast.success("Room created successfully!"); // Visa toast för skapande av rum
             } else {
-                setError("Failed to join or create a room. Please try again.");
+                toast.error("Failed to join or create a room. Please try again."); // Visa toast för misslyckande
             }
         });
     };
@@ -148,7 +152,6 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
                     ))}
                 </div>
 
-                {error && <p className="create-room-error-message">{error}</p>}
                 <button className="create-room-button" type="submit">Create chatroom</button>
             </form>
         </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSocket } from "../../context/SocketContext";
 import PasswordModal from "./PasswordModal"; // Importera modal-komponenten
+import { toast } from "react-hot-toast"; // Importera React Hot Toast
 import "./RoomList.css";
 
 interface Room {
@@ -20,7 +21,6 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
   const socket = useSocket();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [connected, setConnected] = useState(socket.connected);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false); // Hantera modalens öppning
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null); // Håll reda på valt rum
 
@@ -53,14 +53,15 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
   }, [socket, connected]);
 
   const handleJoin = (room: Room) => {
-    if (!connected) return;
-
-    if (!username) {
-      setErrorMessage("Please enter a username before joining a room.");
+    if (!connected) {
+      toast.error("Not connected to the server."); // Visa toast för anslutningsfel
       return;
     }
 
-    setErrorMessage(null);
+    if (!username) {
+      toast.error("Please enter a username before joining a room."); // Visa toast för användarnamn
+      return;
+    }
 
     if (room.hasPassword) {
       setSelectedRoom(room); // Sätt valt rum
@@ -76,7 +77,12 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
         socket.emit("enterRoom", { name: username, room: selectedRoom.name, password }, (response: { success: boolean; message: string }) => {
           if (response.success) {
             resolve(true); // Lösenordet är korrekt
+            onJoinRoom(selectedRoom.name, password); // Gå med i rummet
+            setIsModalOpen(false); // Stäng modalen
+            toast.success("Successfully joined the room!"); // Visa toast för lyckad inloggning
+          
           } else {
+            toast.error("Incorrect password. Please try again."); // Visa toast för fel lösenord
             resolve(false); // Lösenordet är felaktigt
           }
         });
@@ -88,8 +94,6 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
   return (
     <div className="room-list-container">
       <h3 className="room-list-header">Join an active room</h3>
-
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
       {rooms.length > 0 ? (
         <ul className="room-list">

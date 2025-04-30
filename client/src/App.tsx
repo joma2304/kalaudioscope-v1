@@ -6,6 +6,7 @@ import RoomList from "./components/Lobby/RoomList";
 import DraggableWrapper from "./components/DraggableWrapper";
 import "./App.css"; // Importera CSS för App
 import VideoParent from "./components/Video/VideoParent";
+import { Toaster } from "react-hot-toast"; // Importera React Hot Toast
 
 
 const App = () => {
@@ -97,6 +98,7 @@ const App = () => {
 
     return (
         <SocketProvider>
+            <Toaster />
             {isLoggedIn && currentRoom ? (
                 <>
                     <DraggableWrapper>
