@@ -65,13 +65,13 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
             return;
         }
 
-        if (maxUsers === null || maxUsers < 1 || maxUsers > 30) {
-            toast.error("You must choose a valid max amount of users (1–30).");
+        if (!name.trim()) {
+            toast.error("You must enter a name!");
             return;
         }
 
-        if (!name.trim()) {
-            toast.error("You must enter a name!");
+        if (maxUsers === null || maxUsers < 1 || maxUsers > 30) {
+            toast.error("You must choose a valid max amount of users (1–30).");
             return;
         }
 
@@ -166,7 +166,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
                         </div>
 
                         <button className="create-room-button" type="submit">
-                            Create chatroom
+                           <span>Create chatroom</span>
                         </button>
                     </form>
                 )}

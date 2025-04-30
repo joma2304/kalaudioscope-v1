@@ -87,6 +87,7 @@
 
 /* Skapa rum-knapp */
 .create-room-button {
+    position: relative;
     background: linear-gradient(135deg, #6366f1, #4338ca);
     color: white;
     border: none;
@@ -96,13 +97,42 @@
     width: 100%;
     padding: 14px;
     border-radius: 12px;
-    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 0;
+}
+
+.create-room-button::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
+    transform: rotate(25deg);
+    transition: all 0.6s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.create-room-button:hover::before {
+    top: -80%;
+    left: -80%;
+    transform: rotate(45deg);
 }
 
 .create-room-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+    transform: translateY(-1px) scale(1.01);
     background: linear-gradient(135deg, #5145cd, #3730a3);
+}
+
+.create-room-button span {
+    position: relative;
+    z-index: 2;
 }
 
 /* Error-meddelande */
