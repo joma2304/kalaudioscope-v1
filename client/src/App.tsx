@@ -5,6 +5,7 @@ import JoinForm from "./components/Lobby/JoinForm";
 import RoomList from "./components/Lobby/RoomList";
 import DraggableWrapper from "./components/DraggableWrapper";
 import StreamViewer from "./components/Stream/StreamViewer";
+import toast, { Toaster } from 'react-hot-toast';
 
 const testStreams = [
     { label: "Angle 1", url: "/videos/angle1.mp4" },
@@ -53,8 +54,15 @@ const App = () => {
     }, []);
 
     // När man joinar ett befintligt rum (från RoomList)
-    const handleJoinRoom = (roomName: string, password?: string) => {
-        if (!name.trim()) return;
+    const handleJoinRoom = (
+        roomName: string,
+        password?: string,
+        callback?: (result: { success: boolean; message?: string }) => void
+    ) => {
+        if (!name.trim()) {
+            toast.error("You must enter your name!");
+            return;
+        }
         socket.emit("enterRoom", { name, room: roomName, password }, (response: { success: boolean; message?: string }) => {
             if (response.success) {
                 setCurrentRoom(roomName);
@@ -66,12 +74,14 @@ const App = () => {
                     setRoomPassword(undefined);
                     localStorage.removeItem("chatRoomPassword");
                 }
-                // Lägg till dessa två rader:
                 localStorage.setItem("chatName", name);
                 localStorage.setItem("chatRoom", roomName);
+
+                toast.success("Successfully joined the room!");
             } else {
-                alert(response.message || "Failed to join the room.");
+                toast.error(response.message || "Failed to join the room.");
             }
+            if (callback) callback(response);
         });
     };
 
@@ -100,28 +110,31 @@ const App = () => {
 
     return (
         <SocketProvider>
-            {isLoggedIn && currentRoom ? (
-                <>
-                    <DraggableWrapper>
-                        <ChatApp
-                            onLeave={handleLogout}
+            <>
+                <Toaster />
+                {isLoggedIn && currentRoom ? (
+                    <>
+                        <DraggableWrapper>
+                            <ChatApp
+                                onLeave={handleLogout}
+                                name={name}
+                                room={currentRoom}
+                                password={roomPassword}
+                            />
+                        </DraggableWrapper>
+                        {videoExists && <StreamViewer sources={testStreams} />}
+                    </>
+                ) : (
+                    <div className="lobby-view">
+                        <JoinForm
                             name={name}
-                            room={currentRoom}
-                            password={roomPassword}
+                            setName={setName}
+                            onJoinSuccess={handleJoinSuccess}
                         />
-                    </DraggableWrapper>
-                    {videoExists && <StreamViewer sources={testStreams} />}
-                </>
-            ) : (
-                <div className="lobby-view">
-                    <JoinForm
-                        name={name}
-                        setName={setName}
-                        onJoinSuccess={handleJoinSuccess}
-                    />
-                    <RoomList onJoinRoom={handleJoinRoom} />
-                </div>
-            )}
+                        <RoomList onJoinRoom={handleJoinRoom} name={name} />
+                    </div>
+                )}
+            </>
         </SocketProvider>
     );
 };
