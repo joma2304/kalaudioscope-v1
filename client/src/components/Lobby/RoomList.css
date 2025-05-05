@@ -115,6 +115,46 @@
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
 }
 
+.tag-info {
+    margin-bottom: 1.1 rem;
+    font-size: 1 rem;
+    color: #555;
+    line-height: 1.6;
+}
+
+/*Taggar för filterering*/
+.filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+.filter-tag {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 5px;
+    margin: 2px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .filter-tag:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+  }
+  
+  .filter-tag.selected {
+    background-color: #fff;
+    color: var(--tag-color); /* Kontrollera att detta är korrekt */
+    border: 2px solid var(--tag-color);
+  }
+
 /* Enkel fade-in animation */
 @keyframes fadeInUp {
     0% {

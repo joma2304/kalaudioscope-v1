@@ -28,14 +28,9 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
   { name: "First-timers welcome", color: "#22c55e" },
   { name: "Discussion-focused", color: "#eab308" },
   { name: "Silent viewers", color: "#6b7280" },
-  { name: "Live reactions", color: "#ec4899" },
-  { name: "Fans only", color: "#f43f5e" },
   { name: "Casual hangout", color: "#0ea5e9" },
   { name: "Q&A after", color: "#14b8a6" },
-  { name: "Interpretation talk", color: "#a855f7" },
-  { name: "Serious watchers", color: "#d946ef" },
   { name: "No spoilers", color: "#f97316" },
-  { name: "Relaxed vibe", color: "#4ade80" },
   { name: "Late joiners ok", color: "#60a5fa" },
 ];
 

@@ -23,6 +23,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
   const [connected, setConnected] = useState(socket.connected);
   const [isModalOpen, setIsModalOpen] = useState(false); // Hantera modalens öppning
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null); // Håll reda på valt rum
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
   const tagColors: { [key: string]: string } = {
     "Opera pro": "#6366f1",
@@ -34,14 +35,9 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
     "First-timers welcome": "#22c55e",
     "Discussion-focused": "#eab308",
     "Silent viewers": "#6b7280",
-    "Live reactions": "#ec4899",
-    "Fans only": "#f43f5e",
     "Casual hangout": "#0ea5e9",
     "Q&A after": "#14b8a6",
-    "Interpretation talk": "#a855f7",
-    "Serious watchers": "#d946ef",
     "No spoilers": "#f97316",
-    "Relaxed vibe": "#4ade80",
     "Late joiners ok": "#60a5fa",
   };
 
@@ -101,7 +97,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
             onJoinRoom(selectedRoom.name, password); // Gå med i rummet
             setIsModalOpen(false); // Stäng modalen
             toast.success("Successfully joined the room!"); // Visa toast för lyckad inloggning
-          
+
           } else {
             toast.error("Incorrect password. Please try again."); // Visa toast för fel lösenord
             resolve(false); // Lösenordet är felaktigt
@@ -112,13 +108,45 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
     return false;
   };
 
+  const toggleFilter = (tag: string) => {
+    setSelectedFilters((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const filteredRooms = rooms.filter((room) =>
+    selectedFilters.length === 0 || // Visa alla rum om inga filter är valda
+    (room.tags && room.tags.some((tag) => selectedFilters.includes(tag)))
+  );
+
   return (
     <div className="room-list-container">
       <h3 className="room-list-header">Join an active room</h3>
+      <p className="tag-info">Filter active rooms by tags</p>
 
-      {rooms.length > 0 ? (
+      <div className="filter-tags">
+        {Object.keys(tagColors).map((tag) => {
+          const isSelected = selectedFilters.includes(tag);
+          return (
+            <span
+              key={tag}
+              className={`filter-tag ${isSelected ? "selected" : ""}`}
+              onClick={() => toggleFilter(tag)}
+              style={{
+                backgroundColor: isSelected ? "#fff" : tagColors[tag],
+                color: isSelected ? tagColors[tag] : "#fff",
+                border: isSelected ? `2px solid ${tagColors[tag]}` : "none",
+              }}
+            >
+              #{tag}
+            </span>
+          );
+        })}
+      </div>
+
+      {filteredRooms.length > 0 ? (
         <ul className="room-list">
-          {rooms.map((room, index) => {
+          {filteredRooms.map((room, index) => {
             const isFull = room.maxUsers !== undefined && room.userCount >= room.maxUsers;
 
             return (
@@ -135,10 +163,13 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
                   {room.tags && room.tags.length > 0 && (
                     <div className="room-tags">
                       {room.tags.map((tag, i) => (
-                        <span key={i} className="room-tag"
-                        style={{
-                          backgroundColor: tagColors[tag] || "#e5e7eb", // Använd färg från tagColors eller en standardfärg
-                        }}>
+                        <span
+                          key={i}
+                          className="room-tag"
+                          style={{
+                            backgroundColor: tagColors[tag] || "#e5e7eb",
+                          }}
+                        >
                           #{tag}
                         </span>
                       ))}
