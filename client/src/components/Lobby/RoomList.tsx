@@ -25,6 +25,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
   const socket = useSocket();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [connected, setConnected] = useState(socket.connected);
+  const [filterTags, setFilterTags] = useState<string[]>([]);
 
   // Modal state
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -86,6 +87,12 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
     });
   };
 
+  const filteredRooms = filterTags.length === 0
+    ? rooms
+    : rooms.filter(room =>
+        (room.tags ?? []).length > 0 && filterTags.every(tag => (room.tags ?? []).includes(tag))
+      );
+
   if (!connected) {
     return <div>Connecting to server...</div>;
   }
@@ -93,10 +100,38 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
   return (
     <div className="room-list">
       <h2>Available Rooms</h2>
+      <div
+        style={{
+          textAlign: "center",
+          marginBottom: "0.3em",
+          fontSize: "0.98em",
+          color: "#666",
+        }}
+      >
+        Click tags to filter rooms
+      </div>
+      <div className="room-filter-tags" style={{ marginBottom: "1em", textAlign: "center" }}>
+        {["First Timer", "Pro", "Please Be Quiet", "Open Discussion", "Strangers Welcome"].map(tag => (
+          <button
+            key={tag}
+            className={`tag-btn tag-color-${tag.replace(/ /g, "-")}${filterTags.includes(tag) ? " selected" : ""}`}
+            onClick={() =>
+              setFilterTags(prev =>
+                prev.includes(tag)
+                  ? prev.filter(t => t !== tag)
+                  : [...prev, tag]
+              )
+            }
+            style={{ margin: "0 0.2em" }}
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
       <form className="room-list-form">
         <ul>
-          {rooms.length > 0 ? (
-            rooms.map((room) => {
+          {filteredRooms.length > 0 ? (
+            filteredRooms.map((room) => {
               const isFull = room.maxUsers !== undefined && room.userCount >= room.maxUsers;
               return (
                 <li key={room.name} className={`room-list-item${isFull ? " full" : ""}`}>
@@ -119,7 +154,11 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
                     <div className="room-tags-row">
                       <span className="room-tags">
                         {room.tags.map(tag => (
-                          <span key={tag} className="room-tag" data-tag={tag}>
+                          <span
+                            key={tag}
+                            className={`room-tag tag-color-${tag.replace(/ /g, "-")}`}
+                            data-tag={tag}
+                          >
                             #{tag}
                           </span>
                         ))}
@@ -130,7 +169,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
               );
             })
           ) : (
-            <div className="room-list-empty">No rooms available</div>
+            <div className="room-list-empty">No rooms match your filter</div>
           )}
         </ul>
       </form>

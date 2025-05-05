@@ -257,38 +257,32 @@
 
 .room-tag {
   display: inline-block;
-  margin-left: 4px;
-  margin-right: 2px;
+  padding: 0.3em 0.9em;
   border-radius: 16px;
-  padding: 0.18em 0.95em 0.18em 0.7em;
-  font-size: 0.93em;
+  font-size: 0.98em;
   font-weight: 500;
-  letter-spacing: 0.01em;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  margin: 0 0.15em 0.15em 0;
+  border: 1.5px solid transparent;
   vertical-align: middle;
-  border: 1.5px solid;
-  background: #f5faff;
-  transition: background 0.2s, color 0.2s;
-  white-space: normal;      /* <-- Viktigt: tillåt radbrytning */
-  max-width: none;          /* <-- Viktigt: ingen klippning */
-  overflow: visible;
-  text-overflow: unset;
 }
 
 .room-tag[data-tag="First Timer"] {
+
+  background: #fff4e6;
+  color: #e67e22;
+  border-color: #e67e22;
+}
+.room-tag[data-tag="Pro"] {
+
   background: #e3f6fc;
   color: #0a6fae;
   border-color: #0a6fae;
 }
-.room-tag[data-tag="Pro"] {
-  background: #f3e8ff;
-  color: #7c3aed;
-  border-color: #7c3aed;
-}
 .room-tag[data-tag="Please Be Quiet"] {
-  background: #fff4e6;
-  color: #e67e22;
-  border-color: #e67e22;
+
+  background: #fff0f6;
+  color: #d72660;
+  border-color: #d72660;
 }
 .room-tag[data-tag="Open Discussion"] {
   background: #e6ffed;
@@ -296,9 +290,85 @@
   border-color: #27ae60;
 }
 .room-tag[data-tag="Strangers Welcome"] {
-  background: #fff0f6;
-  color: #d72660;
-  border-color: #d72660;
+
+  background: #f3e8ff;
+  color: #7c3aed;
+  border-color: #7c3aed;
+}
+
+.room-tag:first-child {
+  margin-left: 0;
+}
+
+.room-filter-tags .tag-btn.selected {
+  background: #007bff;
+  color: #fff;
+}
+
+/* Tag selected overrides */
+.tag-btn.tag-color-First-Timer.selected,
+.room-tag.tag-color-First-Timer.selected { background: #ffca28; color: #4e3900; border-color: #b28704; }
+.tag-btn.tag-color-Pro.selected,
+.room-tag.tag-color-Pro.selected { background: #29b6f6; color: #00394d; border-color: #0277bd; }
+.tag-btn.tag-color-Please-Be-Quiet.selected,
+.room-tag.tag-color-Please-Be-Quiet.selected { background: #ff8fa3; color: #4d0020; border-color: #b3003c; }
+.tag-btn.tag-color-Open-Discussion.selected,
+.room-tag.tag-color-Open-Discussion.selected { background: #38d96c; color: #114d00; border-color: #1b5e20; }
+.tag-btn.tag-color-Strangers-Welcome.selected,
+.room-tag.tag-color-Strangers-Welcome.selected { background: #a259f7; color: #2d005c; border-color: #5e249c; }
+
+/* Gemensam grundstil för taggar och knappar */
+.tag-btn,
+.room-tag {
+  display: inline-block;
+  padding: 0.4em 1em;
+  border-radius: 16px;
+  border: 1.5px solid #007bff;
+  background: #fff;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 500;
+  margin: 0 0.15em 0.15em 0;
+  transition: background 0.2s, color 0.2s;
+  vertical-align: middle;
+}
+
+/* Färgklasser för taggar */
+.tag-color-First-Timer { background: #ffe082; color: #7c5c00; border-color: #ffe082; }
+.tag-color-Pro { background: #b2f2ff; color: #005c7c; border-color: #b2f2ff; }
+.tag-color-Please-Be-Quiet { background: #ffd6e0; color: #7c003c; border-color: #ffd6e0; }
+.tag-color-Open-Discussion { background: #caffbf; color: #2d7c00; border-color: #caffbf; }
+.tag-color-Strangers-Welcome { background: #e0c3fc; color: #4b007c; border-color: #e0c3fc; }
+
+/* Selected state för filter/tag-btn och room-tag */
+.tag-btn.selected,
+.room-tag.selected {
+  background: #007bff;
+  color: #fff;
+}
+
+/* Tag selected overrides */
+.tag-btn.tag-color-First-Timer.selected,
+.room-tag.tag-color-First-Timer.selected { background: #ffca28; color: #4e3900; border-color: #b28704; }
+.tag-btn.tag-color-Pro.selected,
+.room-tag.tag-color-Pro.selected { background: #29b6f6; color: #00394d; border-color: #0277bd; }
+.tag-btn.tag-color-Please-Be-Quiet.selected,
+.room-tag.tag-color-Please-Be-Quiet.selected { background: #ff8fa3; color: #4d0020; border-color: #b3003c; }
+.tag-btn.tag-color-Open-Discussion.selected,
+.room-tag.tag-color-Open-Discussion.selected { background: #38d96c; color: #114d00; border-color: #1b5e20; }
+.tag-btn.tag-color-Strangers-Welcome.selected,
+.room-tag.tag-color-Strangers-Welcome.selected { background: #a259f7; color: #2d005c; border-color: #5e249c; }
+
+/* Flexlayout för taggar i listan */
+.room-tags,
+.room-filter-tags {
+  display: flex;
+  gap: 0.5em;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 0.2em;
+  justify-content: center;
 }
 
 .room-tag:first-child {
