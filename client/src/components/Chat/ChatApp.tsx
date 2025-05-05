@@ -8,7 +8,7 @@ import UserList from "./ChatContainer/UserList";
 import ActivityIndicator from "./ChatContainer/ActivityIndicator";
 import LeaveChatButton from "./ChatContainer/LeaveChatButton";
 import { sendMessageToServer } from "../../utils/SendMessageToServer";
-import toast from "react-hot-toast";
+import CopyInviteLinkButton from "./ChatContainer/CopyInviteLinkButton";
 
 interface Message {
     name: string;
@@ -33,7 +33,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
     const [showChat, setShowChat] = useState(false);
     const [displayChat, setDisplayChat] = useState(true);
 
-    const inviteLink = `${window.location.origin}?room=${room}${password ? `&password=${password}` : ""}`;
 
     // Sätt alltid upp listeners först!
     useEffect(() => {
@@ -173,25 +172,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
 
                                 <LeaveChatButton leaveChat={leaveChat} />
 
-                                <div className="invite-link-container">
-                                    <p className="invite-text">Invite others to your room:</p>
-                                    <input
-                                        type="text"
-                                        value={inviteLink}
-                                        readOnly
-                                        className="invite-link-input"
-                                        onClick={(e) => (e.target as HTMLInputElement).select()} // Markera texten vid klick
-                                    />
-                                    <button
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(inviteLink);
-                                            toast.success("Invite link copied to clipboard!");
-                                        }}
-                                        className="copy-link-button"
-                                    >
-                                        Copy Link
-                                    </button>
-                                </div>
+                                <CopyInviteLinkButton room={room} password={password} />
                             </div>
 
                         </>

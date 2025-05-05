@@ -2,18 +2,9 @@
     max-width: 520px;
     margin: 2rem auto;
     padding: 2rem;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-  
-  .name-input-container:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-  }
-  
+
   .name-input-title {
     margin-bottom: 1rem;
     font-size: 1.7rem;
@@ -25,6 +16,22 @@
     font-size: 0.9rem;
     color: #555;
     line-height: 1.6;
+  }
+
+  .name-form {
+    max-width: 520px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .name-form:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
   }
   
   .name-input-label {
@@ -54,4 +61,51 @@
     border-color: #6366f1;
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
   }
+
+  /*KNapp*/
+
+  /* Fälla ut formulör för skapa chatt */
+.name-button {
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 15px 48px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  max-width: 360px;
+  margin: 20px auto;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.name-button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
+  transform: rotate(45deg);
+  transition: all 0.6s ease;
+}
+
+.name-button:hover::before {
+  top: -80%;
+  left: -80%;
+  transform: rotate(45deg);
+}
+
+.name-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: linear-gradient(135deg, #5145cd, #3730a3);
+}
   

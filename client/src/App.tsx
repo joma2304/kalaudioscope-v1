@@ -6,8 +6,9 @@ import RoomList from "./components/Lobby/RoomList";
 import DraggableWrapper from "./components/DraggableWrapper";
 import "./App.css"; // Importera CSS för App
 import VideoParent from "./components/Video/VideoParent";
-import { Toaster } from "react-hot-toast"; // Importera React Hot Toast
+import toast, { Toaster } from "react-hot-toast"; // Importera React Hot Toast
 import { useSearchParams } from "react-router-dom";
+import NameInput from "./components/Lobby/NameInput";
 
 
 const App = () => {
@@ -16,27 +17,35 @@ const App = () => {
     const [videoExists, setVideoExists] = useState(false);
     const [name, setName] = useState("");
     const [roomPassword, setRoomPassword] = useState<string | undefined>();
+    const [pendingRoom, setPendingRoom] = useState<string | null>(null);
     const socket = useSocket();
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
 
+    // Hantera länk med ?room=...
     useEffect(() => {
-        const room = searchParams.get("room");
-        const password = searchParams.get("password");
-
-        const storedName = localStorage.getItem("chatName");
-
-        if (room && storedName) {
-            setName(storedName); // Uppdatera namnet
-            handleJoinRoom(room, password || undefined);
-        } else if (room && !storedName) {
-            const userName = prompt("Enter your name to join the room:");
-            if (userName) {
-                setName(userName);
-                localStorage.setItem("chatName", userName);
-                handleJoinRoom(room, password || undefined);
+        const roomFromUrl = searchParams.get("room");
+        const passwordFromUrl = searchParams.get("password");
+    
+        if (roomFromUrl) {
+            setPendingRoom(roomFromUrl);
+            if (passwordFromUrl) {
+                setRoomPassword(passwordFromUrl); // Sätt lösenordet från URL:en
             }
         }
-    }, [name, searchParams]);
+    }, [searchParams]);
+
+        // När namn är ifyllt och pendingRoom finns, joina automatiskt
+        useEffect(() => {
+            if (name && pendingRoom) {
+                handleJoinRoom(pendingRoom, roomPassword); // Skicka lösenordet
+                setPendingRoom(null);
+        
+                // Ta bort room och password från URL
+                searchParams.delete("room");
+                searchParams.delete("password");
+                setSearchParams(searchParams, { replace: true });
+            }
+        }, [name, pendingRoom, roomPassword, searchParams, setSearchParams]);
 
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
@@ -70,8 +79,11 @@ const App = () => {
     }, []);
 
     // När man joinar ett befintligt rum (från RoomList)
-    const handleJoinRoom = (roomName: string, password?: string) => {
-        if (!name.trim()) return;
+    const handleJoinRoom = (
+        roomName: string,
+        password?: string,
+        callback?: (result: { success: boolean; message?: string }) => void
+    ) => {
         socket.emit("enterRoom", { name, room: roomName, password }, (response: { success: boolean; message?: string }) => {
             if (response.success) {
                 setCurrentRoom(roomName);
@@ -85,9 +97,12 @@ const App = () => {
                 }
                 localStorage.setItem("chatName", name);
                 localStorage.setItem("chatRoom", roomName);
+    
+                toast.success("Successfully joined the room!");
             } else {
-                alert(response.message || "Failed to join the room.");
+                toast.error(response.message || "Failed to join the room.");
             }
+            if (callback) callback(response);
         });
     };
 
@@ -112,10 +127,7 @@ const App = () => {
         localStorage.removeItem("chatRoomPassword");
         localStorage.removeItem("chatRoom");
         localStorage.removeItem("chatName");
-
-        // Ta bort query-parametrarna från URL:en
-        const newUrl = `${window.location.origin}${window.location.pathname}`;
-        window.history.replaceState(null, "", newUrl);
+        setName("");
     };
 
     return (
@@ -133,6 +145,8 @@ const App = () => {
                     </DraggableWrapper>
                     {videoExists && <VideoParent />}
                 </>
+            ) : !name ? (
+                <NameInput name={name} setName={setName} />
             ) : (
                 <div className="lobby-view">
                     <JoinForm
@@ -140,11 +154,10 @@ const App = () => {
                         setName={setName}
                         onJoinSuccess={handleJoinSuccess}
                     />
-                    <RoomList onJoinRoom={handleJoinRoom}
-                        username={name} // Skicka användarnamnet som en prop
-                    />
+                    <RoomList onJoinRoom={handleJoinRoom} name={name} />
                 </div>
             )}
+
         </SocketProvider>
     );
 };

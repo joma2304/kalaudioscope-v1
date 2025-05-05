@@ -13,11 +13,15 @@ interface Room {
 }
 
 interface RoomListProps {
-  onJoinRoom: (roomName: string, password?: string) => void;
-  username: string;
+  onJoinRoom: (
+    roomName: string,
+    password?: string,
+    callback?: (result: { success: boolean; message?: string }) => void
+  ) => void;
+  name: string;
 }
 
-const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
+const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
   const socket = useSocket();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [connected, setConnected] = useState(socket.connected);
@@ -75,7 +79,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
       return;
     }
 
-    if (!username) {
+    if (!name.trim()) {
       toast.error("Please enter your name before joining a room."); // Visa toast för användarnamn
       return;
     }
@@ -91,7 +95,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, username }) => {
   const handleModalSubmit = async (password: string) => {
     if (selectedRoom) {
       return new Promise<boolean>((resolve) => {
-        socket.emit("enterRoom", { name: username, room: selectedRoom.name, password }, (response: { success: boolean; message: string }) => {
+        socket.emit("enterRoom", { name: name, room: selectedRoom.name, password }, (response: { success: boolean; message: string }) => {
           if (response.success) {
             resolve(true); // Lösenordet är korrekt
             onJoinRoom(selectedRoom.name, password); // Gå med i rummet

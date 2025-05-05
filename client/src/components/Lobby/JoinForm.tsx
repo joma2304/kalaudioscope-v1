@@ -1,7 +1,6 @@
 import React from "react";
 import { useSocket } from "../../context/SocketContext";
 import { toast } from "react-hot-toast";
-import NameInput from "./NameInput";
 import "./JoinForm.css";
 import { CircleX } from "lucide-react";
 
@@ -11,7 +10,7 @@ interface JoinFormProps {
     onJoinSuccess: (roomName: string, password?: string) => void;
 }
 
-const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => {
+const JoinForm: React.FC<JoinFormProps> = ({ name, onJoinSuccess }) => {
     const socket = useSocket();
     const [maxUsers, setMaxUsers] = React.useState<number | null>(null);
     const [password, setPassword] = React.useState("");
@@ -98,7 +97,6 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
 
     return (
         <>
-            <NameInput name={name} setName={setName} />
 
             {/* Knapp för att öppna formuläret */}
             {!isFormVisible && (
