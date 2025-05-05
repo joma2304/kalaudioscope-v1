@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { BrowserRouter, useSearchParams } from "react-router-dom";
 import { SocketProvider, useSocket } from "./context/SocketContext";
 import ChatApp from "./components/Chat/ChatApp";
 import JoinForm from "./components/Lobby/JoinForm";
@@ -15,13 +16,37 @@ const testStreams = [
     { label: "Angle 4", url: "/videos/angle4.mp4" }
 ];
 
-const App = () => {
+const App: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentRoom, setCurrentRoom] = useState<string | null>(null);
     const [videoExists, setVideoExists] = useState(false);
-    const [name, setName] = useState("");
+    const [name, setName] = useState(localStorage.getItem("chatName") || "");
     const [roomPassword, setRoomPassword] = useState<string | undefined>();
+    const [pendingRoom, setPendingRoom] = useState<string | null>(null);
     const socket = useSocket();
+
+    // For react-router-dom v6+
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Hantera länk med ?room=...
+    useEffect(() => {
+        const roomFromUrl = searchParams.get("room");
+        if (roomFromUrl) {
+            setPendingRoom(roomFromUrl);
+        }
+    }, [searchParams]);
+
+    // När namn är ifyllt och pendingRoom finns, joina automatiskt
+    useEffect(() => {
+        if (name && pendingRoom) {
+            // Kör joinRoom-logik istället för bara setCurrentRoom
+            handleJoinRoom(pendingRoom);
+            setPendingRoom(null);
+            // Ta bort room-parametern från URL
+            searchParams.delete("room");
+            setSearchParams(searchParams, { replace: true });
+        }
+    }, [name, pendingRoom, searchParams, setSearchParams]);
 
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
@@ -127,20 +152,26 @@ const App = () => {
                     </>
                 ) : (
                     <>
-                        <NameInput name={name} setName={setName} />
-                        <div className="lobby-view">
-                            <JoinForm
-                                name={name}
-                                setName={setName}
-                                onJoinSuccess={handleJoinSuccess}
-                            />
-                            <RoomList onJoinRoom={handleJoinRoom} name={name} />
-                        </div>
+                        {/* Visa NameInput om namn saknas */}
+                        {!name ? (
+                            <NameInput name={name} setName={setName} />
+                        ) : (
+                            <div className="lobby-view">
+                                <JoinForm
+                                    name={name}
+                                    setName={setName}
+                                    onJoinSuccess={handleJoinSuccess}
+                                />
+                                <RoomList onJoinRoom={handleJoinRoom} name={name} />
+                            </div>
+                        )}
                     </>
                 )}
             </>
         </SocketProvider>
     );
 };
+
+
 
 export default App;

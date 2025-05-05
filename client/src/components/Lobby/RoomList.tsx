@@ -82,7 +82,6 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
         setShowPasswordModal(false);
       } else {
         setPasswordInput("");
-        
       }
     });
   };

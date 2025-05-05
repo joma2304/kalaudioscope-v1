@@ -8,6 +8,7 @@ import UserList from "./ChatContainer/UserList";
 import ActivityIndicator from "./ChatContainer/ActivityIndicator";
 import LeaveChatButton from "./ChatContainer/LeaveChatButton";
 import { sendMessageToServer } from "../../utils/SendMessageToServer";
+import CopyInviteLinkButton from "./ChatContainer/CopyInviteLinkButton";
 
 interface Message {
     name: string;
@@ -184,6 +185,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
                                 />
                                 <UserList users={users} />
                                 <LeaveChatButton leaveChat={leaveChat} />
+                                <CopyInviteLinkButton room={room} />
                             </div>
                         </>
                     )}
