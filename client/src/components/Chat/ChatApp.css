@@ -286,3 +286,43 @@ hr {
         transform: translateY(0);
     }
 }
+
+/*Länk för inbjudan till chattrum*/
+
+.invite-link-container {
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .invite-text {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+  }
+  
+  .invite-link-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: rgba(30, 30, 30, 0.5);
+    /* Genomskinlig bakgrund för hela chatten */
+    color: #fff;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .copy-link-button {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .copy-link-button:hover {
+    background: #4f46e5;
+  }

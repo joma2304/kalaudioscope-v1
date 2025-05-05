@@ -7,6 +7,7 @@ import DraggableWrapper from "./components/DraggableWrapper";
 import "./App.css"; // Importera CSS för App
 import VideoParent from "./components/Video/VideoParent";
 import { Toaster } from "react-hot-toast"; // Importera React Hot Toast
+import { useSearchParams } from "react-router-dom";
 
 
 const App = () => {
@@ -16,6 +17,26 @@ const App = () => {
     const [name, setName] = useState("");
     const [roomPassword, setRoomPassword] = useState<string | undefined>();
     const socket = useSocket();
+    const [searchParams] = useSearchParams();
+
+    useEffect(() => {
+        const room = searchParams.get("room");
+        const password = searchParams.get("password");
+    
+        const storedName = localStorage.getItem("chatName");
+    
+        if (room && storedName) {
+            setName(storedName); // Uppdatera namnet
+            handleJoinRoom(room, password || undefined);
+        } else if (room && !storedName) {
+            const userName = prompt("Enter your name to join the room:");
+            if (userName) {
+                setName(userName);
+                localStorage.setItem("chatName", userName);
+                handleJoinRoom(room, password || undefined);
+            }
+        }
+    }, [ name, searchParams]);
 
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
@@ -64,9 +85,6 @@ const App = () => {
                 }
                 localStorage.setItem("chatName", name);
                 localStorage.setItem("chatRoom", roomName);
-
-                // Lägg till denna rad:
-                socket.emit('getInitialState');
             } else {
                 alert(response.message || "Failed to join the room.");
             }

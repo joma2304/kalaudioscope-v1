@@ -168,7 +168,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, setName, onJoinSuccess }) => 
                                   onChange={() => toggleTag(tag.name)}
                                   style={{ display: "none" }} // Dölj checkboxen
                                 />
-                                {tag.name}
+                                #{tag.name}
                               </label>
                             );
                           })}
