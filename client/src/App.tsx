@@ -22,9 +22,9 @@ const App = () => {
     useEffect(() => {
         const room = searchParams.get("room");
         const password = searchParams.get("password");
-    
+
         const storedName = localStorage.getItem("chatName");
-    
+
         if (room && storedName) {
             setName(storedName); // Uppdatera namnet
             handleJoinRoom(room, password || undefined);
@@ -36,7 +36,7 @@ const App = () => {
                 handleJoinRoom(room, password || undefined);
             }
         }
-    }, [ name, searchParams]);
+    }, [name, searchParams]);
 
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
@@ -112,6 +112,10 @@ const App = () => {
         localStorage.removeItem("chatRoomPassword");
         localStorage.removeItem("chatRoom");
         localStorage.removeItem("chatName");
+
+        // Ta bort query-parametrarna från URL:en
+        const newUrl = `${window.location.origin}${window.location.pathname}`;
+        window.history.replaceState(null, "", newUrl);
     };
 
     return (
