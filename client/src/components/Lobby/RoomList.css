@@ -117,25 +117,46 @@
   flex: 1 1 220px;
 }
 
+/* Gör rad med namn, användare, lås och knapp till grid */
 .room-info-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
   align-items: center;
   gap: 1.1em;
-  flex-wrap: wrap;
+  width: 100%;
   margin-bottom: 0.2em;
 }
 
+/* Namn alltid till vänster */
 .room-title {
   font-weight: 600;
   font-size: 1.13em;
-  margin-right: 0.5em;
   color: #2a2a2a;
   letter-spacing: 0.2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+/* Antal användare */
+.room-users {
+  font-size: 1em;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 0.2em;
+  min-width: 48px;
+  justify-content: flex-end;
+}
+
+/* Låsikon */
 .room-lock {
   color: #b00;
   font-size: 1.1em;
+  min-width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .room-meta {
@@ -144,14 +165,6 @@
   gap: 0.8rem;
   margin-top: 0.5em;
   flex-shrink: 0;
-}
-
-.room-users {
-  font-size: 1em;
-  color: #555;
-  display: flex;
-  align-items: center;
-  gap: 0.2em;
 }
 
 .user-icon {
@@ -172,8 +185,16 @@
   font-size: 1.05em;
 }
 
+/* Join-knapp alltid högercentrerad */
+.room-info-row button,
 .room-list-item button {
-  margin-left: auto;
+  justify-self: end;
+  margin-left: 0;
+  margin-right: 0;
+  align-self: center;
+}
+
+.room-list-item button {
   background: linear-gradient(135deg, #b71c1c, #a8324a);
   color: #fff;
   border: none;
@@ -307,6 +328,10 @@
     margin-top: 0.5em;
     width: 100%;
     justify-content: flex-start;
+  }
+  .room-info-row {
+    grid-template-columns: 1fr auto auto;
+    gap: 0.7em;
   }
 }
 

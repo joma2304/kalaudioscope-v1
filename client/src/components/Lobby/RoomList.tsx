@@ -102,11 +102,11 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
                 <li key={room.name} className={`room-list-item${isFull ? " full" : ""}`}>
                   <div className="room-info-row">
                     <span className="room-title">{`Box ${room.name}`}</span>
-                    {room.hasPassword && <span className="room-lock">🔒</span>}
                     <span className="room-users">
                       <span className="user-icon" role="img" aria-label="users">👤</span>
                       {room.userCount}/{room.maxUsers || "∞"}
                     </span>
+                    <span className="room-lock">{room.hasPassword && <span className="room-lock">🔒</span>}</span>
                     <button
                       type="button"
                       disabled={isFull}
