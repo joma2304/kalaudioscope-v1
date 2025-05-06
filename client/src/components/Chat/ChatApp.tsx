@@ -185,7 +185,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
                                 />
                                 <UserList users={users} />
                                 <LeaveChatButton leaveChat={leaveChat} />
-                                <CopyInviteLinkButton room={room} />
+                                <CopyInviteLinkButton room={room} password={password}/>
                             </div>
                         </>
                     )}

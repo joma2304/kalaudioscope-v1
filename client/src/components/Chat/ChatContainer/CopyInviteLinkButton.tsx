@@ -4,11 +4,15 @@ import toast from "react-hot-toast";
 
 interface CopyInviteLinkButtonProps {
   room: string;
+  password?: string;
 }
 
-const CopyInviteLinkButton: React.FC<CopyInviteLinkButtonProps> = ({ room }) => {
+const CopyInviteLinkButton: React.FC<CopyInviteLinkButtonProps> = ({ room, password }) => {
   const handleCopy = () => {
-    const url = `${window.location.origin}?room=${encodeURIComponent(room)}`;
+    let url = `${window.location.origin}?room=${encodeURIComponent(room)}`;
+    if (password) {
+      url += `&password=${encodeURIComponent(password)}`;
+    }
     navigator.clipboard.writeText(url);
     toast.success("Invite link copied!");
   };

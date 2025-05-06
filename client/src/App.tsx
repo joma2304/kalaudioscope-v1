@@ -31,22 +31,24 @@ const App: React.FC = () => {
     // Hantera länk med ?room=...
     useEffect(() => {
         const roomFromUrl = searchParams.get("room");
+        const passwordFromUrl = searchParams.get("password");
         if (roomFromUrl) {
             setPendingRoom(roomFromUrl);
+            setRoomPassword(passwordFromUrl || undefined);
         }
     }, [searchParams]);
 
     // När namn är ifyllt och pendingRoom finns, joina automatiskt
     useEffect(() => {
         if (name && pendingRoom) {
-            // Kör joinRoom-logik istället för bara setCurrentRoom
-            handleJoinRoom(pendingRoom);
+            handleJoinRoom(pendingRoom, roomPassword);
             setPendingRoom(null);
-            // Ta bort room-parametern från URL
+            // Ta bort room och password från URL
             searchParams.delete("room");
+            searchParams.delete("password");
             setSearchParams(searchParams, { replace: true });
         }
-    }, [name, pendingRoom, searchParams, setSearchParams]);
+    }, [name, pendingRoom, roomPassword, searchParams, setSearchParams]);
 
     useEffect(() => {
         const storedName = localStorage.getItem("chatName");
@@ -129,6 +131,7 @@ const App: React.FC = () => {
         setIsLoggedIn(false);
         setCurrentRoom(null);
         setRoomPassword(undefined);
+        setName(""); // <-- Lägg till denna rad!
         localStorage.removeItem("chatRoomPassword");
         localStorage.removeItem("chatName");
         localStorage.removeItem("chatRoom");
