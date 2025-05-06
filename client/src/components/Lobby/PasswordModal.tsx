@@ -1,54 +1,41 @@
-import React, { useState } from "react";
-import "./PasswordModal.css"; // Skapa en CSS-fil för modalens styling
+import React from "react";
+import "./PasswordModal.css";
+
 
 interface PasswordModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (password: string) => Promise<boolean>; // Ändra till en Promise för att hantera fel
+  roomName: string;
+  password: string;
+  setPassword: (value: string) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
 }
 
-const PasswordModal: React.FC<PasswordModalProps> = ({ isOpen, onClose, onSubmit }) => {
-  const [password, setPassword] = useState("");
-
-
-  if (!isOpen) return null;
-
-  const handleSubmit = async () => {
-    const success = await onSubmit(password); // Vänta på resultat från onSubmit
-    if (!success) {
-        setPassword(""); // Återställ lösenordet
-
-    } else {
-      setPassword(""); // Återställ lösenordet
-      onClose(); // Stäng modalen
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSubmit(); // Anropa handleSubmit om "Enter" trycks
-    }
-  };
-
-  return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h3>Enter Room Password</h3>
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={handleKeyDown} // Lägg till onKeyDown-händelsen
-          className="modal-input"
-        />
-        <div className="modal-buttons">
-          <button onClick={handleSubmit} className="modal-submit-button">Submit</button>
-          <button onClick={onClose} className="modal-cancel-button">Cancel</button>
-        </div>
+const PasswordModal: React.FC<PasswordModalProps> = ({
+  roomName,
+  password,
+  setPassword,
+  onSubmit,
+  onCancel,
+}) => (
+  <div className="password-modal-overlay">
+    <div className="modal-content">
+      <h3>Enter password for Box {roomName}</h3>
+      <input
+        type="password"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+        autoFocus
+        className="password-input"
+        onKeyDown={e => {
+          if (e.key === "Enter") onSubmit();
+        }}
+      />
+      <div className="modal-buttons">
+        <button onClick={onSubmit} className="modal-submit-button">Join</button>
+        <button onClick={onCancel} className="modal-cancel-button cancel">Cancel</button>
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 export default PasswordModal;
