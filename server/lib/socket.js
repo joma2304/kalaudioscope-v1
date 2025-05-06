@@ -48,7 +48,7 @@ const handleControllerChange = async (room) => {
         roomControllers[room] = newController.id;
         const userDoc = await User.findById(newController.userId).lean();
         const controllerName = userDoc ? `${userDoc.firstName} ${userDoc.lastName}` : "Unknown User";
-        io.to(room).emit("message", buildMsg(ADMIN, `${controllerName} is now in control.`));
+        io.to(room).emit("message", await buildMsg(ADMIN, `${controllerName} is now in control.`));
         io.to(newController.id).emit("youAreNowController");
     } else {
         delete roomControllers[room];

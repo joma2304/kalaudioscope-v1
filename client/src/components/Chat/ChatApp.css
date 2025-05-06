@@ -118,7 +118,7 @@ form {
 .toggle-chat-container {
     margin-top: 1rem;
     position: fixed;
-    top: 35px;
+    top: 0px;
     right: 20px;
     z-index: 1000;
     display: flex;

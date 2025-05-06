@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { SocketProvider, useSocket } from "./context/SocketContext";
+import { SocketProvider } from "./context/SocketContext";
 import ChatApp from "./components/Chat/ChatApp";
 import JoinForm from "./components/Lobby/JoinForm";
 import RoomList from "./components/Lobby/RoomList";
@@ -46,11 +46,32 @@ const AppContent: React.FC = () => {
     useEffect(() => {
         const roomFromUrl = searchParams.get("room");
         const passwordFromUrl = searchParams.get("password");
+
         if (roomFromUrl) {
-            setPendingRoom(roomFromUrl);
-            setRoomPassword(passwordFromUrl || undefined);
+            if (!userId) {
+                // Om användaren inte är inloggad, visa LoginModal
+                setPendingRoom(roomFromUrl);
+                setRoomPassword(passwordFromUrl || undefined);
+                toast.error("You need to log in to join the room.");
+            } else {
+                // Om användaren är inloggad, spara rumsinformationen i localStorage och anslut
+                localStorage.setItem("chatRoom", roomFromUrl);
+                if (passwordFromUrl) {
+                    localStorage.setItem("chatRoomPassword", passwordFromUrl);
+                } else {
+                    localStorage.removeItem("chatRoomPassword");
+                }
+                setCurrentRoom(roomFromUrl);
+                setRoomPassword(passwordFromUrl || undefined);
+
+                // Ta bort room och password från URL
+                searchParams.delete("room");
+                searchParams.delete("password");
+                setSearchParams(searchParams, { replace: true });
+                toast.success("Joined room successfully!");
+            }
         }
-    }, [searchParams]);
+    }, [searchParams, userId]);
 
     // När pendingRoom finns och userId är satt, gå till rummet automatiskt
     useEffect(() => {
@@ -109,7 +130,8 @@ const AppContent: React.FC = () => {
 
     return (
         <>
-            <Header setIsLoggedIn={setIsLoggedIn} setUserId={setUserId} />
+        {/* Visa bara Header om användaren inte är inne i en chatt */}
+        {!currentRoom && <Header setIsLoggedIn={setIsLoggedIn} setUserId={setUserId} />}
             <Toaster />
             {currentRoom ? (
                 <>
