@@ -9,6 +9,8 @@ import VideoParent from "./components/Video/VideoParent";
 import toast, { Toaster } from "react-hot-toast"; // Importera React Hot Toast
 import { useSearchParams } from "react-router-dom";
 import NameInput from "./components/Lobby/NameInput";
+import LoginUser from "./components/User/LoginUser";
+import RegisterUser from "./components/User/RegisterUser";
 
 
 const App = () => {
@@ -132,6 +134,9 @@ const App = () => {
 
     return (
         <SocketProvider>
+            <RegisterUser />
+            <LoginUser />
+
             <Toaster />
             {isLoggedIn && currentRoom ? (
                 <>
