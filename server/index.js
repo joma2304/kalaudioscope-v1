@@ -7,6 +7,8 @@ import { server, app } from "./lib/socket.js";
 import cors from 'cors'
 
 import messageRoutes from './routes/messages.route.js';
+import userRoutes from './routes/user.route.js';
+
 
 dotenv.config();
 app.use(express.json());
@@ -23,14 +25,14 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
     cors({
-        origin: ["http://localhost:5173", "http://127.0.0.1:5173"],    
+        origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
     })
 );
 
 app.use("/api", messageRoutes);
+app.use("/api", userRoutes)
 
 server.listen(PORT, () => {
     console.log('Server is running on PORT:' + PORT);
     connectDB()
 });
-
