@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import "./MessageHistory.css"
 
-const MessageHistory = ({ roomId }: { roomId: string }) => {
-    const [messages, setMessages] = useState<any[]>([]);
-    const name = localStorage.getItem("chatName") || "Guest"; // Sätt en fallback till "Guest"
+interface Message {
+    senderId: string;
+    firstName: string;
+    lastName: string;
+    text: string;
+    createdAt: string;
+}
 
+const MessageHistory = ({ roomId }: { roomId: string }) => {
+    const [messages, setMessages] = useState<Message[]>([]);
+    const authUser = localStorage.getItem("authUser");
+    const userId = authUser ? JSON.parse(authUser).userId : "Guest";
 
     useEffect(() => {
-        // Hämtar meddelanden för chattrummet
         const fetchMessages = async (roomId: string) => {
             try {
                 const res = await fetch(`http://localhost:3500/api/messages/${roomId}`);
@@ -22,29 +29,33 @@ const MessageHistory = ({ roomId }: { roomId: string }) => {
             }
         };
 
-        fetchMessages(localStorage.getItem("chatRoom") || roomId); // Använd roomId om inget finns i localStorage
+        fetchMessages(localStorage.getItem("chatRoom") || roomId);
     }, [roomId]);
 
     const formatTime = (timestamp: string) => {
         const date = new Date(timestamp);
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // T.ex. "14:30"
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
     return (
         <div>
             <div className="chat-history">
-                {messages.map((message, index) => (
-                    <div key={index} className={`message ${message.senderName === name ? "message--self" : "message--other"}`}
-                    >
-                        <strong>{message.senderName} </strong>
-                        <hr />
-                        <p>{message.text}</p>
-                        <small>{formatTime(message.createdAt)}</small>
-                    </div>
-                ))}
-                {messages.length > 0 && 
-                <p className="chat-history-title">Chat history</p>
-}
+                {messages
+                    .filter(message => message.senderId !== "Admin")
+                    .map((message, index) => (
+                        <div
+                            key={index}
+                            className={`message ${message.senderId === userId ? "message--self" : "message--other"}`}
+                        >
+                            <strong>{message.firstName} {message.lastName}</strong>
+                            <hr />
+                            <p>{message.text}</p>
+                            <small>{formatTime(message.createdAt)}</small>
+                        </div>
+                    ))}
+                {messages.length > 0 &&
+                    <p className="chat-history-title">Scroll up for chat history</p>
+                }
             </div>
         </div>
     );

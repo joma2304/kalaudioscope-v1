@@ -157,7 +157,7 @@ const VideoParent = () => {
     };
 
     return (
-        <div>
+        <div className="video-parent">
             <Canvas style={{ width: "100vw", height: "100vh" }} camera={{ position: [0, 0, 0.1] }}>
                 <OrbitControls
                     enableZoom={false}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSocket } from "../../context/SocketContext";
-import PasswordModal from "./PasswordModal"; // Importera modal-komponenten
-import { toast } from "react-hot-toast"; // Importera React Hot Toast
+import PasswordModal from "./PasswordModal";
+import { toast } from "react-hot-toast";
 import "./RoomList.css";
 
 interface Room {
@@ -18,15 +18,15 @@ interface RoomListProps {
     password?: string,
     callback?: (result: { success: boolean; message?: string }) => void
   ) => void;
-  name: string;
+  userId: string;
 }
 
-const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
+const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
   const socket = useSocket();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [connected, setConnected] = useState(socket.connected);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Hantera modalens öppning
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null); // Håll reda på valt rum
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
 
   const tagColors: { [key: string]: string } = {
@@ -75,18 +75,18 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
 
   const handleJoin = (room: Room) => {
     if (!connected) {
-      toast.error("Not connected to the server."); // Visa toast för anslutningsfel
+      toast.error("Not connected to the server.");
       return;
     }
 
-    if (!name.trim()) {
-      toast.error("Please enter your name before joining a room."); // Visa toast för användarnamn
+    if (!userId.trim()) {
+      toast.error("User ID is missing.");
       return;
     }
 
     if (room.hasPassword) {
-      setSelectedRoom(room); // Sätt valt rum
-      setIsModalOpen(true); // Öppna modalen
+      setSelectedRoom(room);
+      setIsModalOpen(true);
     } else {
       onJoinRoom(room.name);
     }
@@ -95,18 +95,20 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
   const handleModalSubmit = async (password: string) => {
     if (selectedRoom) {
       return new Promise<boolean>((resolve) => {
-        socket.emit("enterRoom", { name: name, room: selectedRoom.name, password }, (response: { success: boolean; message: string }) => {
-          if (response.success) {
-            resolve(true); // Lösenordet är korrekt
-            onJoinRoom(selectedRoom.name, password); // Gå med i rummet
-            setIsModalOpen(false); // Stäng modalen
-            toast.success("Successfully joined the room!"); // Visa toast för lyckad inloggning
-
-          } else {
-            toast.error("Incorrect password. Please try again."); // Visa toast för fel lösenord
-            resolve(false); // Lösenordet är felaktigt
+        socket.emit(
+          "enterRoom",
+          { userId, room: selectedRoom.name, password },
+          (response: { success: boolean; message: string }) => {
+            if (response.success) {
+              resolve(true);
+              onJoinRoom(selectedRoom.name, password);
+              setIsModalOpen(false);
+            } else {
+              toast.error("Incorrect password. Please try again.");
+              resolve(false);
+            }
           }
-        });
+        );
       });
     }
     return false;
@@ -118,9 +120,10 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
     );
   };
 
-  const filteredRooms = rooms.filter((room) =>
-    selectedFilters.length === 0 || // Visa alla rum om inga filter är valda
-    (room.tags && room.tags.some((tag) => selectedFilters.includes(tag)))
+  const filteredRooms = rooms.filter(
+    (room) =>
+      selectedFilters.length === 0 ||
+      (room.tags && room.tags.some((tag) => selectedFilters.includes(tag)))
   );
 
   return (
@@ -151,7 +154,8 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
       {filteredRooms.length > 0 ? (
         <ul className="room-list">
           {filteredRooms.map((room, index) => {
-            const isFull = room.maxUsers !== undefined && room.userCount >= room.maxUsers;
+            const isFull =
+              room.maxUsers !== undefined && room.userCount >= room.maxUsers;
 
             return (
               <li key={index} className="room-item">
@@ -188,7 +192,6 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
         <p className="no-rooms-message">No active rooms</p>
       )}
 
-      {/* Lösenordsmodalen */}
       <PasswordModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

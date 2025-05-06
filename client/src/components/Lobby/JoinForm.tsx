@@ -5,41 +5,40 @@ import "./JoinForm.css";
 import { CircleX } from "lucide-react";
 
 interface JoinFormProps {
-    name: string;
-    setName: React.Dispatch<React.SetStateAction<string>>;
+    userId: string;
     onJoinSuccess: (roomName: string, password?: string) => void;
 }
 
-const JoinForm: React.FC<JoinFormProps> = ({ name, onJoinSuccess }) => {
+const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
     const socket = useSocket();
     const [maxUsers, setMaxUsers] = React.useState<number | null>(null);
     const [password, setPassword] = React.useState("");
     const [connected, setConnected] = React.useState(socket.connected);
-    const [isFormVisible, setIsFormVisible] = React.useState(false); // Hantera formulärets synlighet
+    const [isFormVisible, setIsFormVisible] = React.useState(false);
 
     const availableTags = [
-  { name: "Opera pro", color: "#6366f1" },
-  { name: "Quiet room", color: "#10b981" },
-  { name: "Chatting", color: "#f59e0b" },
-  { name: "Beginner", color: "#3b82f6" },
-  { name: "Talk after show", color: "#ef4444" },
-  { name: "Meet new people", color: "#8b5cf6" },
-  { name: "First-timers welcome", color: "#22c55e" },
-  { name: "Discussion-focused", color: "#eab308" },
-  { name: "Silent viewers", color: "#6b7280" },
-  { name: "Casual hangout", color: "#0ea5e9" },
-  { name: "Q&A after", color: "#14b8a6" },
-  { name: "No spoilers", color: "#f97316" },
-  { name: "Late joiners ok", color: "#60a5fa" },
-];
+        { name: "Opera pro", color: "#6366f1" },
+        { name: "Quiet room", color: "#10b981" },
+        { name: "Chatting", color: "#f59e0b" },
+        { name: "Beginner", color: "#3b82f6" },
+        { name: "Talk after show", color: "#ef4444" },
+        { name: "Meet new people", color: "#8b5cf6" },
+        { name: "First-timers welcome", color: "#22c55e" },
+        { name: "Discussion-focused", color: "#eab308" },
+        { name: "Silent viewers", color: "#6b7280" },
+        { name: "Casual hangout", color: "#0ea5e9" },
+        { name: "Q&A after", color: "#14b8a6" },
+        { name: "No spoilers", color: "#f97316" },
+        { name: "Late joiners ok", color: "#60a5fa" },
+    ];
 
     const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
 
     const toggleTag = (tagName: string) => {
-  setSelectedTags((prev) =>
-    prev.includes(tagName) ? prev.filter((t) => t !== tagName) : [...prev, tagName]
-  );
-};
+        setSelectedTags((prev) =>
+            prev.includes(tagName) ? prev.filter((t) => t !== tagName) : [...prev, tagName]
+        );
+    };
 
     React.useEffect(() => {
         const handleConnect = () => setConnected(true);
@@ -61,8 +60,8 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, onJoinSuccess }) => {
             return;
         }
 
-        if (!name.trim()) {
-            toast.error("You must enter a name!");
+        if (!userId) {
+            toast.error("You must be logged in!");
             return;
         }
 
@@ -71,12 +70,11 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, onJoinSuccess }) => {
             return;
         }
 
-        const payload: any = { name, maxUsers, tags: selectedTags };
+        const payload: any = { userId, maxUsers, tags: selectedTags };
         if (password && password.length > 0) payload.password = password;
 
         socket.emit("requestRoom", payload, (response: { success: boolean; roomName?: string }) => {
             if (response.success && response.roomName) {
-                localStorage.setItem("chatName", name);
                 localStorage.setItem("chatRoom", response.roomName);
                 if (password && password.length > 0) {
                     localStorage.setItem("chatRoomPassword", password);
@@ -84,9 +82,8 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, onJoinSuccess }) => {
                     localStorage.removeItem("chatRoomPassword");
                 }
                 onJoinSuccess(response.roomName, password);
-                toast.success("Room created successfully!");
             } else {
-                toast.error("Failed to join or create a room. Please try again.");
+                console.log("Failed to join or create a room. Please try again.");
             }
         });
     };
@@ -97,8 +94,6 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, onJoinSuccess }) => {
 
     return (
         <>
-
-            {/* Knapp för att öppna formuläret */}
             {!isFormVisible && (
                 <button
                     className="toggle-form-button"
@@ -108,11 +103,9 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, onJoinSuccess }) => {
                 </button>
             )}
 
-            {/* Formuläret med animation */}
             <div className={`create-room-container ${isFormVisible ? "open" : ""}`}>
                 {isFormVisible && (
                     <form className="create-room-form" onSubmit={joinRoom}>
-                        {/* "X"-knapp för att stänga formuläret */}
                         <button
                             className="close-form-button"
                             onClick={() => setIsFormVisible(false)}
@@ -122,58 +115,55 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, onJoinSuccess }) => {
                         </button>
 
                         <h3 className="create-room-header">Create a new chatroom</h3>
+
                         <label className="create-room-label">Max amount of users:</label>
                         <input
                             className="create-room-input"
                             type="number"
                             placeholder="Max users (1-30)"
-                            value={maxUsers !== null ? maxUsers : ""}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                setMaxUsers(value === "" ? null : Number(value));
-                            }}
-                            min="1"
+                            value={maxUsers ?? ""}
+                            onChange={(e) => setMaxUsers(parseInt(e.target.value))}
+                            min={1}
                             max={30}
-                            step={1}
                         />
 
-                        <label className="create-room-label">Password:</label>
+                        <label className="create-room-label">Password (optional):</label>
                         <input
                             className="create-room-input"
                             type="password"
-                            placeholder="Password (optional)"
+                            placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
 
-                        <label className="create-room-label">Select tags for chatroom:</label>
+                        <label className="create-room-label">Tags:</label>
                         <div className="create-room-tags">
-                          {availableTags.map((tag) => {
-                            const isSelected = selectedTags.includes(tag.name); // Kontrollera om taggen är vald
-                            return (
-                              <label
-                                key={tag.name}
-                                className="tag-checkbox"
-                                style={{
-                                  backgroundColor: isSelected ? "#fff" : tag.color, // Ändra bakgrundsfärg om vald
-                                  color: isSelected ? tag.color : "#fff", // Ändra textfärg om vald
-                                  border: isSelected ? ` solid 1px ${tag.color}` : "none", // Lägg till kantlinje om vald
-                                }}
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={isSelected}
-                                  onChange={() => toggleTag(tag.name)}
-                                  style={{ display: "none" }} // Dölj checkboxen
-                                />
-                                #{tag.name}
-                              </label>
-                            );
-                          })}
+                            {availableTags.map((tag) => {
+                                const isSelected = selectedTags.includes(tag.name); // Kontrollera om taggen är vald
+                                return (
+                                    <label
+                                        key={tag.name}
+                                        className="tag-checkbox"
+                                        style={{
+                                            backgroundColor: isSelected ? "#fff" : tag.color, // Ändra bakgrundsfärg om vald
+                                            color: isSelected ? tag.color : "#fff", // Ändra textfärg om vald
+                                            border: isSelected ? `1px solid ${tag.color}` : "none", // Lägg till kantlinje om vald
+                                        }}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={isSelected}
+                                            onChange={() => toggleTag(tag.name)}
+                                            style={{ display: "none" }} // Dölj checkboxen
+                                        />
+                                        #{tag.name}
+                                    </label>
+                                );
+                            })}
                         </div>
 
-                        <button className="create-room-button" type="submit">
-                           <span>Create chatroom</span>
+                        <button type="submit" className="create-room-button">
+                            Create Room
                         </button>
                     </form>
                 )}

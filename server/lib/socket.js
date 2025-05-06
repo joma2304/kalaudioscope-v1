@@ -10,6 +10,7 @@ import {
     getUsersInRoom,
     getAllActiveRooms,
 } from "./roomManager.js";
+import User from "../models/user.model.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -23,11 +24,11 @@ const io = new Server(server, {
 });
 
 // Room state
-const roomControllers = {};   // room: socketId
-const roomMaxLimits = {};     // room: number
-const roomPasswords = {};     // room: string
-const roomTags = {};          // room: string[]
-const roomCleanupTimers = {}; // roomName -> timeout
+const roomControllers = {};
+const roomMaxLimits = {};
+const roomPasswords = {};
+const roomTags = {};
+const roomCleanupTimers = {};
 
 const emitRoomList = () => {
     io.emit("roomList", getAllActiveRooms().map((room) => ({
@@ -39,10 +40,25 @@ const emitRoomList = () => {
     })));
 };
 
-io.on("connection", socket => {
+const handleControllerChange = async (room) => {
+    const remainingUsers = getUsersInRoom(room);
+    if (remainingUsers.length > 0) {
+        const newController = remainingUsers[0];
+        newController.isController = true;
+        roomControllers[room] = newController.id;
+        const userDoc = await User.findById(newController.userId).lean();
+        const controllerName = userDoc ? `${userDoc.firstName} ${userDoc.lastName}` : "Unknown User";
+        io.to(room).emit("message", buildMsg(ADMIN, `${controllerName} is now in control.`));
+        io.to(newController.id).emit("youAreNowController");
+    } else {
+        delete roomControllers[room];
+    }
+};
+
+io.on("connection", (socket) => {
     console.log(`User ${socket.id} connected`);
 
-    socket.on("requestRoom", ({ name, maxUsers, password, tags }, callback) => {
+    socket.on("requestRoom", ({ userId, maxUsers, password, tags }, callback) => {
         const existingRooms = getAllActiveRooms();
         let roomName = "0";
         while (existingRooms.includes(roomName)) roomName = (parseInt(roomName) + 1).toString();
@@ -55,148 +71,130 @@ io.on("connection", socket => {
         emitRoomList();
     });
 
-    socket.on("enterRoom", ({ name, room, password }, callback = () => { }) => {
-
-        // Återställ ev. borttagnings-timer om rummet används igen
-        if (roomCleanupTimers[room]) {
-            clearTimeout(roomCleanupTimers[room]);
-            delete roomCleanupTimers[room];
-        }
-
+    socket.on("enterRoom", async ({ userId, room, password }, callback = () => {}) => {
         const currentUsers = getUsersInRoom(room).length;
 
-        if (roomMaxLimits[room] && currentUsers >= roomMaxLimits[room])
+        if (roomMaxLimits[room] && currentUsers >= roomMaxLimits[room]) {
             return callback({ success: false, message: "Room is full." });
+        }
 
-        if (roomPasswords[room] && roomPasswords[room] !== password)
+        if (roomPasswords[room] && roomPasswords[room] !== password) {
             return callback({ success: false, message: "Incorrect password." });
-
-        let user = UsersState.users.find(u => u.name === name && u.room === room);
-        const isNewUser = !user;
-
-        if (!user) user = activateUser(socket.id, name, room);
-        else user.id = socket.id; // uppdatera socket.id om användaren återansluter
-
-        socket.join(user.room);
-
-        // Kontrollerhantering
-        const controllerId = roomControllers[user.room];
-        if (!controllerId || controllerId === socket.id) {
-            roomControllers[user.room] = socket.id;
-            user.isController = true;
-            socket.emit("youAreNowController", user.name);
-        } else {
-            user.isController = false;
         }
 
-        const userState = getUser(socket.id);
-        if (userState) {
-            socket.emit("initialState", {
-                currentTime: userState.videoTime || 0,
-                isPlaying: userState.isPlaying || false,
-                isController: userState.isController || false
-            });
-        }
+        const user = activateUser(socket.id, userId, room);
+        socket.join(room);
 
-        socket.emit("getInitialState");
-        socket.emit("userList", { users: getUsersInRoom(user.room) });
-        io.to(user.room).emit("userList", { users: getUsersInRoom(user.room) });
+        const usersInRoom = getUsersInRoom(room);
+        const users = await Promise.all(
+            usersInRoom.map(async (u) => {
+                const userDoc = await User.findById(u.userId).lean();
+                return {
+                    userId: u.userId,
+                    firstName: userDoc?.firstName || "",
+                    lastName: userDoc?.lastName || ""
+                };
+            })
+        );
+
+        io.to(room).emit("userList", { users });
+
+        const joinedUser = await User.findById(userId).lean();
+        const joinedName = joinedUser ? `${joinedUser.firstName} ${joinedUser.lastName}` : userId;
+        io.to(room).emit("message", await buildMsg(ADMIN, `${joinedName} has joined`));
+
         emitRoomList();
 
-        socket.emit("message", buildMsg(ADMIN, "Welcome to the chat!"));
-
-        if (isNewUser) {
-            socket.broadcast.to(user.room).emit("message", buildMsg(ADMIN, `${user.name} has joined`));
+        if (!roomControllers[room] || roomControllers[room] === socket.id) {
+            roomControllers[room] = socket.id;
+            socket.emit("youAreNowController");
         }
 
-        return callback({ success: true, message: "Joined the room successfully.", users: getUsersInRoom(user.room) });
+        callback({
+            success: true,
+            message: "Joined the room successfully.",
+            users
+        });
     });
 
-
-    socket.on("setRoomLimit", ({ room, maxUsers }, callback) => {
+    socket.on("leaveRoom", async ({ userId, room }) => {
         const user = getUser(socket.id);
-        if (!user || user.room !== room || maxUsers <= 0)
-            return callback({ success: false, message: "Invalid request." });
-
-        roomMaxLimits[room] = maxUsers;
-        callback({ success: true, message: `Max user limit set to ${maxUsers} for room ${room}.` });
-    });
-
-    socket.on("getRoomList", () => socket.emit("roomList", getAllActiveRooms().map(room => ({
-        name: room,
-        userCount: getUsersInRoom(room).length,
-        maxUsers: roomMaxLimits[room] || null,
-        hasPassword: !!roomPasswords[room],
-        tags: roomTags[room] || []
-    }))));
-
-    // När användaren lämnar rummet
-    const handleUserLeave = (socketId, customMessage = null) => {
-        const user = getUser(socketId);
         if (!user) return;
 
-        userLeavesApp(socketId);
-        const room = user.room;
+        userLeavesApp(socket.id);
         socket.leave(room);
 
-        io.to(room).emit("message", buildMsg(ADMIN, customMessage || `${user.name} has left`));
-        io.to(room).emit("userList", { users: getUsersInRoom(room) });
+        const leftUser = await User.findById(userId).lean();
+        const leftName = leftUser ? `${leftUser.firstName} ${leftUser.lastName}` : userId;
+        io.to(room).emit("message", await buildMsg(ADMIN, `${leftName} has left the chat`));
 
-        // Kontrollansvarig omfördelas
-        if (user.isController) {
-            const others = getUsersInRoom(room).filter(u => u.id !== user.id);
-            if (others.length > 0) {
-                const newController = others[0];
-                newController.isController = true;
-                roomControllers[room] = newController.id;
-                io.to(room).emit("message", buildMsg(ADMIN, `${newController.name} is in control.`));
-                io.to(newController.id).emit("youAreNowController", newController.name);
-            } else {
-                delete roomControllers[room];
-            }
-        }
+        const usersInRoom = getUsersInRoom(room);
+        const users = await Promise.all(
+            usersInRoom.map(async (u) => {
+                const userDoc = await User.findById(u.userId).lean();
+                return {
+                    userId: u.userId,
+                    firstName: userDoc?.firstName || "",
+                    lastName: userDoc?.lastName || ""
+                };
+            })
+        );
 
-        const remainingUsers = getUsersInRoom(room);
-        if (remainingUsers.length === 0) {
-            // Starta timer för att ta bort rummet efter 2 minuter
-            if (!roomCleanupTimers[room]) {
-                roomCleanupTimers[room] = setTimeout(() => {
-                    delete roomPasswords[room];
-                    delete roomMaxLimits[room];
-                    delete roomControllers[room];
-                    delete roomTags[room];
-                    delete roomCleanupTimers[room];
-                    emitRoomList();
-                    console.log(`Room ${room} was removed after being empty for 2 minutes.`);
-                }, 2 * 60 * 1000); // 2 minuter
-            }
-        } else {
-            // Om någon är kvar i rummet – avbryt eventuell timer
-            if (roomCleanupTimers[room]) {
-                clearTimeout(roomCleanupTimers[room]);
-                delete roomCleanupTimers[room];
-            }
+        io.to(room).emit("userList", { users });
+
+        if (user.isController) await handleControllerChange(room);
+
+        if (usersInRoom.length === 0) {
+            delete roomPasswords[room];
+            delete roomMaxLimits[room];
         }
 
         emitRoomList();
-    };
+    });
 
+    socket.on("disconnect", async () => {
+        const user = getUser(socket.id);
+        if (!user) return;
 
-    socket.on("leaveRoom", ({ name, room }) => handleUserLeave(socket.id));
+        userLeavesApp(socket.id);
 
-    socket.on("disconnect", () => {
-        handleUserLeave(socket.id);
+        const discUser = await User.findById(user.userId).lean();
+        const discName = discUser ? `${discUser.firstName} ${discUser.lastName}` : user.userId;
+        io.to(user.room).emit("message", await buildMsg(ADMIN, `${discName} has left the chat`));
+
+        const usersInRoom = getUsersInRoom(user.room);
+        const users = await Promise.all(
+            usersInRoom.map(async (u) => {
+                const userDoc = await User.findById(u.userId).lean();
+                return {
+                    userId: u.userId,
+                    firstName: userDoc?.firstName || "",
+                    lastName: userDoc?.lastName || ""
+                };
+            })
+        );
+
+        io.to(user.room).emit("userList", { users });
+
+        if (user.isController) await handleControllerChange(user.room);
+
+        emitRoomList();
         console.log(`User ${socket.id} disconnected`);
     });
 
-    socket.on("message", ({ name, text }) => {
+    socket.on("message", async ({ userId, text }) => {
         const room = getUser(socket.id)?.room;
-        if (room) io.to(room).emit("message", buildMsg(name, text));
+        if (room) {
+            const msg = await buildMsg(userId, text);
+            io.to(room).emit("message", msg);
+        }
     });
 
-    socket.on("activity", (name) => {
+    socket.on("activity", (userId) => {
         const room = getUser(socket.id)?.room;
-        if (room) socket.broadcast.to(room).emit("activity", name);
+        if (room) {
+            socket.broadcast.to(room).emit("activity", userId);
+        }
     });
 
     socket.on("syncTime", (time) => {

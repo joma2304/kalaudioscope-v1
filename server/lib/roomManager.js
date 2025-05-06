@@ -6,25 +6,42 @@ const UsersState = {
     }
 };
 
-// Funktion för att skapa ett meddelande 
-function buildMsg(name, text) {
+//Funktion för att skapa ett meddelande 
+async function buildMsg(userId, text) {
+    if (userId === "Admin") {
+        return {
+            userId,
+            firstName: "Admin",
+            lastName: "",
+            text: text || "System message", // Fallback för text
+            time: new Intl.DateTimeFormat('default', {
+                hour: 'numeric',
+                minute: 'numeric',
+                hourCycle: 'h23' // Använd 24-timmarsformat
+            }).format(new Date())
+        };
+    }
+    // Hämta namn från databasen
+    const user = await User.findById(userId).lean();
     return {
-        name,
+        userId,
+        firstName: user?.firstName || "",
+        lastName: user?.lastName || "",
         text,
         time: new Intl.DateTimeFormat('default', {
             hour: 'numeric',
             minute: 'numeric',
-            hourCycle: 'h23'
+            hourCycle: 'h23' // Använd 24-timmarsformat
         }).format(new Date())
     };
 }
 
-function activateUser(id, name, room) {
+function activateUser(id, userId, room) {
     const existingController = UsersState.users.find(user => user.room === room && user.isController);
 
     const user = {
-        id,
-        name,
+        id, // socket.id
+        userId, // Använd userId istället för name
         room,
         isController: !existingController
     };
@@ -34,7 +51,7 @@ function activateUser(id, name, room) {
         user,
     ]);
 
-    console.log(UsersState.users);  // Lägg till för att debugga användarlistan
+    console.log(UsersState.users);  // Debugga användarlistan
 
     return user;
 }
@@ -65,7 +82,11 @@ function getUser(id) {
 }
 
 const getUsersInRoom = (room) => {
-    return UsersState.users.filter(user => user.room === room);
+    return UsersState.users.filter(user => user.room === room).map(user => ({
+        id: user.id, // Lägg till socket.id
+        userId: user.userId, // Returnera userId istället för name
+        isController: user.isController
+    }));
 };
 
 function getAllActiveRooms() {
