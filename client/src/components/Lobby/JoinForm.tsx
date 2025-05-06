@@ -59,7 +59,6 @@ const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
     e.preventDefault();
     if (!connected) return;
 
-    // userId kommer från props, men säkerställ att det finns
     if (!userId) {
       toast.error("You must be logged in!");
       return;
@@ -76,6 +75,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
         } else {
           localStorage.removeItem("chatRoomPassword");
         }
+        // Viktigt: anropa onJoinSuccess, som i App.tsx anropar handleJoinRoom!
         onJoinSuccess(response.roomName, password);
       } else {
         setError("Failed to join or create a room. Please try again.");

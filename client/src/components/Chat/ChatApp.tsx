@@ -38,10 +38,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
     const [users, setUsers] = useState<User[]>([]);
     const [activity, setActivity] = useState("");
     const [isTyping, setIsTyping] = useState(false);
-    const [showChat, setShowChat] = useState(false);
-    const [showHeader, setShowHeader] = useState(true);
-    const [lastLeftTime, setLastLeftTime] = useState<number | null>(null);
-    const [hasLeft, setHasLeft] = useState(false);
     const [error, setError] = useState("");
     const [displayChat, setDisplayChat] = useState(true);
 
@@ -61,8 +57,12 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
                 setActivity("");
                 return;
             }
-            const user = users.find(u => u.userId === userId);
-            setActivity(user ? `${user.firstName} ${user.lastName} skriver...` : "Någon skriver...");
+            // Hämta users från senaste state
+            setUsers(prevUsers => {
+                const user = prevUsers.find(u => u.userId === userId);
+                setActivity(user ? `${user.firstName} ${user.lastName} skriver...` : "Någon skriver...");
+                return prevUsers;
+            });
         };
 
         socket.on("message", handleMessage);
@@ -74,34 +74,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
             socket.off("userList", handleUserList);
             socket.off("activity", handleActivity);
         };
-    }, [socket, users]);
-
-    // Join rummet EFTER att listeners är uppe
-    useEffect(() => {
-        if (userId && room) {
-            setShowChat(false);
-            setShowHeader(true);
-            socket.emit(
-                "enterRoom",
-                { userId, room, password },
-                (response: { success: boolean; message?: string; users?: User[] }) => {
-                    if (response?.success) {
-                        setShowChat(true);
-                        setShowHeader(false);
-                        if (response.users) {
-                            setUsers(response.users);
-                        }
-                    } else {
-                        setError(response?.message || "Failed to join room.");
-                    }
-                }
-            );
-
-            if (lastLeftTime && Date.now() - lastLeftTime < 60000) {
-                setHasLeft(false);
-            }
-        }
-    }, [socket, userId, room, password, lastLeftTime]);
+    }, [socket]);
 
     // Hantera scrollning av chattfönstret
     const chatRef = useRef<HTMLDivElement>(null);
@@ -134,11 +107,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
         setMessages([]);
         setUsers([]);
         setActivity("");
-        setShowChat(false);
-        setShowHeader(true);
-
-        setLastLeftTime(Date.now());
-        setHasLeft(true);
 
         onLeave();
     };
@@ -165,39 +133,31 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
         <>
             <div>
                 <div className="toggle-chat-container">
-                    {showChat && (
-                        <button onClick={() => setDisplayChat(!displayChat)} className="toggle-chat">
-                            {displayChat ? (
-                                <> <CircleX />Hide Chat</>
-                            ) : (
-                                <><MessageSquareIcon />Show Chat</>
-                            )}
-                        </button>
-                    )}
+                    <button onClick={() => setDisplayChat(!displayChat)} className="toggle-chat">
+                        {displayChat ? (
+                            <> <CircleX />Hide Chat</>
+                        ) : (
+                            <><MessageSquareIcon />Show Chat</>
+                        )}
+                    </button>
                 </div>
             </div>
 
             {displayChat && (
                 <div>
-                    {!showChat && <p>Connecting to Room...</p>}
-
-                    {showChat && (
-                        <>
-                            <div className="chat-container" >
-                                <MessageList messages={messages} userId={userId} chatRef={chatRef} roomId={room} />
-                                <ActivityIndicator activity={activity} />
-                                <MessageForm
-                                    message={message}
-                                    setMessage={setMessage}
-                                    sendMessage={sendMessage}
-                                    handleTyping={handleTyping}
-                                />
-                                <UserList users={users} />
-                                <LeaveChatButton leaveChat={leaveChat} />
-                                <CopyInviteLinkButton room={room} password={password}/>
-                            </div>
-                        </>
-                    )}
+                    <div className="chat-container" >
+                        <MessageList messages={messages} userId={userId} chatRef={chatRef} roomId={room} />
+                        <ActivityIndicator activity={activity} />
+                        <MessageForm
+                            message={message}
+                            setMessage={setMessage}
+                            sendMessage={sendMessage}
+                            handleTyping={handleTyping}
+                        />
+                        <UserList users={users} />
+                        <LeaveChatButton leaveChat={leaveChat} />
+                        <CopyInviteLinkButton room={room} password={password}/>
+                    </div>
                 </div>
             )}
         </>

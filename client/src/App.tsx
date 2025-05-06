@@ -27,13 +27,14 @@ const getUserId = () => {
     }
 };
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
     const [currentRoom, setCurrentRoom] = useState<string | null>(null);
     const [videoExists, setVideoExists] = useState(false);
     const [roomPassword, setRoomPassword] = useState<string | undefined>();
     const [pendingRoom, setPendingRoom] = useState<string | null>(null);
     const [userId, setUserId] = useState(getUserId());
     const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("authUser"));
+    const [isJoined, setIsJoined] = useState(false);
     const socket = useSocket();
 
     const [searchParams, setSearchParams] = useSearchParams();
@@ -114,6 +115,7 @@ const App: React.FC = () => {
         socket.emit("enterRoom", { userId, room: roomName, password }, (response: { success: boolean; message?: string }) => {
             if (response.success) {
                 setCurrentRoom(roomName);
+                setIsJoined(true);
                 if (password) {
                     setRoomPassword(password);
                     localStorage.setItem("chatRoomPassword", password);
@@ -133,60 +135,55 @@ const App: React.FC = () => {
 
     // När man skapar ett nytt rum (från JoinForm)
     const handleJoinSuccess = (roomName: string, password?: string) => {
-        setCurrentRoom(roomName);
-        if (password) {
-            setRoomPassword(password);
-            localStorage.setItem("chatRoomPassword", password);
-        } else {
-            setRoomPassword(undefined);
-            localStorage.removeItem("chatRoomPassword");
-        }
-        localStorage.setItem("chatRoom", roomName);
+        // Gör INTE setCurrentRoom eller setIsJoined här!
+        handleJoinRoom(roomName, password);
     };
-
-
 
     const handleLogout = () => {
         setCurrentRoom(null);
         setRoomPassword(undefined);
+        setIsJoined(false);
         localStorage.removeItem("chatRoomPassword");
         localStorage.removeItem("chatRoom");
-
     };
 
     return (
-        <UserProvider>
-            <SocketProvider>
+        <>
+            <Header setIsLoggedIn={setIsLoggedIn} setUserId={setUserId} />
+            <Toaster />
+            {currentRoom && isJoined ? (
                 <>
-                    <Header setIsLoggedIn={setIsLoggedIn} setUserId={setUserId} />
-                    <Toaster />
-                    {currentRoom ? (
-                        <>
-                            <DraggableWrapper>
-                                <ChatApp
-                                    onLeave={handleLogout}
-                                    userId={userId}
-                                    room={currentRoom}
-                                    password={roomPassword}
-                                />
-                            </DraggableWrapper>
-                            {videoExists && <StreamViewer sources={testStreams} />}
-                        </>
-                    ) : (
-                        isLoggedIn && (
-                            <div className="lobby-view">
-                                <JoinForm
-                                    userId={userId}
-                                    onJoinSuccess={handleJoinSuccess}
-                                />
-                                <RoomList onJoinRoom={handleJoinRoom} userId={userId} />
-                            </div>
-                        )
-                    )}
+                    <DraggableWrapper>
+                        <ChatApp
+                            onLeave={handleLogout}
+                            userId={userId}
+                            room={currentRoom}
+                            password={roomPassword}
+                        />
+                    </DraggableWrapper>
+                    {videoExists && <StreamViewer sources={testStreams} />}
                 </>
-            </SocketProvider>
-        </UserProvider>
+            ) : (
+                isLoggedIn && (
+                    <div className="lobby-view">
+                        <JoinForm
+                            userId={userId}
+                            onJoinSuccess={handleJoinSuccess}
+                        />
+                        <RoomList onJoinRoom={handleJoinRoom} userId={userId} />
+                    </div>
+                )
+            )}
+        </>
     );
 };
+
+const App: React.FC = () => (
+    <UserProvider>
+        <SocketProvider>
+            <AppContent />
+        </SocketProvider>
+    </UserProvider>
+);
 
 export default App;
