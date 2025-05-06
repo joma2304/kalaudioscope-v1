@@ -7,6 +7,7 @@ import { server, app } from "./lib/socket.js";
 import cors from 'cors'
 
 import messageRoutes from './routes/messages.route.js';
+import userRoutes from './routes/user.route.js';
 
 
 dotenv.config();
@@ -29,6 +30,7 @@ app.use(
 );
 
 app.use("/api", messageRoutes);
+app.use("/api", userRoutes)
 
 server.listen(PORT, () => {
     console.log('Server is running on PORT:' + PORT);

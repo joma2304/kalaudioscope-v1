@@ -1,0 +1,26 @@
+.copy-invite-wrapper {
+    text-align: center;
+    margin-top: 0.7em;
+  }
+  
+  .create-room-btn {
+    background-color: #4f46e5; /* Indigo-600 */
+    color: white;
+    border: none;
+    padding: 0.6em 1.2em;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
+  }
+  
+  .create-room-btn:hover {
+    background-color: #4338ca; /* Indigo-700 */
+  }
+  
+  .copy-icon {
+    margin-right: 6px;
+    margin-bottom: -2px;
+  }
