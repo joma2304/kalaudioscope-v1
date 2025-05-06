@@ -1,3 +1,5 @@
+import User from "../models/user.model.js"; //
+
 // state för att hantera användare
 const UsersState = {
     users: [],

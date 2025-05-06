@@ -2,7 +2,6 @@ import { Server } from "socket.io";
 import http from "http";
 import express from "express";
 import {
-    UsersState,
     buildMsg,
     activateUser,
     userLeavesApp,
@@ -28,7 +27,6 @@ const roomControllers = {};
 const roomMaxLimits = {};
 const roomPasswords = {};
 const roomTags = {};
-const roomCleanupTimers = {};
 
 const emitRoomList = () => {
     io.emit("roomList", getAllActiveRooms().map((room) => ({
@@ -58,7 +56,7 @@ const handleControllerChange = async (room) => {
 io.on("connection", (socket) => {
     console.log(`User ${socket.id} connected`);
 
-    socket.on("requestRoom", ({ userId, maxUsers, password, tags }, callback) => {
+    socket.on("requestRoom", ({ maxUsers, password, tags }, callback) => {
         const existingRooms = getAllActiveRooms();
         let roomName = "0";
         while (existingRooms.includes(roomName)) roomName = (parseInt(roomName) + 1).toString();
@@ -82,7 +80,7 @@ io.on("connection", (socket) => {
             return callback({ success: false, message: "Incorrect password." });
         }
 
-        const user = activateUser(socket.id, userId, room);
+        activateUser(socket.id, userId, room);
         socket.join(room);
 
         const usersInRoom = getUsersInRoom(room);
