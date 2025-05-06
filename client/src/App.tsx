@@ -151,9 +151,6 @@ const App: React.FC = () => {
         setRoomPassword(undefined);
         localStorage.removeItem("chatRoomPassword");
         localStorage.removeItem("chatRoom");
-        localStorage.removeItem("authUser");
-        setIsLoggedIn(false);
-        setUserId("");
     };
 
     return (
