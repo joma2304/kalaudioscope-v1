@@ -10,6 +10,7 @@ import {
     getUsersInRoom,
     getAllActiveRooms,
 } from "./roomManager.js";
+import User from "../models/user.model.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -37,13 +38,13 @@ function emitRoomList() {
     })));
 }
 
-function handleControllerChange(room) {
+async function handleControllerChange(room) {
     const remainingUsers = getUsersInRoom(room);
     if (remainingUsers.length > 0) {
         const newController = remainingUsers[0];
         newController.isController = true;
         roomControllers[room] = newController.id;
-        io.to(room).emit('message', buildMsg(ADMIN, `${newController.name} is now in control.`));
+        io.to(room).emit('message', await buildMsg(ADMIN, `${newController.name} is now in control.`));
         io.to(newController.id).emit('youAreNowController');
     } else {
         delete roomControllers[room];
@@ -72,7 +73,7 @@ io.on('connection', socket => {
         emitRoomList();
     });
 
-    socket.on('enterRoom', ({ userId, room, password }, callback = () => {}) => {
+    socket.on('enterRoom', async ({ userId, room, password }, callback = () => {}) => {
         const currentUsers = getUsersInRoom(room).length;
         const maxUsers = roomMaxLimits[room];
 
@@ -95,10 +96,21 @@ io.on('connection', socket => {
 
         const user = activateUser(socket.id, userId, room);
         socket.join(room);
-        const users = getUsersInRoom(room);
-
+        const usersInRoom = getUsersInRoom(room);
+        const users = await Promise.all(
+            usersInRoom.map(async u => {
+                const user = await User.findById(u.userId).lean();
+                return {
+                    userId: u.userId,
+                    firstName: user?.firstName || "",
+                    lastName: user?.lastName || ""
+                };
+            })
+        );
         io.to(room).emit('userList', { users });
-        io.to(room).emit('message', buildMsg(ADMIN, `${userId} has joined`));
+        const joinedUser = await User.findById(userId).lean();
+        const joinedName = joinedUser ? `${joinedUser.firstName} ${joinedUser.lastName}` : userId;
+        io.to(room).emit('message', await buildMsg(ADMIN, `${joinedName} has joined`));
         emitRoomList();
 
         if (!roomControllers[room] || roomControllers[room] === socket.id) {
@@ -137,16 +149,31 @@ io.on('connection', socket => {
         emitRoomList();
     });
 
-    socket.on('leaveRoom', ({ userId, room }) => {
+    socket.on('leaveRoom', async ({ userId, room }) => {
         const user = getUser(socket.id);
         if (!user) return;
 
         userLeavesApp(socket.id);
         socket.leave(room);
-        io.to(room).emit('message', buildMsg(ADMIN, `${userId} has left`));
-        io.to(room).emit('userList', { users: getUsersInRoom(room) });
+        const leftUser = await User.findById(userId).lean();
+        const leftName = leftUser ? `${leftUser.firstName} ${leftUser.lastName}` : userId;
+        io.to(room).emit('message', await buildMsg(ADMIN, `${leftName} has left the chat`));
 
-        if (user.isController) handleControllerChange(room);
+        // Hämta namn till alla kvarvarande användare:
+        const usersInRoom = getUsersInRoom(room);
+        const users = await Promise.all(
+            usersInRoom.map(async u => {
+                const userDoc = await User.findById(u.userId).lean();
+                return {
+                    userId: u.userId,
+                    firstName: userDoc?.firstName || "",
+                    lastName: userDoc?.lastName || ""
+                };
+            })
+        );
+        io.to(room).emit('userList', { users });
+
+        if (user.isController) await handleControllerChange(room);
         if (getUsersInRoom(room).length === 0) {
             delete roomPasswords[room];
             delete roomMaxLimits[room];
@@ -155,24 +182,40 @@ io.on('connection', socket => {
         emitRoomList();
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
         const user = getUser(socket.id);
         if (!user) return;
 
         userLeavesApp(socket.id);
-        io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has left`));
-        io.to(user.room).emit('userList', { users: getUsersInRoom(user.room) });
+        const discUser = await User.findById(user.userId).lean();
+        const discName = discUser ? `${discUser.firstName} ${discUser.lastName}` : user.name;
+        io.to(user.room).emit('message', await buildMsg(ADMIN, `${discName} has left the chat`));
 
-        if (user.isController) handleControllerChange(user.room);
+        // Hämta namn till alla kvarvarande användare:
+        const usersInRoom = getUsersInRoom(user.room);
+        const users = await Promise.all(
+            usersInRoom.map(async u => {
+                const userDoc = await User.findById(u.userId).lean();
+                return {
+                    userId: u.userId,
+                    firstName: userDoc?.firstName || "",
+                    lastName: userDoc?.lastName || ""
+                };
+            })
+        );
+        io.to(user.room).emit('userList', { users });
+
+        if (user.isController) await handleControllerChange(user.room);
         emitRoomList();
 
         console.log(`User ${socket.id} disconnected`);
     });
 
-    socket.on('message', ({ userId, text }) => {
+    socket.on('message', async ({ userId, text }) => {
         const room = getUser(socket.id)?.room;
         if (room) {
-            io.to(room).emit('message', buildMsg(userId, text));
+            const msg = await buildMsg(userId, text);
+            io.to(room).emit('message', msg);
         }
     });
 

@@ -1,3 +1,5 @@
+import User from "../models/user.model.js"; // Lägg till denna import
+
 // state för att hantera användare
 const UsersState = {
     users: [],
@@ -7,16 +9,33 @@ const UsersState = {
 }
 
 //Funktion för att skapa ett meddelande 
-function buildMsg(userId, text) {
+async function buildMsg(userId, text) {
+    if (userId === "Admin") {
+        return {
+            userId,
+            firstName: "Admin",
+            lastName: "",
+            text,
+            time: new Intl.DateTimeFormat('default', {
+                hour: 'numeric',
+                minute: 'numeric',
+                hourCycle: 'h23' // Använd 24-timmarsformat
+            }).format(new Date())
+        };
+    }
+    // Hämta namn från databasen
+    const user = await User.findById(userId).lean();
     return {
         userId,
+        firstName: user?.firstName || "",
+        lastName: user?.lastName || "",
         text,
         time: new Intl.DateTimeFormat('default', {
             hour: 'numeric',
             minute: 'numeric',
             hourCycle: 'h23' // Använd 24-timmarsformat
         }).format(new Date())
-    }
+    };
 }
 
 // Funktion för att aktivera en användare
