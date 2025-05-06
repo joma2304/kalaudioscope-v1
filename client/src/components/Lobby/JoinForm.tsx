@@ -4,8 +4,7 @@ import "./JoinForm.css";
 import toast from 'react-hot-toast';
 
 interface JoinFormProps {
-  name: string;
-  setName: React.Dispatch<React.SetStateAction<string>>;
+  userId: string;
   onJoinSuccess: (roomName: string, password?: string) => void;
 }
 
@@ -17,7 +16,7 @@ const TAG_OPTIONS = [
   "Strangers Welcome"
 ];
 
-const JoinForm: React.FC<JoinFormProps> = ({ name, onJoinSuccess }) => {
+const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
   const [error, setError] = useState("");
   const socket = useSocket();
   const [maxUsers, setMaxUsers] = useState<number>(6);
@@ -60,17 +59,17 @@ const JoinForm: React.FC<JoinFormProps> = ({ name, onJoinSuccess }) => {
     e.preventDefault();
     if (!connected) return;
 
-    if (!name.trim()) {
-      toast.error("You must enter your name!");
+    // userId kommer från props, men säkerställ att det finns
+    if (!userId) {
+      toast.error("You must be logged in!");
       return;
     }
 
-    const payload: any = { name, maxUsers, tags: selectedTags };
+    const payload: any = { userId, maxUsers, tags: selectedTags };
     if (password && password.length > 0) payload.password = password;
 
     socket.emit("requestRoom", payload, (response: { success: boolean; roomName?: string }) => {
       if (response.success && response.roomName) {
-        localStorage.setItem("chatName", name);
         localStorage.setItem("chatRoom", response.roomName);
         if (password && password.length > 0) {
           localStorage.setItem("chatRoomPassword", password);

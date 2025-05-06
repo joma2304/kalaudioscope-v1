@@ -3,8 +3,9 @@ import "./MessageHistory.css"
 
 const MessageHistory = ({ roomId }: { roomId: string }) => {
     const [messages, setMessages] = useState<any[]>([]);
-    const name = localStorage.getItem("chatName") || "Guest"; // Sätt en fallback till "Guest"
-
+    // Hämta userId från authUser i localStorage
+    const authUser = localStorage.getItem("authUser");
+    const userId = authUser ? JSON.parse(authUser).userId : "Guest";
 
     useEffect(() => {
         // Hämtar meddelanden för chattrummet
@@ -34,17 +35,19 @@ const MessageHistory = ({ roomId }: { roomId: string }) => {
         <div>
             <div className="chat-history">
                 {messages.map((message, index) => (
-                    <div key={index} className={`message ${message.senderName === name ? "message--self" : "message--other"}`}
+                    <div
+                        key={index}
+                        className={`message ${message.senderId === userId ? "message--self" : "message--other"}`}
                     >
-                        <strong>{message.senderName} </strong>
+                        <strong>{message.senderId}</strong>
                         <hr />
                         <p>{message.text}</p>
                         <small>{formatTime(message.createdAt)}</small>
                     </div>
                 ))}
-                {messages.length > 0 && 
-                <p className="chat-history-title">Scroll up for chat history</p>
-}
+                {messages.length > 0 &&
+                    <p className="chat-history-title">Scroll up for chat history</p>
+                }
             </div>
         </div>
     );

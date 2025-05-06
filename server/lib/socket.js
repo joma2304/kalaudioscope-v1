@@ -53,7 +53,7 @@ function handleControllerChange(room) {
 io.on('connection', socket => {
     console.log(`User ${socket.id} connected`);
 
-    socket.on("requestRoom", ({ name, maxUsers, password, tags }, callback) => {
+    socket.on("requestRoom", ({ userId, maxUsers, password, tags }, callback) => {
         const existingRooms = getAllActiveRooms();
         let roomName = "0";
         while (existingRooms.includes(roomName)) {
@@ -72,7 +72,7 @@ io.on('connection', socket => {
         emitRoomList();
     });
 
-    socket.on('enterRoom', ({ name, room, password }, callback = () => {}) => {
+    socket.on('enterRoom', ({ userId, room, password }, callback = () => {}) => {
         const currentUsers = getUsersInRoom(room).length;
         const maxUsers = roomMaxLimits[room];
 
@@ -83,7 +83,7 @@ io.on('connection', socket => {
             return callback({ success: false, message: "Incorrect password." });
         }
 
-        const existingUser = UsersState.users.find(u => u.name === name && u.room === room);
+        const existingUser = UsersState.users.find(u => u.name === userId && u.room === room);
         if (existingUser) {
             socket.join(room);
             return callback({
@@ -93,12 +93,12 @@ io.on('connection', socket => {
             });
         }
 
-        const user = activateUser(socket.id, name, room);
+        const user = activateUser(socket.id, userId, room);
         socket.join(room);
         const users = getUsersInRoom(room);
 
         io.to(room).emit('userList', { users });
-        io.to(room).emit('message', buildMsg(ADMIN, `${name} has joined`));
+        io.to(room).emit('message', buildMsg(ADMIN, `${userId} has joined`));
         emitRoomList();
 
         if (!roomControllers[room] || roomControllers[room] === socket.id) {
@@ -137,13 +137,13 @@ io.on('connection', socket => {
         emitRoomList();
     });
 
-    socket.on('leaveRoom', ({ name, room }) => {
+    socket.on('leaveRoom', ({ userId, room }) => {
         const user = getUser(socket.id);
         if (!user) return;
 
         userLeavesApp(socket.id);
         socket.leave(room);
-        io.to(room).emit('message', buildMsg(ADMIN, `${name} has left`));
+        io.to(room).emit('message', buildMsg(ADMIN, `${userId} has left`));
         io.to(room).emit('userList', { users: getUsersInRoom(room) });
 
         if (user.isController) handleControllerChange(room);
@@ -169,17 +169,17 @@ io.on('connection', socket => {
         console.log(`User ${socket.id} disconnected`);
     });
 
-    socket.on('message', ({ name, text }) => {
+    socket.on('message', ({ userId, text }) => {
         const room = getUser(socket.id)?.room;
         if (room) {
-            io.to(room).emit('message', buildMsg(name, text));
+            io.to(room).emit('message', buildMsg(userId, text));
         }
     });
 
-    socket.on('activity', name => {
+    socket.on('activity', userId => {
         const room = getUser(socket.id)?.room;
         if (room) {
-            socket.broadcast.to(room).emit('activity', name);
+            socket.broadcast.to(room).emit('activity', userId);
         }
     });
 

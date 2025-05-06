@@ -7,9 +7,9 @@ const UsersState = {
 }
 
 //Funktion för att skapa ett meddelande 
-function buildMsg(name, text) {
+function buildMsg(userId, text) {
     return {
-        name,
+        userId,
         text,
         time: new Intl.DateTimeFormat('default', {
             hour: 'numeric',
@@ -20,8 +20,8 @@ function buildMsg(name, text) {
 }
 
 // Funktion för att aktivera en användare
-function activateUser(id, name, room) {
-    const user = { id, name, room };
+function activateUser(id, userId, room) {
+    const user = { id, userId, room };
     UsersState.setUsers([
         ...UsersState.users.filter((user) => user.id !== id),
         user,

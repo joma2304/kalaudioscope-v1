@@ -1,15 +1,15 @@
 export const sendMessageToServer = async ({
-    name,
+    userId,
     text,
     socket,
 }: {
-    name: string;
+    userId: string;
     text: string;
     socket: any;
 }) => {
-    if (!name || !text) return;
+    if (!userId || !text) return;
 
-    socket.emit("message", { name, text });
+    socket.emit("message", { userId, text });
 
     try {
         const res = await fetch("http://localhost:3500/api/send", {
@@ -18,7 +18,7 @@ export const sendMessageToServer = async ({
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                name,
+                userId,
                 text,
                 roomId: localStorage.getItem("chatRoom"),
             }),

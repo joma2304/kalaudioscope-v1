@@ -19,7 +19,9 @@ const MessageForm: React.FC<MessageFormProps> = ({ message, setMessage, sendMess
                 onKeyDown={handleTyping}
                 required
             />
-            <button className="send-button" type="submit"><SendHorizonal size={18} /> <span>Send</span></button>
+            <button className="send-button" type="submit">
+                <SendHorizonal size={18} /> <span>Send</span>
+            </button>
         </form>
     );
 };

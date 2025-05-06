@@ -11,19 +11,19 @@ import { sendMessageToServer } from "../../utils/SendMessageToServer";
 import CopyInviteLinkButton from "./ChatContainer/CopyInviteLinkButton";
 
 interface Message {
-    name: string;
+    userId: string;
     text: string;
     time: string;
 }
 
 interface ChatAppProps {
     onLeave: () => void;
-    name: string;
+    userId: string;
     room: string;
-    password?: string; // Lägg till denna
+    password?: string;
 }
 
-const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
+const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) => {
     const socket = useSocket();
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
@@ -39,48 +39,49 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
 
     // Sätt alltid upp listeners först!
     useEffect(() => {
-        const handleMessage = (data: Message) => {
-            setMessages((prev) => [...prev, data]);
+        const handleMessage = (data: { userId: string; text: string; time: string }) => {
+            const formattedMessage: Message = {
+                userId: data.userId,
+                text: data.text,
+                time: data.time,
+            };
+            setMessages((prev) => [...prev, formattedMessage]);
             setActivity("");
         };
 
-        const handleUserList = ({ users }: { users: { name: string }[] }) => {
-            console.log("userList received:", users);
-            setUsers(users.map((user) => user.name));
+        const handleUserList = ({ users }: { users: { userId: string }[] }) => {
+            setUsers(users.map((user) => user.userId));
         };
 
-        const handleActivity = (name: string | null) => {
-            setActivity(name ? `${name} skriver...` : "");
+        const handleActivity = (userId: string | null) => {
+            setActivity(userId ? `${userId} skriver...` : "");
         };
 
         socket.on("message", handleMessage);
         socket.on("userList", handleUserList);
         socket.on("activity", handleActivity);
 
-        console.log("Listeners set up for userList, message, activity");
-
         return () => {
             socket.off("message", handleMessage);
             socket.off("userList", handleUserList);
             socket.off("activity", handleActivity);
-            console.log("Listeners cleaned up");
         };
     }, [socket]);
 
     // Join rummet EFTER att listeners är uppe
     useEffect(() => {
-        if (name && room) {
+        if (userId && room) {
             setShowChat(false);
             setShowHeader(true);
             socket.emit(
                 "enterRoom",
-                { name, room, password },
-                (response: { success: boolean; message?: string; users?: { name: string }[] }) => {
+                { userId, room, password },
+                (response: { success: boolean; message?: string; users?: { userId: string }[] }) => {
                     if (response?.success) {
                         setShowChat(true);
                         setShowHeader(false);
                         if (response.users) {
-                            setUsers(response.users.map(u => u.name));
+                            setUsers(response.users.map(u => u.userId));
                         }
                     } else {
                         setError(response?.message || "Failed to join room.");
@@ -92,7 +93,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
                 setHasLeft(false);
             }
         }
-    }, [socket, name, room, password]);
+    }, [socket, userId, room, password]);
 
     // Hantera scrollning av chattfönstret
     const chatRef = useRef<HTMLDivElement>(null);
@@ -104,9 +105,9 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
 
     const sendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (message.trim() && name) {
+        if (message.trim() && userId) {
             await sendMessageToServer({
-                name,
+                userId,
                 text: message,
                 socket,
             });
@@ -120,7 +121,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
             return;
         }
 
-        socket.emit("leaveRoom", { name, room });
+        socket.emit("leaveRoom", { userId, room });
 
         setMessages([]);
         setUsers([]);
@@ -137,7 +138,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const handleTyping = () => {
         if (!isTyping) {
-            socket.emit("activity", name);
+            socket.emit("activity", userId);
             setIsTyping(true);
         }
 
@@ -175,7 +176,7 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, name, room, password }) => {
                     {showChat && (
                         <>
                             <div className="chat-container" >
-                                <MessageList messages={messages} name={name} chatRef={chatRef} roomId={room} />
+                                <MessageList messages={messages} userId={userId} chatRef={chatRef} roomId={room} />
                                 <ActivityIndicator activity={activity} />
                                 <MessageForm
                                     message={message}

@@ -18,10 +18,10 @@ interface RoomListProps {
     password?: string,
     callback?: (result: { success: boolean; message?: string }) => void
   ) => void;
-  name: string;
+  userId: string;
 }
 
-const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
+const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
   const socket = useSocket();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [connected, setConnected] = useState(socket.connected);
@@ -61,8 +61,8 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, name }) => {
   }, [socket, connected]);
 
   const handleJoin = (room: Room) => {
-    if (!name.trim()) {
-      toast.error("You must enter your name!");
+    if (!userId) {
+      toast.error("You must be logged in!");
       return;
     }
     if (!connected) return;
