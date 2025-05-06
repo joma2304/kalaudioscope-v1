@@ -34,9 +34,6 @@ const AppContent: React.FC = () => {
     const [pendingRoom, setPendingRoom] = useState<string | null>(null);
     const [userId, setUserId] = useState(getUserId());
     const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("authUser"));
-    const [isJoined, setIsJoined] = useState(false);
-    const socket = useSocket();
-
     const [searchParams, setSearchParams] = useSearchParams();
 
     // Uppdatera isLoggedIn och userId när authUser ändras (t.ex. i annan flik)
@@ -46,7 +43,6 @@ const AppContent: React.FC = () => {
             setIsLoggedIn(!!authUser);
             setUserId(authUser ? JSON.parse(authUser).userId : "");
         };
-
         window.addEventListener("storage", checkAuth);
         return () => window.removeEventListener("storage", checkAuth);
     }, []);
@@ -61,17 +57,17 @@ const AppContent: React.FC = () => {
         }
     }, [searchParams]);
 
-    // När pendingRoom finns och userId är satt, joina automatiskt
+    // När pendingRoom finns och userId är satt, gå till rummet automatiskt
     useEffect(() => {
         if (userId && pendingRoom) {
-            handleJoinRoom(pendingRoom, roomPassword);
+            setCurrentRoom(pendingRoom);
             setPendingRoom(null);
             // Ta bort room och password från URL
             searchParams.delete("room");
             searchParams.delete("password");
             setSearchParams(searchParams, { replace: true });
         }
-    }, [userId, pendingRoom, roomPassword, searchParams, setSearchParams]);
+    }, [userId, pendingRoom, searchParams, setSearchParams]);
 
     useEffect(() => {
         const storedRoom = localStorage.getItem("chatRoom");
@@ -89,60 +85,29 @@ const AppContent: React.FC = () => {
         const checkVideoFile = async () => {
             try {
                 const response = await fetch("/videos/angle1.mp4");
-                if (response.ok && response.headers.get("content-type") !== "text/html") {
-                    setVideoExists(true);
-                } else {
-                    setVideoExists(false);
-                }
-            } catch (error) {
+                setVideoExists(response.ok && response.headers.get("content-type") !== "text/html");
+            } catch {
                 setVideoExists(false);
             }
         };
-
         checkVideoFile();
     }, [userId]);
 
-    // När man joinar ett befintligt rum (från RoomList)
-    const handleJoinRoom = (
-        roomName: string,
-        password?: string,
-        callback?: (result: { success: boolean; message?: string }) => void
-    ) => {
-        if (!userId) {
-            toast.error("You must be logged in!");
-            return;
-        }
-        socket.emit("enterRoom", { userId, room: roomName, password }, (response: { success: boolean; message?: string }) => {
-            if (response.success) {
-                setCurrentRoom(roomName);
-                setIsJoined(true);
-                if (password) {
-                    setRoomPassword(password);
-                    localStorage.setItem("chatRoomPassword", password);
-                } else {
-                    setRoomPassword(undefined);
-                    localStorage.removeItem("chatRoomPassword");
-                }
-                localStorage.setItem("chatRoom", roomName);
-
-                toast.success("Successfully joined the room!");
-            } else {
-                toast.error(response.message || "Failed to join the room.");
-            }
-            if (callback) callback(response);
-        });
-    };
-
     // När man skapar ett nytt rum (från JoinForm)
     const handleJoinSuccess = (roomName: string, password?: string) => {
-        // Gör INTE setCurrentRoom eller setIsJoined här!
-        handleJoinRoom(roomName, password);
+        setCurrentRoom(roomName);
+        setRoomPassword(password);
+        localStorage.setItem("chatRoom", roomName);
+        if (password) {
+            localStorage.setItem("chatRoomPassword", password);
+        } else {
+            localStorage.removeItem("chatRoomPassword");
+        }
     };
 
     const handleLogout = () => {
         setCurrentRoom(null);
         setRoomPassword(undefined);
-        setIsJoined(false);
         localStorage.removeItem("chatRoomPassword");
         localStorage.removeItem("chatRoom");
     };
@@ -151,7 +116,7 @@ const AppContent: React.FC = () => {
         <>
             <Header setIsLoggedIn={setIsLoggedIn} setUserId={setUserId} />
             <Toaster />
-            {currentRoom && isJoined ? (
+            {currentRoom ? (
                 <>
                     <DraggableWrapper>
                         <ChatApp
@@ -170,7 +135,7 @@ const AppContent: React.FC = () => {
                             userId={userId}
                             onJoinSuccess={handleJoinSuccess}
                         />
-                        <RoomList onJoinRoom={handleJoinRoom} userId={userId} />
+                        <RoomList onJoinRoom={handleJoinSuccess} userId={userId} />
                     </div>
                 )
             )}

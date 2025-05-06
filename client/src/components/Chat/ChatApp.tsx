@@ -35,11 +35,17 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
     const socket = useSocket();
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
+    const usersRef = useRef<User[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [activity, setActivity] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const [error, setError] = useState("");
     const [displayChat, setDisplayChat] = useState(true);
+    const hasJoinedRef = useRef(false);
+
+    useEffect(() => {
+        usersRef.current = users;
+    }, [users]);
 
     // Sätt alltid upp listeners först!
     useEffect(() => {
@@ -57,12 +63,8 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
                 setActivity("");
                 return;
             }
-            // Hämta users från senaste state
-            setUsers(prevUsers => {
-                const user = prevUsers.find(u => u.userId === userId);
-                setActivity(user ? `${user.firstName} ${user.lastName} skriver...` : "Någon skriver...");
-                return prevUsers;
-            });
+            const user = usersRef.current.find(u => u.userId === userId);
+            setActivity(user ? `${user.firstName} ${user.lastName} skriver...` : "Någon skriver...");
         };
 
         socket.on("message", handleMessage);
@@ -75,6 +77,14 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
             socket.off("activity", handleActivity);
         };
     }, [socket]);
+
+    // Gör join när ChatApp mountas och userId/room finns
+    useEffect(() => {
+        if (!hasJoinedRef.current && userId && room) {
+            socket.emit("enterRoom", { userId, room, password });
+            hasJoinedRef.current = true;
+        }
+    }, [socket, userId, room, password]);
 
     // Hantera scrollning av chattfönstret
     const chatRef = useRef<HTMLDivElement>(null);
