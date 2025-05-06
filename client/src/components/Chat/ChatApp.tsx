@@ -39,7 +39,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
     const [users, setUsers] = useState<User[]>([]);
     const [activity, setActivity] = useState("");
     const [isTyping, setIsTyping] = useState(false);
-    const [error, setError] = useState("");
     const [displayChat, setDisplayChat] = useState(true);
     const hasJoinedRef = useRef(false);
 
