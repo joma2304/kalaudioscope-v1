@@ -5,7 +5,6 @@ import { UserProvider } from "./context/UserContext";
 import ChatApp from "./components/Chat/ChatApp";
 import JoinForm from "./components/Lobby/JoinForm";
 import RoomList from "./components/Lobby/RoomList";
-import DraggableWrapper from "./components/DraggableWrapper";
 import StreamViewer from "./components/Stream/StreamViewer";
 import toast, { Toaster } from 'react-hot-toast';
 import Header from "./components/Header/header";
@@ -118,14 +117,12 @@ const AppContent: React.FC = () => {
             <Toaster />
             {currentRoom ? (
                 <>
-                    <DraggableWrapper>
-                        <ChatApp
-                            onLeave={handleLogout}
-                            userId={userId}
-                            room={currentRoom}
-                            password={roomPassword}
-                        />
-                    </DraggableWrapper>
+                    <ChatApp
+                        onLeave={handleLogout}
+                        userId={userId}
+                        room={currentRoom}
+                        password={roomPassword}
+                    />
                     {videoExists && <StreamViewer sources={testStreams} />}
                 </>
             ) : (
