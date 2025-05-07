@@ -9,6 +9,7 @@ import ActivityIndicator from "./ChatContainer/ActivityIndicator";
 import LeaveChatButton from "./ChatContainer/LeaveChatButton";
 import { sendMessageToServer } from "../../utils/SendMessageToServer";
 import CopyInviteLinkButton from "./ChatContainer/CopyInviteLinkButton";
+import { Rnd } from "react-rnd";
 
 interface Message {
     userId: string;
@@ -152,10 +153,21 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
                     </button>
                 </div>
             </div>
-
-            {displayChat && (
-                <div>
-                    <div className="chat-container" >
+            <div className="font-bold p-2 ">
+                {displayChat && (
+                <>
+                    <Rnd
+                        className="chat-container cursor-move"
+                        bounds="window"
+                        minWidth={325}
+                        minHeight={639}
+                        default={{
+                            x: 1350,
+                            y: -575, 
+                            width: 'fit-content',
+                            height: 'fit-content',
+                        }}
+                    >
                         <MessageList messages={messages} userId={userId} chatRef={chatRef} roomId={room} />
                         <ActivityIndicator activity={activity} />
                         <MessageForm
@@ -167,9 +179,10 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
                         <UserList users={users} />
                         <LeaveChatButton leaveChat={leaveChat} />
                         <CopyInviteLinkButton room={room} password={password}/>
-                    </div>
-                </div>
-            )}
+                    </Rnd>
+                </>
+                )}
+            </div>
         </>
     );
 };
