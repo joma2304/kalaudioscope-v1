@@ -9,6 +9,7 @@
   "dependencies": {
     "mongoose": "^8.13.2",
     "react-hot-toast": "^2.5.2",
+    "react-rnd": "^10.5.2",
     "undici-types": "^6.21.0"
   },
   "scripts": {
