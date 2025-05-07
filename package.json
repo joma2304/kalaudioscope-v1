@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "@types/node": "^22.13.14",
+    "@types/react-rnd": "^7.4.4",
     "concurrently": "^9.1.2"
   },
   "name": "testchat",
@@ -9,6 +10,7 @@
   "dependencies": {
     "mongoose": "^8.13.2",
     "react-hot-toast": "^2.5.2",
+    "react-rnd": "^10.5.2",
     "undici-types": "^6.21.0"
   },
   "scripts": {
