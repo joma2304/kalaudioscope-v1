@@ -124,7 +124,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
       );
 
   if (!connected) {
-    return <div>Connecting to server...</div>;
+    return <div>Loading list of active chatrooms...</div>;
   }
 
   return (

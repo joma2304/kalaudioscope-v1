@@ -89,7 +89,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
     };
 
     if (!connected) {
-        return <div>Connecting to server...</div>;
+        return <div className="loading">Connecting... </div>;
     }
 
     return (

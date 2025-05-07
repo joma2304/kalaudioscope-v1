@@ -77,7 +77,7 @@ io.on("connection", (socket) => {
         emitRoomList();
     });
 
-    socket.on("enterRoom", async ({ userId, room, password }, callback = () => {}) => {
+    socket.on("enterRoom", async ({ userId, room, password }, callback = () => { }) => {
         const currentUsers = getUsersInRoom(room).length;
 
         if (roomMaxLimits[room] && currentUsers >= roomMaxLimits[room]) {
@@ -135,6 +135,7 @@ io.on("connection", (socket) => {
 
     });
 
+
     socket.on("setRoomLimit", ({ room, maxUsers }, callback) => {
         const user = getUser(socket.id);
         if (!user || user.room !== room) {
@@ -146,7 +147,7 @@ io.on("connection", (socket) => {
         roomMaxLimits[room] = maxUsers;
         callback({ success: true, message: `Max user limit set to ${maxUsers} for room ${room}.` });
     });
-
+    //Behövs för att kunna se rumslistan i frontend
     socket.on("getRoomList", () => {
         emitRoomList();
     });
