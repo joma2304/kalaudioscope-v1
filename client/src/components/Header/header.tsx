@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useUser } from "../../context/UserContext";
 import LoginModal from "./LoginModal";
+import "./Header.css";
 
 interface HeaderProps {
   setIsLoggedIn: (val: boolean) => void;
@@ -12,31 +13,37 @@ const Header: React.FC<HeaderProps> = ({ setIsLoggedIn, setUserId }) => {
   const [showLogin, setShowLogin] = useState(false);
 
   return (
-    <header style={{ padding: "1em", background: "#222", color: "#fff", display: "flex", justifyContent: "space-between" }}>
-      <div>
-        <strong>Opera Chat</strong>
-      </div>
-      <div>
-        {user ? (
-          <>
-            <span style={{ marginRight: 12 }}>
-              {user.firstName} {user.lastName} ({user.email})
-            </span>
-            <button onClick={() => { logout(); setIsLoggedIn(false); setUserId(""); }} style={{ padding: "0.4em 1em" }}>Logout</button>
-          </>
-        ) : (
-          <>
-            <button onClick={() => setShowLogin(true)} style={{ padding: "0.4em 1em" }}>Login</button>
-            <LoginModal
-              open={showLogin}
-              onClose={() => setShowLogin(false)}
-              setIsLoggedIn={setIsLoggedIn}
-              setUserId={setUserId}
-            />
-          </>
-        )}
-      </div>
-    </header>
+    <header className="header">
+    <div className="header-title">Opera Chat</div>
+    <div className="header-user">
+      {user ? (
+        <>
+          <span className="user-info">
+            {user.firstName} {user.lastName} ({user.email})
+          </span>
+          <button className="logout-btn" onClick={() => {
+            logout();
+            setIsLoggedIn(false);
+            setUserId("");
+          }}>
+            Logout
+          </button>
+        </>
+      ) : (
+        <>
+          <button className="login-btn" onClick={() => setShowLogin(true)}>
+            Login
+          </button>
+          <LoginModal
+            open={showLogin}
+            onClose={() => setShowLogin(false)}
+            setIsLoggedIn={setIsLoggedIn}
+            setUserId={setUserId}
+          />
+        </>
+      )}
+    </div>
+  </header>
   );
 };
 

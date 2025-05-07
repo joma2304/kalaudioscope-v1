@@ -1,0 +1,57 @@
+.header {
+    padding: 1rem 2rem;
+    background-color: #1c1c1e;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 100vw;
+  }
+  
+  .header-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+    letter-spacing: 0.5px;
+  }
+  
+  .header-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .user-info {
+    opacity: 0.9;
+  }
+  
+  .login-btn,
+  .logout-btn {
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  
+  .login-btn {
+    background: linear-gradient(135deg, #6366f1, #4338ca); /* Gradient som matchar resten av appen */
+  }
+  
+  .login-btn:hover {
+    background: linear-gradient(135deg, #4f46e5, #3730a3); /* Ljusare gradient vid hover */
+    transform: scale(1.02); /* Lätt förstoring vid hover */
+  }
+  
+  .logout-btn {
+    background: linear-gradient(135deg, #f16363, #c82525); /* Gradient som matchar resten av appen */
+  }
+  
+  .logout-btn:hover {
+    background: linear-gradient(135deg, #ef5858, #c71f1f); /* Gradient som matchar resten av appen */
+    transform: scale(1.02); /* Lätt förstoring vid hover */
+  }
+  

@@ -46,15 +46,36 @@ const AppContent: React.FC = () => {
         return () => window.removeEventListener("storage", checkAuth);
     }, []);
 
-    // Hantera länk med ?room=...
-    useEffect(() => {
-        const roomFromUrl = searchParams.get("room");
-        const passwordFromUrl = searchParams.get("password");
-        if (roomFromUrl) {
+   // Hantera länk med ?room=...
+   useEffect(() => {
+    const roomFromUrl = searchParams.get("room");
+    const passwordFromUrl = searchParams.get("password");
+
+    if (roomFromUrl) {
+        if (!userId) {
+            // Om användaren inte är inloggad, visa toast och spara rumsinformationen i pendingRoom
             setPendingRoom(roomFromUrl);
             setRoomPassword(passwordFromUrl || undefined);
+            toast.error("You need to log in to join the room.");
+        } else {
+            // Om användaren är inloggad, spara rumsinformationen i localStorage och anslut
+            localStorage.setItem("chatRoom", roomFromUrl);
+            if (passwordFromUrl) {
+                localStorage.setItem("chatRoomPassword", passwordFromUrl);
+            } else {
+                localStorage.removeItem("chatRoomPassword");
+            }
+            setCurrentRoom(roomFromUrl);
+            setRoomPassword(passwordFromUrl || undefined);
+
+            // Ta bort room och password från URL
+            searchParams.delete("room");
+            searchParams.delete("password");
+            setSearchParams(searchParams, { replace: true });
+            toast.success("Joined room successfully!");
         }
-    }, [searchParams]);
+    }
+}, [searchParams, userId]);
 
     // När pendingRoom finns och userId är satt, gå till rummet automatiskt
     useEffect(() => {

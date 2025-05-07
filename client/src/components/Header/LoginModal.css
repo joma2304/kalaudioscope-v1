@@ -1,0 +1,120 @@
+/* Overlay för modalen */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Halvtransparent svart bakgrund */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modalens innehåll */
+.modal-content {
+    background: #ffffff; /* Vit bakgrund */
+    border-radius: 10px;
+    padding: 20px 30px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Lätt skugga */
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Rubrik */
+.modal-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #1a1a1a;
+    text-align: center;
+}
+
+/* Formulär */
+.form-group {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.login-form-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+}
+
+.login-form-input:focus {
+    border-color: #6366f1; /* Samma färg som andra element i appen */
+    outline: none;
+    box-shadow: 0 0 4px rgba(99, 102, 241, 0.5);
+}
+
+/* Felmeddelande */
+.error-text {
+    color: #e63946; /* Röd färg för fel */
+    font-size: 0.85rem;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Knappar */
+.primary-btn {
+    background: linear-gradient(135deg, #6366f1, #4338ca); /* Samma gradient som andra knappar */
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+    transition: background 0.3s ease;
+}
+
+.primary-btn:hover {
+    background: linear-gradient(135deg, #4338ca, #6366f1); /* Omvänd gradient vid hover */
+}
+
+.secondary-btn {
+    background: #f3f4f6; /* Ljus bakgrund */
+    color: #1a1a1a;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.secondary-btn:hover {
+    background: #e5e7eb; /* Ljusare grå vid hover */
+    color: #000;
+}
+
+/* Animation för modal */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

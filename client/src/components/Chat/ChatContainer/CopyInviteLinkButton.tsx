@@ -1,6 +1,7 @@
 import React from "react";
 import { Copy } from "lucide-react";
 import toast from "react-hot-toast";
+import "./CopyInviteLinkButton.css";
 
 interface CopyInviteLinkButtonProps {
   room: string;
@@ -18,12 +19,12 @@ const CopyInviteLinkButton: React.FC<CopyInviteLinkButtonProps> = ({ room, passw
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "0.7em" }}>
-      <button className="create-room-btn" onClick={handleCopy}>
-        <Copy size={16} style={{ marginRight: 6, marginBottom: -2 }} />
+    <div className="copy-invite-wrapper">
+    <button className="create-room-btn" onClick={handleCopy}>
+        <Copy size={16} className="copy-icon" />
         Copy invite link
-      </button>
-    </div>
+    </button>
+</div>
   );
 };
 

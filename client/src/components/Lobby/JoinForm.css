@@ -1,262 +1,247 @@
-/* Grundläggande font och rubriker */
-body, .join-form, .form-group, .tag-btn, .password-input, .chair-count-label, .create-room-btn, .room-list, .room-list-item, label {
-  font-family: 'Lora', serif;
-}
-h1, h2, h3, .join-form-title {
-  font-family: 'Lugrasimo', cursive;
-  letter-spacing: 0.5px;
-}
-
-/* Wrapper för JoinForm och NameInput */
-.join-form,
-.name-input-box {
-  background: #fff;
-  border-radius: 14px;
-  padding: 2.5rem 2.2rem 2.2rem 2.2rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-  max-width: 600px;
-  min-width: 320px;
-  width: 95vw;
-  margin: 2rem auto 1.5rem auto;
-}
-
-/* Formulär och grupper */
-.join-form form,
-.name-input-box form {
+/* Container för skapa rum-komponenten */
+.create-room-container {
   display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  align-items: center;
   justify-content: center;
-}
-.form-group,
-.name-input-box .form-group {
-  margin-bottom: 1.3em;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4em;
-}
-.form-group.centered {
   align-items: center;
-  text-align: center;
-}
-.form-group label {
-  font-weight: 500;
-  margin-bottom: 2px;
-  color: #222;
-}
-
-/* Inputs */
-.join-form input[type="text"],
-.join-form input[type="number"],
-.join-form input[type="password"],
-.name-input {
-  width: 100%;
-  padding: 0.7em 1em;
-  border-radius: 7px;
-  border: 1.5px solid #bcd;
-  font-size: 1.08em;
-  background: #f8fafd;
-  color: #222;
-  transition: border 0.2s;
-  text-align: center;
-}
-.join-form input:focus,
-.name-input:focus,
-.password-input:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-/* Ikoner i inputs */
-.name-input-wrapper,
-.password-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-.name-icon,
-.password-icon {
-  position: absolute;
-  right: 0.7em;
-  font-size: 1.3em;
-  color: #bdbdbd;
-  pointer-events: none;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-/* Taggar */
-.tag-select {
-  display: flex;
-  gap: 0.5em;
-  flex-wrap: wrap;
-  margin-top: 0.2em;
-  justify-content: center;
-}
-.tag-btn {
-  padding: 0.4em 1em;
-  border-radius: 16px;
-  border: 1.5px solid #007bff;
-  background: #fff;
-  color: #007bff;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background 0.2s, color 0.2s;
-}
-.tag-btn.selected {
-  background: #007bff;
-  color: #fff;
-}
-/* Tag color classes */
-.tag-color-First-Timer { background: #ffe082; color: #7c5c00; border-color: #ffe082; }
-.tag-color-Pro { background: #b2f2ff; color: #005c7c; border-color: #b2f2ff; }
-.tag-color-Please-Be-Quiet { background: #ffd6e0; color: #7c003c; border-color: #ffd6e0; }
-.tag-color-Open-Discussion { background: #caffbf; color: #2d7c00; border-color: #caffbf; }
-.tag-color-Strangers-Welcome { background: #e0c3fc; color: #4b007c; border-color: #e0c3fc; }
-/* Tag selected overrides */
-.tag-btn.tag-color-First-Timer.selected { background: #ffca28; color: #4e3900; border-color: #b28704; }
-.tag-btn.tag-color-Pro.selected { background: #29b6f6; color: #00394d; border-color: #0277bd; }
-.tag-btn.tag-color-Please-Be-Quiet.selected { background: #ff8fa3; color: #4d0020; border-color: #b3003c; }
-.tag-btn.tag-color-Open-Discussion.selected { background: #38d96c; color: #114d00; border-color: #1b5e20; }
-.tag-btn.tag-color-Strangers-Welcome.selected { background: #a259f7; color: #2d005c; border-color: #5e249c; }
-
-/* Grundstil för taggar */
-.tag-btn,
-.room-tag {
-  display: inline-block;
-  padding: 0.4em 1em;
-  border-radius: 16px;
-  border: 1.5px solid #007bff;
-  background: #fff;
-  color: #007bff;
-  cursor: pointer;
-  font-size: 1em;
-  font-weight: 500;
-  margin: 0 0.15em 0.15em 0;
-  transition: background 0.2s, color 0.2s;
-  vertical-align: middle;
-}
-
-/* Färgklasser för taggar */
-.tag-color-First-Timer { background: #ffe082; color: #7c5c00; border-color: #ffe082; }
-.tag-color-Pro { background: #b2f2ff; color: #005c7c; border-color: #b2f2ff; }
-.tag-color-Please-Be-Quiet { background: #ffd6e0; color: #7c003c; border-color: #ffd6e0; }
-.tag-color-Open-Discussion { background: #caffbf; color: #2d7c00; border-color: #caffbf; }
-.tag-color-Strangers-Welcome { background: #e0c3fc; color: #4b007c; border-color: #e0c3fc; }
-
-/* Selected state för filter/tag-btn */
-.tag-btn.selected,
-.room-tag.selected {
-  background: #007bff;
-  color: #fff;
-}
-
-/* Tag selected overrides (om du vill ha olika färg när de är valda) */
-.tag-btn.tag-color-First-Timer.selected,
-.room-tag.tag-color-First-Timer.selected { background: #ffca28; color: #4e3900; border-color: #b28704; }
-.tag-btn.tag-color-Pro.selected,
-.room-tag.tag-color-Pro.selected { background: #29b6f6; color: #00394d; border-color: #0277bd; }
-.tag-btn.tag-color-Please-Be-Quiet.selected,
-.room-tag.tag-color-Please-Be-Quiet.selected { background: #ff8fa3; color: #4d0020; border-color: #b3003c; }
-.tag-btn.tag-color-Open-Discussion.selected,
-.room-tag.tag-color-Open-Discussion.selected { background: #38d96c; color: #114d00; border-color: #1b5e20; }
-.tag-btn.tag-color-Strangers-Welcome.selected,
-.room-tag.tag-color-Strangers-Welcome.selected { background: #a259f7; color: #2d005c; border-color: #5e249c; }
-
-/* Create room-knapp */
-.create-room-btn {
-  width: 100%;
-  background: linear-gradient(135deg, #b71c1c 0%, #a8324a 60%, #d46a6a 100%);
-  color: #fff;
-  border: none;
-  border-radius: 7px;
-  padding: 0.85em 0;
-  font-size: 1.1em;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 0.5em;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 12px #b71c1c33;
-  transition: background 0.5s cubic-bezier(0.4,0,0.2,1), 
-              transform 0.25s cubic-bezier(0.4,0,0.2,1), 
-              box-shadow 0.5s cubic-bezier(0.4,0,0.2,1);
+  max-height: 0;
+  opacity: 0;
+  margin-top: 10px;
+  transform: scaleY(0.95) translateY(-10px);
+  transform-origin: top;
+  transition:
+      max-height 1.2s ease,
+      opacity 1.1s ease,
+      transform 1.0s ease;
 }
-.create-room-btn::before {
+
+.create-room-container.open {
+  max-height: 1200px;
+  opacity: 1;
+  transform: scaleY(1) translateY(0);
+}
+
+.create-room-header {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 1.5rem;
+  margin: 0 auto;
+}
+
+.create-room-description {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto 1.5rem auto;
+}
+
+/* Formuläret för att skapa rum */
+.create-room-form {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 520px;
+  box-sizing: border-box;
+  transition: opacity 1.2s ease 1.2s, transform 1.5s ease 0.8s;
+  opacity: 0;
+  transform: translateY(10px);
+  flex-direction: column;
+}
+
+.create-room-container.open .create-room-form {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+.create-room-form:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+}
+
+/* Inputfält */
+
+.create-room-label {
+text-align: left;
+}
+.create-room-input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  font-size: 1rem;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.create-room-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
+.create-room-input::placeholder {
+  color: #999;
+}
+
+/* Skapa rum-knapp */
+.create-room-button {
+  position: relative;
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 0;
+}
+
+.create-room-button::before {
   content: "";
   position: absolute;
-  top: -60%;
-  left: -40%;
-  width: 60%;
-  height: 220%;
-  background: linear-gradient(120deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 100%);
-  transform: skewX(-25deg);
-  transition: opacity 0.3s;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
+  transform: rotate(25deg);
+  transition: all 0.6s ease;
+  z-index: 1;
   pointer-events: none;
 }
-.create-room-btn:hover {
-  background: linear-gradient(135deg, #a8324a 0%, #b71c1c 60%, #fff0 100%);
-  transform: scale(1.04);
-  box-shadow: 0 4px 24px #b71c1c55;
-}
-.create-room-btn:hover::before {
-  animation: shine 0.8s forwards;
-  opacity: 1;
-}
-@keyframes shine {
-  0% { left: -60%; opacity: 0.2; }
-  60% { left: 110%; opacity: 0.5; }
-  100% { left: 110%; opacity: 0; }
+
+.create-room-button:hover::before {
+  top: -80%;
+  left: -80%;
+  transform: rotate(45deg);
 }
 
-/* Error */
-.error-message {
-  color: #ff4d4f;
-  background: #fff0f0;
-  border-radius: 6px;
-  padding: 0.7rem 1.2rem;
-  text-align: center;
+.create-room-button:hover {
+  transform: translateY(-1px) scale(1.01);
+  background: linear-gradient(135deg, #5145cd, #3730a3);
+}
+
+.create-room-button span {
+  position: relative;
+  z-index: 2;
+}
+
+
+.create-room-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+  font-size: 14px;
   font-weight: 500;
-  font-size: 1.05em;
+  color: #1a1a1a;
 }
 
-/* Stäng-knapp */
-.close-btn {
+.tag-checkbox {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 6px 10px;
+  border-radius: 5px;
+  margin: 2px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tag-checkbox:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Stil för valda taggar */
+.tag-checkbox.selected {
+  background-color: #fff !important; /* Vit bakgrund */
+  color: var(--tag-color) !important; /* Dynamisk färg */
+}
+
+/* Fälla ut formulör för skapa chatt */
+.toggle-form-button {
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 18px 28px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  max-width: 360px;
+  margin: 20px auto;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(67, 56, 202, 0.35);
+}
+
+.toggle-form-button::before {
+  content: "";
   position: absolute;
-  top: 8px;
-  right: 10px;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
+  transform: rotate(25deg);
+  transition: all 0.6s ease;
+}
+
+.toggle-form-button:hover::before {
+  top: -80%;
+  left: -80%;
+  transform: rotate(45deg);
+}
+
+.toggle-form-button:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 16px 32px rgba(99, 102, 241, 0.45);
+  background: linear-gradient(135deg, #5145cd, #3730a3);
+}
+
+
+/* Stäng-knapp*/
+.close-form-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
   background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #888;
-  transition: color 0.2s;
+  color: #666;
+  transition: color 0.2s ease, transform 0.2s ease;
+  z-index: 10;
 }
 
-.close-btn:hover {
-  color: #e74c3c !important;
-  background: none;
-}
-
-/* Responsivitet */
-@media (max-width: 700px) {
-  .join-form,
-  .name-input-box {
-    max-width: 99vw;
-    padding: 1.2rem 0.5rem 1rem 0.5rem;
-  }
-}
-
-/* Rubriker */
-h2, .join-form-title {
-  font-size: 1.8em;
-  font-weight: 700;
-  color: #222;
-  margin-bottom: 0.5em;
-  text-align: center;
+.close-form-button:hover {
+  color: #ef4444;
+  /* modern röd nyans */
+  transform: scale(1.2);
 }
 
 /* Stolar */
@@ -288,21 +273,3 @@ h2, .join-form-title {
   margin-top: 0.2em;
   margin-left: 0.1em;
 }
-
-/* Slide-animation för JoinForm */
-.join-form-slide {
-  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.4s cubic-bezier(0.4,0,0.2,1);
-  transform: translateY(0);
-  opacity: 1;
-}
-.join-form-slide.closed {
-  transform: translateY(60px);
-  opacity: 0;
-}
-
-/* Lobby-view padding */
-.lobby-view {
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-}
-

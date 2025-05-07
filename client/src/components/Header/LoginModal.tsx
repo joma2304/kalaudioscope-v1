@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useUser } from "../../context/UserContext";
+import "./LoginModal.css"; // Importera CSS-filen
 
 interface Props {
   open: boolean;
@@ -43,39 +44,40 @@ const LoginModal: React.FC<Props> = ({ open, onClose, setIsLoggedIn, setUserId }
   };
 
   return (
-    <div style={{
-      position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
-      background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
-    }}>
-      <div style={{ background: "#fff", padding: 32, borderRadius: 8, minWidth: 320 }}>
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: 12 }}>
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              style={{ width: "100%", padding: 8 }}
-            />
-          </div>
-          <div style={{ marginBottom: 12 }}>
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              style={{ width: "100%", padding: 8 }}
-            />
-          </div>
-          {error && <div style={{ color: "red", marginBottom: 8 }}>{error}</div>}
-          <button type="submit" style={{ width: "100%", padding: 10, marginBottom: 8 }}>Login</button>
-          <button type="button" onClick={onClose} style={{ width: "100%", padding: 10, background: "#eee" }}>Cancel</button>
-        </form>
-      </div>
+    <div className="modal-overlay">
+    <div className="modal-content">
+      <h2>Login</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="email">Email:</label>
+          <input
+            id="email"
+            className="login-form-input"
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password:</label>
+          <input
+            id="password"
+            className="login-form-input"
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        {error && <div className="error-text">{error}</div>}
+        <button type="submit" className="primary-btn">Login</button>
+        <button type="button" className="secondary-btn" onClick={onClose}>Cancel</button>
+      </form>
     </div>
+  </div>
   );
 };
 
