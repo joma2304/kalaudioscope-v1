@@ -11,7 +11,6 @@ interface PasswordModalProps {
 }
 
 const PasswordModal: React.FC<PasswordModalProps> = ({
-  roomName,
   password,
   setPassword,
   onSubmit,
@@ -19,7 +18,7 @@ const PasswordModal: React.FC<PasswordModalProps> = ({
 }) => (
   <div className="password-modal-overlay">
     <div className="modal-content">
-      <h3>Enter password for Box {roomName}</h3>
+      <h3>Enter password</h3>
       <input
         type="password"
         value={password}

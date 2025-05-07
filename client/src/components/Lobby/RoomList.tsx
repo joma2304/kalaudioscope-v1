@@ -48,12 +48,16 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
 
   useEffect(() => {
-    const handleConnect = () => setConnected(true);
+    const handleConnect = () => {
+      setConnected(true);
+      socket.emit("getRoomList"); // Begär rumslistan vid anslutning
+    };
+  
     const handleDisconnect = () => setConnected(false);
-
+  
     socket.on("connect", handleConnect);
     socket.on("disconnect", handleDisconnect);
-
+  
     return () => {
       socket.off("connect", handleConnect);
       socket.off("disconnect", handleDisconnect);

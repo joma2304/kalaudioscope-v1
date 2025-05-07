@@ -45,7 +45,7 @@ function activateUser(id, userId, room) {
         id, // socket.id
         userId, // Använd userId istället för name
         room,
-        isController: !existingController
+        isController: !existingController // Första användaren i rummet blir controller
     };
 
     UsersState.setUsers([
@@ -53,7 +53,7 @@ function activateUser(id, userId, room) {
         user,
     ]);
 
-    console.log(UsersState.users);  // Debugga användarlistan
+    console.log("Aktiverad användare:", user); // Debugga användarlistan
 
     return user;
 }
@@ -76,6 +76,8 @@ function userLeavesApp(id, transferControl = true) {
         UsersState.users.filter(user => user.id !== id)
     );
 
+    console.log("Användare lämnade:", id); // Debugga användarlistan
+
     return newController;
 }
 
@@ -92,6 +94,10 @@ const getUsersInRoom = (room) => {
 };
 
 function getAllActiveRooms() {
+    // Kontrollera att UsersState innehåller användare
+    if (UsersState.users.length === 0) {
+        console.warn("Inga användare i UsersState, inga aktiva rum.");
+    }
     return Array.from(new Set(UsersState.users.map(user => user.room)));
 }
 

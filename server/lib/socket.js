@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import http from "http";
 import express from "express";
 import {
+    UsersState,
     buildMsg,
     activateUser,
     userLeavesApp,
@@ -22,36 +23,39 @@ const io = new Server(server, {
     }
 });
 
-// Room state
-const roomControllers = {};
-const roomMaxLimits = {};
-const roomPasswords = {};
-const roomTags = {};
+// Rumsrelaterad state
+const roomControllers = {};   // room: socketId
+const roomMaxLimits = {};     // room: number
+const roomPasswords = {};     // room: string
+const roomTags = {};          // room: string[]
+const roomCleanupTimers = {}; // room: timeout
 
-const emitRoomList = () => {
-    io.emit("roomList", getAllActiveRooms().map((room) => ({
+function emitRoomList() {
+    io.emit("roomList", getAllActiveRooms().map(room => ({
         name: room,
         userCount: getUsersInRoom(room).length,
         maxUsers: roomMaxLimits[room] || null,
         hasPassword: !!roomPasswords[room],
-        tags: roomTags[room] || []
+        tags: roomTags[room] || [],
     })));
-};
+}
 
-const handleControllerChange = async (room) => {
+async function handleControllerChange(room) {
     const remainingUsers = getUsersInRoom(room);
     if (remainingUsers.length > 0) {
         const newController = remainingUsers[0];
         newController.isController = true;
         roomControllers[room] = newController.id;
+
         const userDoc = await User.findById(newController.userId).lean();
-        const controllerName = userDoc ? `${userDoc.firstName} ${userDoc.lastName}` : "Unknown User";
-        io.to(room).emit("message", await buildMsg(ADMIN, `${controllerName} is now in control.`));
-        io.to(newController.id).emit("youAreNowController");
+        const name = userDoc ? `${userDoc.firstName} ${userDoc.lastName}` : newController.userId;
+
+        io.to(room).emit('message', await buildMsg(ADMIN, `${name} is now in control.`));
+        io.to(newController.id).emit('youAreNowController');
     } else {
         delete roomControllers[room];
     }
-};
+}
 
 io.on("connection", (socket) => {
     console.log(`User ${socket.id} connected`);
@@ -62,7 +66,11 @@ io.on("connection", (socket) => {
         while (existingRooms.includes(roomName)) roomName = (parseInt(roomName) + 1).toString();
 
         if (maxUsers) roomMaxLimits[roomName] = maxUsers;
-        password ? roomPasswords[roomName] = password : delete roomPasswords[roomName];
+        if (typeof password === "string" && password.length > 0) {
+            roomPasswords[roomName] = password;
+        } else {
+            delete roomPasswords[roomName];
+        }
         roomTags[roomName] = Array.isArray(tags) ? tags : [];
 
         callback({ success: true, roomName });
@@ -80,7 +88,17 @@ io.on("connection", (socket) => {
             return callback({ success: false, message: "Incorrect password." });
         }
 
-        activateUser(socket.id, userId, room);
+        const existingUser = UsersState.users.find(u => u.name === userId && u.room === room);
+        if (existingUser) {
+            socket.join(room);
+            return callback({
+                success: true,
+                message: "Reconnected to the room.",
+                users: getUsersInRoom(room)
+            });
+        }
+
+        const user = activateUser(socket.id, userId, room);
         socket.join(room);
 
         const usersInRoom = getUsersInRoom(room);
@@ -100,20 +118,39 @@ io.on("connection", (socket) => {
         const joinedUser = await User.findById(userId).lean();
         const joinedName = joinedUser ? `${joinedUser.firstName} ${joinedUser.lastName}` : userId;
         io.to(room).emit("message", await buildMsg(ADMIN, `${joinedName} has joined`));
-
         emitRoomList();
 
         if (!roomControllers[room] || roomControllers[room] === socket.id) {
             roomControllers[room] = socket.id;
+            user.isController = true;
             socket.emit("youAreNowController");
         }
+
 
         callback({
             success: true,
             message: "Joined the room successfully.",
             users
         });
+
     });
+
+    socket.on("setRoomLimit", ({ room, maxUsers }, callback) => {
+        const user = getUser(socket.id);
+        if (!user || user.room !== room) {
+            return callback({ success: false, message: "You are not in this room." });
+        }
+        if (maxUsers <= 0) {
+            return callback({ success: false, message: "Max users must be greater than 0." });
+        }
+        roomMaxLimits[room] = maxUsers;
+        callback({ success: true, message: `Max user limit set to ${maxUsers} for room ${room}.` });
+    });
+
+    socket.on("getRoomList", () => {
+        emitRoomList();
+    });
+
 
     socket.on("leaveRoom", async ({ userId, room }) => {
         const user = getUser(socket.id);
@@ -145,6 +182,8 @@ io.on("connection", (socket) => {
         if (usersInRoom.length === 0) {
             delete roomPasswords[room];
             delete roomMaxLimits[room];
+            delete roomControllers[room];
+            delete roomTags[room];
         }
 
         emitRoomList();
