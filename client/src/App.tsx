@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { SocketProvider, useSocket } from "./context/SocketContext";
+import { SocketProvider } from "./context/SocketContext";
 import { UserProvider } from "./context/UserContext";
 import ChatApp from "./components/Chat/ChatApp";
 import JoinForm from "./components/Lobby/JoinForm";
 import RoomList from "./components/Lobby/RoomList";
 import StreamViewer from "./components/Stream/StreamViewer";
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import Header from "./components/Header/header";
 
 const testStreams = [

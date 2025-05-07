@@ -40,7 +40,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
     const [users, setUsers] = useState<User[]>([]);
     const [activity, setActivity] = useState("");
     const [isTyping, setIsTyping] = useState(false);
-    const [error, setError] = useState("");
     const [displayChat, setDisplayChat] = useState(true);
     const hasJoinedRef = useRef(false);
 
@@ -162,10 +161,10 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
                         minWidth={325}
                         minHeight={639}
                         default={{
-                            x: 1350,
-                            y: -575, 
-                            width: 'fit-content',
-                            height: 'fit-content',
+                            x: window.innerWidth - 375, // 50px från höger
+                            y: window.innerHeight - 700, // 60px från botten
+                            width: 350,
+                            height: 650,
                         }}
                     >
                         <MessageList messages={messages} userId={userId} chatRef={chatRef} roomId={room} />
