@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import crypto from "crypto"; // Lägg till högst upp i filen
 import {
     UsersState,
     buildMsg,
@@ -28,7 +29,7 @@ const roomControllers = {};   // room: socketId
 const roomMaxLimits = {};     // room: number
 const roomPasswords = {};     // room: string
 const roomTags = {};          // room: string[]
-const roomCleanupTimers = {}; // room: timeout
+
 
 function emitRoomList() {
     io.emit("roomList", getAllActiveRooms().map(room => ({
@@ -62,8 +63,11 @@ io.on("connection", (socket) => {
 
     socket.on("requestRoom", ({ maxUsers, password, tags }, callback) => {
         const existingRooms = getAllActiveRooms();
-        let roomName = "0";
-        while (existingRooms.includes(roomName)) roomName = (parseInt(roomName) + 1).toString();
+        // Skapa ett slumpmässigt rumsnamn, t.ex. 8 tecken långt
+        let roomName;
+        do {
+            roomName = crypto.randomBytes(8).toString("hex"); // t.ex. "a1b2c3d4"
+        } while (existingRooms.includes(roomName));
 
         if (maxUsers) roomMaxLimits[roomName] = maxUsers;
         if (typeof password === "string" && password.length > 0) {
