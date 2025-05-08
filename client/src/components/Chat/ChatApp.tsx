@@ -159,12 +159,14 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
                         className="chat-container cursor-move"
                         bounds={"window"}
                         minWidth={325}
-                        minHeight={639}
+                        minHeight={679}
+                        maxWidth={window.innerWidth - 20} // Maxbredd: 20px marginal totalt (10px på varje sida)
+                        maxHeight={window.innerHeight - 20} // Maxhöjd: 20px marginal totalt (10px på varje sida)
                         default={{
                             x: 0,
                             y: 55, 
-                            width: 'fit-content',
-                            height: 'fit-content',
+                            width: '400',
+                            height: '679',
                         }}
                     >
                         <MessageList messages={messages} userId={userId} chatRef={chatRef} roomId={room} />
