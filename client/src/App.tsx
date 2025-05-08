@@ -6,7 +6,7 @@ import ChatApp from "./components/Chat/ChatApp";
 import JoinForm from "./components/Lobby/JoinForm";
 import RoomList from "./components/Lobby/RoomList";
 import StreamViewer from "./components/Stream/StreamViewer";
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import Header from "./components/Header/header";
 
 const testStreams = [
@@ -134,7 +134,7 @@ const AppContent: React.FC = () => {
 
     return (
         <>
-            <Header setIsLoggedIn={setIsLoggedIn} setUserId={setUserId} />
+            {!currentRoom && <Header setIsLoggedIn={setIsLoggedIn} setUserId={setUserId} />}
             <Toaster />
             {currentRoom ? (
                 <>
