@@ -23,10 +23,12 @@ const io = new Server(server, {
     }
 });
 
-const roomControllers = {};
-const roomMaxLimits = {};
-const roomPasswords = {};
-const roomTags = {};
+// Rumsrelaterad state
+const roomControllers = {};   // room: socketId
+const roomMaxLimits = {};     // room: number
+const roomPasswords = {};     // room: string
+const roomTags = {};          // room: string[]
+const roomCleanupTimers = {}; // room: timeout
 
 function emitRoomList() {
     io.emit("roomList", getAllActiveRooms().map(room => ({
@@ -44,22 +46,24 @@ async function handleControllerChange(room) {
         const newController = remainingUsers[0];
         newController.isController = true;
         roomControllers[room] = newController.id;
-        io.to(room).emit('message', await buildMsg(ADMIN, `${newController.name} is now in control.`));
+
+        const userDoc = await User.findById(newController.userId).lean();
+        const name = userDoc ? `${userDoc.firstName} ${userDoc.lastName}` : newController.userId;
+
+        io.to(room).emit('message', await buildMsg(ADMIN, `${name} is now in control.`));
         io.to(newController.id).emit('youAreNowController');
     } else {
         delete roomControllers[room];
     }
 }
 
-io.on('connection', socket => {
+io.on("connection", (socket) => {
     console.log(`User ${socket.id} connected`);
 
-    socket.on("requestRoom", ({ userId, maxUsers, password, tags }, callback) => {
+    socket.on("requestRoom", ({ maxUsers, password, tags }, callback) => {
         const existingRooms = getAllActiveRooms();
         let roomName = "0";
-        while (existingRooms.includes(roomName)) {
-            roomName = (parseInt(roomName) + 1).toString();
-        }
+        while (existingRooms.includes(roomName)) roomName = (parseInt(roomName) + 1).toString();
 
         if (maxUsers) roomMaxLimits[roomName] = maxUsers;
         if (typeof password === "string" && password.length > 0) {
@@ -73,13 +77,13 @@ io.on('connection', socket => {
         emitRoomList();
     });
 
-    socket.on('enterRoom', async ({ userId, room, password }, callback = () => {}) => {
+    socket.on("enterRoom", async ({ userId, room, password }, callback = () => { }) => {
         const currentUsers = getUsersInRoom(room).length;
-        const maxUsers = roomMaxLimits[room];
 
-        if (maxUsers && currentUsers >= maxUsers) {
+        if (roomMaxLimits[room] && currentUsers >= roomMaxLimits[room]) {
             return callback({ success: false, message: "Room is full." });
         }
+
         if (roomPasswords[room] && roomPasswords[room] !== password) {
             return callback({ success: false, message: "Incorrect password." });
         }
@@ -96,42 +100,41 @@ io.on('connection', socket => {
 
         const user = activateUser(socket.id, userId, room);
         socket.join(room);
+
         const usersInRoom = getUsersInRoom(room);
         const users = await Promise.all(
-            usersInRoom.map(async u => {
-                const user = await User.findById(u.userId).lean();
+            usersInRoom.map(async (u) => {
+                const userDoc = await User.findById(u.userId).lean();
                 return {
                     userId: u.userId,
-                    firstName: user?.firstName || "",
-                    lastName: user?.lastName || ""
+                    firstName: userDoc?.firstName || "",
+                    lastName: userDoc?.lastName || ""
                 };
             })
         );
-        io.to(room).emit('userList', { users });
+
+        io.to(room).emit("userList", { users });
+
         const joinedUser = await User.findById(userId).lean();
         const joinedName = joinedUser ? `${joinedUser.firstName} ${joinedUser.lastName}` : userId;
-        io.to(room).emit('message', await buildMsg(ADMIN, `${joinedName} has joined`));
+        io.to(room).emit("message", await buildMsg(ADMIN, `${joinedName} has joined`));
         emitRoomList();
 
         if (!roomControllers[room] || roomControllers[room] === socket.id) {
             roomControllers[room] = socket.id;
-            socket.emit('youAreNowController');
+            user.isController = true;
+            socket.emit("youAreNowController");
         }
 
-        const state = getUser(socket.id);
-        if (state) {
-            socket.emit('initialState', {
-                currentTime: state.videoTime || 0,
-                isPlaying: state.isPlaying || false
-            });
-        }
 
         callback({
             success: true,
             message: "Joined the room successfully.",
             users
         });
+
     });
+
 
     socket.on("setRoomLimit", ({ room, maxUsers }, callback) => {
         const user = getUser(socket.id);
@@ -144,25 +147,26 @@ io.on('connection', socket => {
         roomMaxLimits[room] = maxUsers;
         callback({ success: true, message: `Max user limit set to ${maxUsers} for room ${room}.` });
     });
-
+    //Behövs för att kunna se rumslistan i frontend
     socket.on("getRoomList", () => {
         emitRoomList();
     });
 
-    socket.on('leaveRoom', async ({ userId, room }) => {
+
+    socket.on("leaveRoom", async ({ userId, room }) => {
         const user = getUser(socket.id);
         if (!user) return;
 
         userLeavesApp(socket.id);
         socket.leave(room);
+
         const leftUser = await User.findById(userId).lean();
         const leftName = leftUser ? `${leftUser.firstName} ${leftUser.lastName}` : userId;
-        io.to(room).emit('message', await buildMsg(ADMIN, `${leftName} has left the chat`));
+        io.to(room).emit("message", await buildMsg(ADMIN, `${leftName} has left the chat`));
 
-        // Hämta namn till alla kvarvarande användare:
         const usersInRoom = getUsersInRoom(room);
         const users = await Promise.all(
-            usersInRoom.map(async u => {
+            usersInRoom.map(async (u) => {
                 const userDoc = await User.findById(u.userId).lean();
                 return {
                     userId: u.userId,
@@ -171,30 +175,34 @@ io.on('connection', socket => {
                 };
             })
         );
-        io.to(room).emit('userList', { users });
+
+        io.to(room).emit("userList", { users });
 
         if (user.isController) await handleControllerChange(room);
-        if (getUsersInRoom(room).length === 0) {
+
+        if (usersInRoom.length === 0) {
             delete roomPasswords[room];
             delete roomMaxLimits[room];
+            delete roomControllers[room];
+            delete roomTags[room];
         }
 
         emitRoomList();
     });
 
-    socket.on('disconnect', async () => {
+    socket.on("disconnect", async () => {
         const user = getUser(socket.id);
         if (!user) return;
 
         userLeavesApp(socket.id);
-        const discUser = await User.findById(user.userId).lean();
-        const discName = discUser ? `${discUser.firstName} ${discUser.lastName}` : user.name;
-        io.to(user.room).emit('message', await buildMsg(ADMIN, `${discName} has left the chat`));
 
-        // Hämta namn till alla kvarvarande användare:
+        const discUser = await User.findById(user.userId).lean();
+        const discName = discUser ? `${discUser.firstName} ${discUser.lastName}` : user.userId;
+        io.to(user.room).emit("message", await buildMsg(ADMIN, `${discName} has left the chat`));
+
         const usersInRoom = getUsersInRoom(user.room);
         const users = await Promise.all(
-            usersInRoom.map(async u => {
+            usersInRoom.map(async (u) => {
                 const userDoc = await User.findById(u.userId).lean();
                 return {
                     userId: u.userId,
@@ -203,42 +211,43 @@ io.on('connection', socket => {
                 };
             })
         );
-        io.to(user.room).emit('userList', { users });
+
+        io.to(user.room).emit("userList", { users });
 
         if (user.isController) await handleControllerChange(user.room);
-        emitRoomList();
 
+        emitRoomList();
         console.log(`User ${socket.id} disconnected`);
     });
 
-    socket.on('message', async ({ userId, text }) => {
+    socket.on("message", async ({ userId, text }) => {
         const room = getUser(socket.id)?.room;
         if (room) {
             const msg = await buildMsg(userId, text);
-            io.to(room).emit('message', msg);
+            io.to(room).emit("message", msg);
         }
     });
 
-    socket.on('activity', userId => {
+    socket.on("activity", (userId) => {
         const room = getUser(socket.id)?.room;
         if (room) {
-            socket.broadcast.to(room).emit('activity', userId);
+            socket.broadcast.to(room).emit("activity", userId);
         }
     });
 
-    socket.on('syncTime', time => {
+    socket.on("syncTime", (time) => {
         const user = getUser(socket.id);
         if (user?.isController) {
             user.videoTime = time;
-            socket.broadcast.to(user.room).emit('syncTime', time);
+            socket.broadcast.to(user.room).emit("syncTime", time);
         }
     });
 
-    socket.on('togglePlayPause', isPlaying => {
+    socket.on("togglePlayPause", (isPlaying) => {
         const user = getUser(socket.id);
         if (user?.isController) {
             user.isPlaying = isPlaying;
-            socket.broadcast.to(user.room).emit('togglePlayPause', isPlaying);
+            socket.broadcast.to(user.room).emit("togglePlayPause", isPlaying);
         }
     });
 });
