@@ -139,13 +139,12 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
           return (
             <span
               key={tag}
-              className={`filter-tag ${isSelected ? "selected" : ""}`}
+              className={`filter-tag${isSelected ? " selected" : ""}`}
               onClick={() => toggleFilter(tag)}
               style={{
-                backgroundColor: isSelected ? "#fff" : tagColors[tag],
-                color: isSelected ? tagColors[tag] : "#fff",
-                border: isSelected ? `2px solid ${tagColors[tag]}` : "none",
-              }}
+                // Sätt färgen som CSS-variabel för både selected och unselected
+                "--tag-color": tagColors[tag]
+              } as React.CSSProperties}
             >
               #{tag}
             </span>

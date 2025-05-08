@@ -156,8 +156,10 @@ text-align: left;
   font-size: 0.9rem;
   font-weight: 500;
   text-align: center;
-  border: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1.5px solid var(--tag-color, #6366f1);
+  background: #fff;
+  color: var(--tag-color, #6366f1);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
   padding: 6px 10px;
   border-radius: 5px;
   margin: 2px;
@@ -172,8 +174,9 @@ text-align: left;
 
 /* Stil för valda taggar */
 .tag-checkbox.selected {
-  background-color: #fff !important; /* Vit bakgrund */
-  color: var(--tag-color) !important; /* Dynamisk färg */
+  background: var(--tag-color, #6366f1) !important;
+  color: #fff !important;
+  border: none !important;
 }
 
 /* Fälla ut formulör för skapa chatt */

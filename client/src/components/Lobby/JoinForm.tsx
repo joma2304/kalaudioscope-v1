@@ -145,12 +145,8 @@ const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
                 return (
                   <label
                     key={tag.name}
-                    className="tag-checkbox"
-                    style={{
-                      backgroundColor: isSelected ? "#fff" : tag.color,
-                      color: isSelected ? tag.color : "#fff",
-                      border: isSelected ? `1px solid ${tag.color}` : "none",
-                    }}
+                    className={`tag-checkbox${isSelected ? " selected" : ""}`}
+                    style={{ "--tag-color": tag.color } as React.CSSProperties}
                   >
                     <input
                       type="checkbox"
