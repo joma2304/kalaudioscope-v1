@@ -7,7 +7,7 @@ import JoinForm from "./components/Lobby/JoinForm";
 import RoomList from "./components/Lobby/RoomList";
 import StreamViewer from "./components/Stream/StreamViewer";
 import toast, { Toaster } from 'react-hot-toast';
-import Header from "./components/Header/header";
+import Header from "./components/Header/Header";
 
 const testStreams = [
     { label: "Angle 1", url: "/videos/angle1.mp4" },
@@ -144,7 +144,7 @@ const AppContent: React.FC = () => {
                         room={currentRoom}
                         password={roomPassword}
                     />
-                    {videoExists && <StreamViewer sources={testStreams} />}
+                    {videoExists && <StreamViewer sources={testStreams} userId={userId} />}
                 </>
             ) : (
                 isLoggedIn && (

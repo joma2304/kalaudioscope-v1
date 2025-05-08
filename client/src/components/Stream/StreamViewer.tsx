@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import VideoParent from "../Video/VideoParent";
+import { useSocket } from "../../context/SocketContext";
 import "./StreamViewer.css";
 
 interface StreamSource {
@@ -8,20 +10,88 @@ interface StreamSource {
 
 interface StreamViewerProps {
   sources: StreamSource[];
+  userId: string; // Lägg till userId som en prop
 }
 
-const StreamViewer: React.FC<StreamViewerProps> = ({ sources }) => {
+const StreamViewer: React.FC<StreamViewerProps> = ({ sources, userId }) => {
   const [currentSourceIndex, setCurrentSourceIndex] = useState(0);
   const [isReady, setIsReady] = useState(false);
+  const [showVideoParent, setShowVideoParent] = useState(false); // Ny state för att växla mellan StreamViewer och VideoParent
+  const [isController, setIsController] = useState(false); // Ny state för att kontrollera om användaren har kontrollen
   const videoRefs = useRef<HTMLVideoElement[]>([]);
   const [currentTime, setCurrentTime] = useState(0);
+
+  const socket = useSocket();
 
   // Initiera referenser för varje video
   useEffect(() => {
     videoRefs.current = videoRefs.current.slice(0, sources.length);
   }, [sources.length]);
 
-  // Sätt starttid och spela upp alla videos samtidigt
+  // Hämta kontrollstatus från servern
+  useEffect(() => {
+    socket.on("youAreNowController", () => {
+      setIsController(true);
+    });
+
+    socket.on("youAreNoLongerController", () => {
+      setIsController(false);
+    });
+
+    // Lyssna på vyändringar från servern
+    socket.on("viewModeChanged", (isVideoParent: boolean) => {
+      setShowVideoParent(isVideoParent);
+    });
+
+    // Fråga servern om initial kontrollstatus
+    console.log("Sending getControllerStatus with userId:", userId);
+    socket.emit("getControllerStatus", { userId });
+
+    return () => {
+      socket.off("youAreNowController");
+      socket.off("youAreNoLongerController");
+      socket.off("viewModeChanged");
+    };
+  }, [socket, userId]);
+
+  useEffect(() => {
+    socket.on('syncTime', (time: number) => {
+        const activeVideo = videoRefs.current[currentSourceIndex];
+        if (activeVideo && Math.abs(activeVideo.currentTime - time) > 0.1) {
+            activeVideo.currentTime = time; // Synkronisera tiden
+        }
+    });
+
+    return () => {
+        socket.off('syncTime');
+    };
+  }, [socket, currentSourceIndex]);
+
+  useEffect(() => {
+    socket.on('togglePlayPause', (isPlaying: boolean) => {
+        const activeVideo = videoRefs.current[currentSourceIndex];
+        if (activeVideo) {
+            if (isPlaying && activeVideo.paused) {
+                activeVideo.play().catch(console.warn);
+            } else if (!isPlaying && !activeVideo.paused) {
+                activeVideo.pause();
+            }
+        }
+    });
+
+    return () => {
+        socket.off('togglePlayPause');
+    };
+  }, [socket, currentSourceIndex]);
+
+  // Byt vy och meddela servern
+  const toggleViewMode = () => {
+    const newViewMode = !showVideoParent;
+    setShowVideoParent(newViewMode);
+    socket.emit("toggleViewMode", { userId, isVideoParent: newViewMode }); // Skicka ny vy till servern
+  };
+
+  // Synka alla videos när de är laddade
   const syncVideos = () => {
     videoRefs.current.forEach((video) => {
       if (video) {
@@ -94,47 +164,72 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources }) => {
 
   return (
     <div className="stream-viewer">
-      {/* Vinklarna */}
-      <div className="stream-thumbnails">
-        {sources.map((source, index) => (
-          <button
-            key={index}
-            className={`thumbnail-button ${currentSourceIndex === index ? "active" : ""}`}
-            onClick={() => switchSource(index)}
-          >
-            <video
-              className="thumbnail-video"
-              src={source.url}
-              muted
-              playsInline
-              preload="metadata"
-            />
-            <span className="label">{source.label}</span>
-          </button>
-        ))}
-      </div>
+      {/* Växla mellan StreamViewer och VideoParent */}
+      {isController && ( // Visa knappen endast om användaren har kontrollen
+        <button
+          onClick={toggleViewMode}
+          className="toggle-view-button"
+          style={{
+            margin: "10px",
+            padding: "10px 20px",
+            backgroundColor: "#6366f1",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          {showVideoParent ? "Switch to stream" : "Switch to 360 stream"}
+        </button>
+      )}
 
-      {/* Huvudvideon */}
-      <div className="main-video-container">
-        {sources.map((source, index) => (
-          <video
-            key={index}
-            ref={(el) => {
-              if (el) {
-                videoRefs.current[index] = el;
-              }
-            }}
-            src={source.url}
-            className={`main-video ${index === currentSourceIndex ? "visible" : "hidden"}`}
-            muted={index !== currentSourceIndex}
-            controls={index === currentSourceIndex}
-            autoPlay
-            playsInline
-            onLoadedMetadata={handleLoadedMetadata}
-            onTimeUpdate={index === currentSourceIndex ? handleTimeUpdate : undefined}
-          />
-        ))}
-      </div>
+      {showVideoParent ? (
+        <VideoParent /> // Visa VideoParent om showVideoParent är true
+      ) : (
+        <>
+          {/* Vinklarna */}
+          <div className="stream-thumbnails">
+            {sources.map((source, index) => (
+              <button
+                key={index}
+                className={`thumbnail-button ${currentSourceIndex === index ? "active" : ""}`}
+                onClick={() => switchSource(index)}
+              >
+                <video
+                  className="thumbnail-video"
+                  src={source.url}
+                  muted
+                  playsInline
+                  preload="metadata"
+                />
+                <span className="label">{source.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Huvudvideon */}
+          <div className="main-video-container">
+            {sources.map((source, index) => (
+              <video
+                key={index}
+                ref={(el) => {
+                  if (el) {
+                    videoRefs.current[index] = el;
+                  }
+                }}
+                src={source.url}
+                className={`main-video ${index === currentSourceIndex ? "visible" : "hidden"}`}
+                muted={index !== currentSourceIndex}
+                controls={index === currentSourceIndex}
+                autoPlay
+                playsInline
+                onLoadedMetadata={handleLoadedMetadata}
+                onTimeUpdate={index === currentSourceIndex ? handleTimeUpdate : undefined}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };

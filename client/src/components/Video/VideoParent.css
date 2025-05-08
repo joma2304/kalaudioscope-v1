@@ -1,14 +1,66 @@
+
 .video-controls {
     position: absolute;
     bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.6);
-    padding: 10px 20px;
+    width: 90%;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px;
     border-radius: 10px;
     color: white;
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-family: sans-serif;
+    opacity: 0.7;
+    transition: opacity 0.3s ease, background 0.3s ease;
+}
+
+.video-controls:hover {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.controller-actions {
+    display: flex;
     align-items: center;
-    gap: 15px;
-    z-index: 10;
+    gap: 10px;
+}
+
+.time-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.controller-info {
+    opacity: 0.8;
+}
+
+
+.seek-bar:hover {
+cursor: pointer;
+}
+
+.controller-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: none;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    flex-shrink: 0;
+    font-size: 0.9em;
+}
+
+.controller-button:hover {
+    background: linear-gradient(135deg, #0056b3, #004494);
+    transform: scale(1.05);
 }

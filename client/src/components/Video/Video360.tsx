@@ -17,6 +17,8 @@ const Video360: React.FC<Video360Props> = ({ videoSrc, videoRef }) => {
     useEffect(() => {
         if (videoRef && videoTexture?.image instanceof HTMLVideoElement) {
             videoRef.current = videoTexture.image;
+        } else {
+            console.error("Failed to load video texture.");
         }
     }, [videoTexture, videoRef]);
 

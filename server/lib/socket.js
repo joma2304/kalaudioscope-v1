@@ -30,7 +30,6 @@ const roomMaxLimits = {};     // room: number
 const roomPasswords = {};     // room: string
 const roomTags = {};          // room: string[]
 
-
 function emitRoomList() {
     io.emit("roomList", getAllActiveRooms().map(room => ({
         name: room,
@@ -52,11 +51,13 @@ async function handleControllerChange(room) {
         const name = userDoc ? `${userDoc.firstName} ${userDoc.lastName}` : newController.userId;
 
         io.to(room).emit('message', await buildMsg(ADMIN, `${name} is now in control.`));
+
         io.to(newController.id).emit('youAreNowController');
     } else {
         delete roomControllers[room];
     }
 }
+
 
 io.on("connection", (socket) => {
     console.log(`User ${socket.id} connected`);
@@ -88,6 +89,7 @@ io.on("connection", (socket) => {
             return callback({ success: false, message: "Room is full." });
         }
 
+
         if (roomPasswords[room] && roomPasswords[room] !== password) {
             return callback({ success: false, message: "Incorrect password." });
         }
@@ -105,6 +107,7 @@ io.on("connection", (socket) => {
         const user = activateUser(socket.id, userId, room);
         socket.join(room);
 
+
         const usersInRoom = getUsersInRoom(room);
         const users = await Promise.all(
             usersInRoom.map(async (u) => {
@@ -113,19 +116,26 @@ io.on("connection", (socket) => {
                     userId: u.userId,
                     firstName: userDoc?.firstName || "",
                     lastName: userDoc?.lastName || ""
+
                 };
             })
         );
 
         io.to(room).emit("userList", { users });
 
+
+        io.to(room).emit("userList", { users });
+
         const joinedUser = await User.findById(userId).lean();
         const joinedName = joinedUser ? `${joinedUser.firstName} ${joinedUser.lastName}` : userId;
+        io.to(room).emit("message", await buildMsg(ADMIN, `${joinedName} has joined`));
         io.to(room).emit("message", await buildMsg(ADMIN, `${joinedName} has joined`));
         emitRoomList();
 
         if (!roomControllers[room] || roomControllers[room] === socket.id) {
             roomControllers[room] = socket.id;
+            user.isController = true;
+            socket.emit("youAreNowController");
             user.isController = true;
             socket.emit("youAreNowController");
         }
@@ -137,7 +147,9 @@ io.on("connection", (socket) => {
             users
         });
 
+
     });
+
 
 
     socket.on("setRoomLimit", ({ room, maxUsers }, callback) => {
@@ -151,10 +163,12 @@ io.on("connection", (socket) => {
         roomMaxLimits[room] = maxUsers;
         callback({ success: true, message: `Max user limit set to ${maxUsers} for room ${room}.` });
     });
+
     //Behövs för att kunna se rumslistan i frontend
     socket.on("getRoomList", () => {
         emitRoomList();
     });
+
 
 
     socket.on("leaveRoom", async ({ userId, room }) => {
@@ -163,6 +177,7 @@ io.on("connection", (socket) => {
 
         userLeavesApp(socket.id);
         socket.leave(room);
+
 
         const leftUser = await User.findById(userId).lean();
         const leftName = leftUser ? `${leftUser.firstName} ${leftUser.lastName}` : userId;
@@ -180,6 +195,7 @@ io.on("connection", (socket) => {
             })
         );
 
+
         io.to(room).emit("userList", { users });
 
         if (user.isController) await handleControllerChange(room);
@@ -187,6 +203,8 @@ io.on("connection", (socket) => {
         if (usersInRoom.length === 0) {
             delete roomPasswords[room];
             delete roomMaxLimits[room];
+            delete roomControllers[room];
+            delete roomTags[room];
             delete roomControllers[room];
             delete roomTags[room];
         }
@@ -200,9 +218,11 @@ io.on("connection", (socket) => {
 
         userLeavesApp(socket.id);
 
+
         const discUser = await User.findById(user.userId).lean();
         const discName = discUser ? `${discUser.firstName} ${discUser.lastName}` : user.userId;
         io.to(user.room).emit("message", await buildMsg(ADMIN, `${discName} has left the chat`));
+
 
         const usersInRoom = getUsersInRoom(user.room);
         const users = await Promise.all(
@@ -218,42 +238,68 @@ io.on("connection", (socket) => {
 
         io.to(user.room).emit("userList", { users });
 
+        io.to(user.room).emit("userList", { users });
+
         if (user.isController) await handleControllerChange(user.room);
+
 
         emitRoomList();
         console.log(`User ${socket.id} disconnected`);
     });
+
 
     socket.on("message", async ({ userId, text }) => {
         const room = getUser(socket.id)?.room;
         if (room) {
             const msg = await buildMsg(userId, text);
             io.to(room).emit("message", msg);
+            io.to(room).emit("message", msg);
         }
     });
+
 
     socket.on("activity", (userId) => {
         const room = getUser(socket.id)?.room;
         if (room) {
             socket.broadcast.to(room).emit("activity", userId);
+            socket.broadcast.to(room).emit("activity", userId);
+        }
+    });
+
+    socket.on("getControllerStatus", () => {
+        const user = getUser(socket.id);
+        if (user?.isController) {
+            socket.emit("youAreNowController");
+        } else {
+            socket.emit("youAreNoLongerController");
+        }
+    });
+
+    socket.on("toggleViewMode", ({ userId, isVideoParent }) => {
+        const user = getUser(userId);
+        if (user?.isController) {
+            io.to(user.room).emit("viewModeChanged", isVideoParent);
         }
     });
 
     socket.on("syncTime", (time) => {
         const user = getUser(socket.id);
         if (user?.isController) {
-            user.videoTime = time;
+           // user.videoTime = time;
             socket.broadcast.to(user.room).emit("syncTime", time);
         }
     });
+
 
     socket.on("togglePlayPause", (isPlaying) => {
         const user = getUser(socket.id);
         if (user?.isController) {
             user.isPlaying = isPlaying;
             socket.broadcast.to(user.room).emit("togglePlayPause", isPlaying);
+            socket.broadcast.to(user.room).emit("togglePlayPause", isPlaying);
         }
     });
 });
 
+    
 export { io, app, server };
