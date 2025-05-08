@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
 
     socket.on("requestRoom", ({ maxUsers, password, tags }, callback) => {
         const existingRooms = getAllActiveRooms();
-        // Skapa ett slumpmässigt rumsnamn, t.ex. 8 tecken långt
+        // Skapa ett slumpmässigt rumsnamn, t.ex. 8 tecken långt.
         let roomName;
         do {
             roomName = crypto.randomBytes(8).toString("hex"); // t.ex. "a1b2c3d4"
