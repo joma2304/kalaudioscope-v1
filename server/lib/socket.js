@@ -296,7 +296,6 @@ io.on("connection", (socket) => {
         if (user?.isController) {
             user.isPlaying = isPlaying;
             socket.broadcast.to(user.room).emit("togglePlayPause", isPlaying);
-            socket.broadcast.to(user.room).emit("togglePlayPause", isPlaying);
         }
     });
 });

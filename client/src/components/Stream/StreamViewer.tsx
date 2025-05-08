@@ -56,31 +56,31 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources, userId }) => {
 
   useEffect(() => {
     socket.on('syncTime', (time: number) => {
-        const activeVideo = videoRefs.current[currentSourceIndex];
-        if (activeVideo && Math.abs(activeVideo.currentTime - time) > 0.1) {
-            activeVideo.currentTime = time; // Synkronisera tiden
-        }
+      const activeVideo = videoRefs.current[currentSourceIndex];
+      if (activeVideo && Math.abs(activeVideo.currentTime - time) > 0.1) {
+        activeVideo.currentTime = time; // Synkronisera tiden
+      }
     });
 
     return () => {
-        socket.off('syncTime');
+      socket.off('syncTime');
     };
   }, [socket, currentSourceIndex]);
 
   useEffect(() => {
     socket.on('togglePlayPause', (isPlaying: boolean) => {
-        const activeVideo = videoRefs.current[currentSourceIndex];
-        if (activeVideo) {
-            if (isPlaying && activeVideo.paused) {
-                activeVideo.play().catch(console.warn);
-            } else if (!isPlaying && !activeVideo.paused) {
-                activeVideo.pause();
-            }
+      const activeVideo = videoRefs.current[currentSourceIndex];
+      if (activeVideo) {
+        if (isPlaying && activeVideo.paused) {
+          activeVideo.play().catch(console.warn);
+        } else if (!isPlaying && !activeVideo.paused) {
+          activeVideo.pause();
         }
+      }
     });
 
     return () => {
-        socket.off('togglePlayPause');
+      socket.off('togglePlayPause');
     };
   }, [socket, currentSourceIndex]);
 
@@ -96,7 +96,7 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources, userId }) => {
     videoRefs.current.forEach((video) => {
       if (video) {
         video.currentTime = currentTime;
-        video.play().catch(() => {}); // Hantera eventuella autoplay-fel
+        video.play().catch(() => { }); // Hantera eventuella autoplay-fel
       }
     });
   };
@@ -164,27 +164,12 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources, userId }) => {
 
   return (
     <div className="stream-viewer">
-      {/* Växla mellan StreamViewer och VideoParent */}
-      {isController && ( // Visa knappen endast om användaren har kontrollen
-        <button
-          onClick={toggleViewMode}
-          className="toggle-view-button"
-          style={{
-            margin: "10px",
-            padding: "10px 20px",
-            backgroundColor: "#6366f1",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          {showVideoParent ? "Switch to stream" : "Switch to 360 stream"}
-        </button>
-      )}
-
       {showVideoParent ? (
-        <VideoParent /> // Visa VideoParent om showVideoParent är true
+        <VideoParent
+          onToggleViewMode={toggleViewMode}
+          isVideoParent={showVideoParent}
+          isController={isController} // Behåll denna prop om den används för andra ändamål
+        />
       ) : (
         <>
           {/* Vinklarna */}
@@ -205,6 +190,14 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources, userId }) => {
                 <span className="label">{source.label}</span>
               </button>
             ))}
+
+            {/* Knapp för att byta vy */}
+            <button
+              onClick={toggleViewMode}
+              className="toggle-view-button"
+            >
+              {showVideoParent ? "Switch to stream" : "Switch to 360 stream"}
+            </button>
           </div>
 
           {/* Huvudvideon */}

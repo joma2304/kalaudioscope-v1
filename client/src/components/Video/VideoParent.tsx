@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import Video360 from "./Video360";
-import { useSocket } from "../../context/SocketContext"; // Importera useSocket
-import "./VideoParent.css"; // Importera CSS-filen
+import { useSocket } from "../../context/SocketContext";
+import "./VideoParent.css";
 
 const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -13,13 +13,18 @@ const formatTime = (time: number) => {
 
 const STORAGE_KEY = "lastVideoTime";
 
-const VideoParent = () => {
+interface VideoParentProps {
+    onToggleViewMode: () => void; // Ny prop för att hantera vybyte
+    isVideoParent: boolean; // För att veta vilken vy som är aktiv
+    isController: boolean; // För att visa knappen endast för kontrollanvändaren
+}
+
+const VideoParent: React.FC<VideoParentProps> = ({ onToggleViewMode, isVideoParent, isController }) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
     const [isVideoReady, setIsVideoReady] = useState(false);
-    const [isController, setIsController] = useState(false);
 
     const socket = useSocket();
     const userId = "uniqueUserId"; // Replace with actual user ID logic
@@ -72,75 +77,6 @@ const VideoParent = () => {
         };
     }, [isVideoReady, socket]);
 
-    useEffect(() => {
-        socket.on('syncTime', (time: number) => {
-            const video = videoRef.current;
-            if (video && Math.abs(video.currentTime - time) > 0.1) {
-                video.currentTime = time; // Synkronisera tiden
-            }
-        });
-
-        socket.on('youAreNowController', () => {
-            setIsController(true);
-        });
-
-        socket.on('youAreNoLongerController', () => {
-            setIsController(false);
-        });
-
-        return () => {
-            socket.off('syncTime');
-            socket.off('youAreNowController');
-            socket.off('youAreNoLongerController');
-        };
-    }, [socket]);
-
-    useEffect(() => {
-        socket.emit('getInitialState', { userId });
-
-        socket.on('initialState', ({ currentTime, isPlaying, isController }) => {
-            setIsController(isController);
-            const video = videoRef.current;
-            if (video) {
-                video.currentTime = currentTime;
-                setCurrentTime(currentTime);
-                setIsPlaying(isPlaying);
-
-                if (isPlaying) {
-                    video.play().catch(console.warn);
-                } else {
-                    video.pause();
-                }
-            }
-        });
-
-        return () => {
-            socket.off('initialState');
-        };
-    }, [socket, userId]);
-
-    useEffect(() => {
-        socket.emit('getControllerStatus', { userId }); // Skicka userId som en del av payloaden
-    }, [socket, userId]);
-
-    useEffect(() => {
-        socket.on('togglePlayPause', (isPlaying: boolean) => {
-            const video = videoRef.current;
-            if (video) {
-                if (isPlaying && video.paused) {
-                    video.play().catch(console.warn);
-                } else if (!isPlaying && !video.paused) {
-                    video.pause();
-                }
-                setIsPlaying(isPlaying);
-            }
-        });
-
-        return () => {
-            socket.off('togglePlayPause');
-        };
-    }, [socket]);
-
     const togglePlay = () => {
         const video = videoRef.current;
         if (!video) return;
@@ -149,12 +85,12 @@ const VideoParent = () => {
             video.muted = false;
             video.play().then(() => {
                 setIsPlaying(true);
-                socket.emit('togglePlayPause', { userId, isPlaying: true }); // Skicka play-status
+                socket.emit('togglePlayPause', { userId, isPlaying: true });
             }).catch(console.warn);
         } else {
             video.pause();
             setIsPlaying(false);
-            socket.emit('togglePlayPause', { userId, isPlaying: false }); // Skicka pause-status
+            socket.emit('togglePlayPause', { userId, isPlaying: false });
         }
     };
 
@@ -165,7 +101,7 @@ const VideoParent = () => {
             video.currentTime = newTime;
             setCurrentTime(newTime);
             localStorage.setItem(STORAGE_KEY, newTime.toString());
-            socket.emit('syncTime', { userId, time: newTime }); // Skicka tidsuppdatering till servern
+            socket.emit('syncTime', { userId, time: newTime });
         }
     };
 
@@ -191,24 +127,31 @@ const VideoParent = () => {
                     </span>
                 </div>
 
-                {isController && (
-                    <div className="controller-actions">
-                        <button className="controller-button" onClick={togglePlay} style={{ padding: "5px 10px" }}>
-                            {isPlaying ? "⏸ Pause" : "▶ Play"}
-                        </button>
+                <div className="controller-actions">
+                    <button className="controller-button" onClick={togglePlay} style={{ padding: "5px 10px" }}>
+                        {isPlaying ? "⏸ Pause" : "▶ Play"}
+                    </button>
 
-                        <input
-                            className="seek-bar"
-                            type="range"
-                            min={0}
-                            max={duration || 0}
-                            step={0.1}
-                            value={currentTime}
-                            onChange={handleSeek}
-                            style={{ flexGrow: 1 }}
-                        />
-                    </div>
-                )}
+                    <input
+                        className="seek-bar"
+                        type="range"
+                        min={0}
+                        max={duration || 0}
+                        step={0.1}
+                        value={currentTime}
+                        onChange={handleSeek}
+                        style={{ flexGrow: 1 }}
+                    />
+
+                    {/* Knapp för att byta vy */}
+                    <button
+                        className="controller-button"
+                        onClick={onToggleViewMode}
+                        style={{ padding: "5px 10px" }}
+                    >
+                        {isVideoParent ? "Switch to stream" : "Switch to 360 stream"}
+                    </button>
+                </div>
             </div>
         </div>
     );
