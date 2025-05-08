@@ -121,21 +121,16 @@ io.on("connection", (socket) => {
             })
         );
 
-        io.to(room).emit("userList", { users });
-
 
         io.to(room).emit("userList", { users });
 
         const joinedUser = await User.findById(userId).lean();
         const joinedName = joinedUser ? `${joinedUser.firstName} ${joinedUser.lastName}` : userId;
         io.to(room).emit("message", await buildMsg(ADMIN, `${joinedName} has joined`));
-        io.to(room).emit("message", await buildMsg(ADMIN, `${joinedName} has joined`));
-        emitRoomList();
+
 
         if (!roomControllers[room] || roomControllers[room] === socket.id) {
             roomControllers[room] = socket.id;
-            user.isController = true;
-            socket.emit("youAreNowController");
             user.isController = true;
             socket.emit("youAreNowController");
         }
@@ -205,8 +200,6 @@ io.on("connection", (socket) => {
             delete roomMaxLimits[room];
             delete roomControllers[room];
             delete roomTags[room];
-            delete roomControllers[room];
-            delete roomTags[room];
         }
 
         emitRoomList();
@@ -238,7 +231,6 @@ io.on("connection", (socket) => {
 
         io.to(user.room).emit("userList", { users });
 
-        io.to(user.room).emit("userList", { users });
 
         if (user.isController) await handleControllerChange(user.room);
 
@@ -253,7 +245,6 @@ io.on("connection", (socket) => {
         if (room) {
             const msg = await buildMsg(userId, text);
             io.to(room).emit("message", msg);
-            io.to(room).emit("message", msg);
         }
     });
 
@@ -261,7 +252,6 @@ io.on("connection", (socket) => {
     socket.on("activity", (userId) => {
         const room = getUser(socket.id)?.room;
         if (room) {
-            socket.broadcast.to(room).emit("activity", userId);
             socket.broadcast.to(room).emit("activity", userId);
         }
     });
@@ -275,12 +265,12 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("toggleViewMode", ({ userId, isVideoParent }) => {
-        const user = getUser(userId);
-        if (user?.isController) {
-            io.to(user.room).emit("viewModeChanged", isVideoParent);
-        }
-    });
+    // socket.on("toggleViewMode", ({ userId, isVideoParent }) => {
+    //     const user = getUser(userId);
+    //     if (user?.isController) {
+    //         io.to(user.room).emit("viewModeChanged", isVideoParent);
+    //     }
+    // });
 
     socket.on("syncTime", (time) => {
         const user = getUser(socket.id);
