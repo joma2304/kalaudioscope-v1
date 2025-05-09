@@ -52,6 +52,7 @@
   opacity: 0;
   transform: translateY(10px);
   flex-direction: column;
+  align-items: flex-start;
 }
 
 .create-room-container.open .create-room-form {
@@ -156,7 +157,7 @@ text-align: left;
   font-size: 0.9rem;
   font-weight: 500;
   text-align: center;
-  border: 1.5px solid var(--tag-color, #6366f1);
+  border: 2px solid var(--tag-color, #6366f1);
   background: #fff;
   color: var(--tag-color, #6366f1);
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
@@ -250,8 +251,8 @@ text-align: left;
 /* Stolar */
 .chair-grid {
   display: grid;
-  grid-template-columns: repeat(4, 2.2em);
-  grid-template-rows: repeat(4, 2.2em);
+  grid-template-columns: repeat(10, 2.2em);
+  grid-template-rows: repeat(3, 2.2em);
   gap: 0.4em;
   margin: 0.5em 0 0.3em 0;
   justify-content: center;
@@ -269,10 +270,19 @@ text-align: left;
   text-shadow: 0 2px 8px #bbb3;
 }
 .chair-btn.selected { filter: none; }
-.chair-btn:focus { outline: 2px solid #b71c1c; }
+.chair-btn:focus { outline: 2px solid #5145cd; }
 .chair-count-label {
   font-size: 1em;
   color: #444;
   margin-top: 0.2em;
   margin-left: 0.1em;
+}
+
+.chair-count-label {
+  color: #5145cd;
+  font-weight: bold;
+  font-size: 20px;
+  margin: 0 auto;
+  margin-top: 10px;
+  margin-bottom: 2rem;
 }

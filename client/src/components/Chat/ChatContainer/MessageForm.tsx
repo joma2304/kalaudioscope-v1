@@ -20,7 +20,7 @@ const MessageForm: React.FC<MessageFormProps> = ({ message, setMessage, sendMess
                 required
             />
             <button className="send-button" type="submit">
-                <SendHorizonal size={18} /> <span>Send</span>
+                <SendHorizonal size={18} className="send-message-icon" /> Send
             </button>
         </form>
     );
