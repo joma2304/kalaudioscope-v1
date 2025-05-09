@@ -46,14 +46,15 @@ const Header: React.FC<HeaderProps> = ({ setIsLoggedIn, setUserId }) => {
             <span className="user-info">
               {user.firstName} {user.lastName} ({user.email})
             </span>
-            <button
-              className="settings-btn"
-              onClick={() => setShowSettings(true)}
-              title="Account settings"
-              style={{ background: "none", border: "none", marginRight: "0.5em", cursor: "pointer" }}
-            >
-              <Settings size={22} color="#bbb" />
-            </button>
+    <div className="settings-icon">
+      <button
+        className="settings-btn"
+        onClick={() => setShowSettings(true)}
+        title="Account settings"
+      >
+        <Settings size={22} className="settings-icon-svg" />
+      </button>
+    </div>
             <SettingsModal
               isOpen={showSettings}
               onClose={() => setShowSettings(false)}
