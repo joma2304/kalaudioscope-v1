@@ -9,12 +9,16 @@ import StreamViewer from "./components/Stream/StreamViewer";
 import toast, { Toaster } from 'react-hot-toast';
 import Header from "./components/Header/Header";
 
-const testStreams = [
+const defaultStreams = [
     { label: "Angle 1", url: "/videos/angle1.mp4" },
     { label: "Angle 2", url: "/videos/angle2.mp4" },
     { label: "Angle 3", url: "/videos/angle3.mp4" },
     { label: "Angle 4", url: "/videos/angle4.mp4" }
 ];
+const getStreams = () => {
+    const stored = localStorage.getItem("customStreams");
+    return stored ? JSON.parse(stored) : defaultStreams;
+};
 
 const getUserId = () => {
     const authUser = localStorage.getItem("authUser");
@@ -34,6 +38,7 @@ const AppContent: React.FC = () => {
     const [userId, setUserId] = useState(getUserId());
     const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("authUser"));
     const [searchParams, setSearchParams] = useSearchParams();
+    const [testStreams, setTestStreams] = useState(getStreams());
 
     // Uppdatera isLoggedIn och userId när authUser ändras (t.ex. i annan flik)
     useEffect(() => {
@@ -44,6 +49,12 @@ const AppContent: React.FC = () => {
         };
         window.addEventListener("storage", checkAuth);
         return () => window.removeEventListener("storage", checkAuth);
+    }, []);
+
+    useEffect(() => {
+        const onStorage = () => setTestStreams(getStreams());
+        window.addEventListener("storage", onStorage);
+        return () => window.removeEventListener("storage", onStorage);
     }, []);
 
    // Hantera länk med ?room=...

@@ -3,6 +3,13 @@ import "./LoginModal.css";
 import { useUser } from "../../context/UserContext";
 import toast from "react-hot-toast";
 
+const defaultStreams = [
+  { label: "Angle 1", url: "/videos/angle1.mp4" },
+  { label: "Angle 2", url: "/videos/angle2.mp4" },
+  { label: "Angle 3", url: "/videos/angle3.mp4" },
+  { label: "Angle 4", url: "/videos/angle4.mp4" }
+];
+
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -20,6 +27,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteError, setDeleteError] = useState("");
+  const [streams, setStreams] = useState(() => {
+    const stored = localStorage.getItem("customStreams");
+    return stored ? JSON.parse(stored) : defaultStreams;
+  });
 
   if (!isOpen) return null;
 
@@ -89,10 +100,50 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
     }
   };
 
+  // Spara till localStorage när streams ändras
+  const handleStreamChange = (idx: number, url: string) => {
+    const updated = streams.map((s: { label: string; url: string }, i: number) => 
+      i === idx ? { ...s, url } : s
+    );
+    setStreams(updated);
+    localStorage.setItem("customStreams", JSON.stringify(updated));
+  };
+
+  const handleResetStreams = () => {
+    setStreams(defaultStreams);
+    localStorage.removeItem("customStreams");
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Account Settings</h2>
+
+        {/* Stream URL settings */}
+        <div style={{ marginBottom: 20 }}>
+          <h3 style={{ fontSize: "1.1em", marginBottom: 8 }}>Custom stream URLs</h3>
+          {streams.map((stream: { label: string; url: string }, idx: number) => (
+            <div className="form-group" key={stream.label}>
+              <label>{stream.label} URL:</label>
+              <input
+                className="modal-input"
+                type="text"
+                value={stream.url}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleStreamChange(idx, e.target.value)}
+                placeholder={`URL for ${stream.label}`}
+              />
+            </div>
+          ))}
+          <button
+            type="button"
+            className="secondary-btn"
+            style={{ marginTop: 4 }}
+            onClick={handleResetStreams}
+          >
+            Reset to default
+          </button>
+        </div>
+
         <form onSubmit={handleUpdate}>
           <div className="form-group">
             <label>First Name:</label>
@@ -133,7 +184,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
                 Enter your password to confirm <b>deletion of your account</b>:
               </p>
               <div className="form-group">
-                
+                <label>Password:</label>
                 <input
                   className="modal-input"
                   type="password"
