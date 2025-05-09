@@ -39,11 +39,11 @@ const Header: React.FC<HeaderProps> = ({ setIsLoggedIn, setUserId }) => {
 
   return (
     <header className="header">
-      <a href="/" className="header-logo-link" style={{ display: "flex", alignItems: "center" }}>
+      <a href="/" className="header-logo-link">
         <img
           src="/kalaudioscope-logo-small.png"
           alt="Kalaudioscope Logo"
-          style={{ height: "38px", width: "auto", marginRight: "1rem" }}
+          className="header-logo"
         />
       </a>
       <div className="header-user">
