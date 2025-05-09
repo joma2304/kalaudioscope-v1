@@ -115,6 +115,11 @@ p, h3 {
     text-align: center;
 }
 
+.settings-modal {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
 /* Knappar */
 .primary-btn {
     background: linear-gradient(135deg, #6366f1, #4338ca); /* Samma gradient som andra knappar */

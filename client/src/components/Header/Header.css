@@ -1,6 +1,6 @@
 .header {
     padding: 1rem 2rem;
-    background-color: #1c1c1e;
+    background-color: #34349a;
     color: #ffffff;
     display: flex;
     justify-content: space-between;
@@ -76,18 +76,31 @@
     background: #1e7e34;
   }
 
-  .settings-btn {
-    background: none;
-    border: none;
-    margin-right: 0.5em;
-    cursor: pointer;
-    padding: 0.3em;
-    border-radius: 50%;
-    transition: background 0.2s;
-  }
-  .settings-btn:hover {
-    background: #222;
-  }
+/* SettingsButton.css */
+
+.settings-icon {
+  display: flex;
+  align-items: center;
+}
+
+.settings-btn {
+  background: none;
+  border: none;
+  padding: 0.5em;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+  border-radius: 8px;
+}
+
+
+.settings-icon-svg {
+  color: #c8c8c8;
+  transition: color 0.3s;
+}
+
+.settings-btn:hover .settings-icon-svg {
+  color: #6a79ce;
+}
 
   .header-logo-link img {
     display: block;

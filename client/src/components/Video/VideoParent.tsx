@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import Video360 from "./Video360";
-import { useSocket } from "../../context/SocketContext";
 import "./VideoParent.css";
 
 const formatTime = (time: number) => {
@@ -16,18 +15,14 @@ const STORAGE_KEY = "lastVideoTime";
 interface VideoParentProps {
     onToggleViewMode: () => void; // Ny prop för att hantera vybyte
     isVideoParent: boolean; // För att veta vilken vy som är aktiv
-    isController: boolean; // För att visa knappen endast för kontrollanvändaren
 }
 
-const VideoParent: React.FC<VideoParentProps> = ({ onToggleViewMode, isVideoParent, isController }) => {
+const VideoParent: React.FC<VideoParentProps> = ({ onToggleViewMode, isVideoParent }) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
     const [isVideoReady, setIsVideoReady] = useState(false);
-
-    const socket = useSocket();
-    const userId = "uniqueUserId"; // Replace with actual user ID logic
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -49,7 +44,6 @@ const VideoParent: React.FC<VideoParentProps> = ({ onToggleViewMode, isVideoPare
         const updateTime = () => {
             setCurrentTime(video.currentTime);
             localStorage.setItem(STORAGE_KEY, video.currentTime.toString());
-            socket.emit('syncTime', video.currentTime);
         };
 
         const updateMeta = () => {
@@ -75,7 +69,7 @@ const VideoParent: React.FC<VideoParentProps> = ({ onToggleViewMode, isVideoPare
             video.removeEventListener("loadedmetadata", updateMeta);
             video.removeEventListener("timeupdate", updateTime);
         };
-    }, [isVideoReady, socket]);
+    }, [isVideoReady]);
 
     const togglePlay = () => {
         const video = videoRef.current;
@@ -85,12 +79,10 @@ const VideoParent: React.FC<VideoParentProps> = ({ onToggleViewMode, isVideoPare
             video.muted = false;
             video.play().then(() => {
                 setIsPlaying(true);
-                socket.emit('togglePlayPause', { userId, isPlaying: true });
             }).catch(console.warn);
         } else {
             video.pause();
             setIsPlaying(false);
-            socket.emit('togglePlayPause', { userId, isPlaying: false });
         }
     };
 
@@ -101,7 +93,6 @@ const VideoParent: React.FC<VideoParentProps> = ({ onToggleViewMode, isVideoPare
             video.currentTime = newTime;
             setCurrentTime(newTime);
             localStorage.setItem(STORAGE_KEY, newTime.toString());
-            socket.emit('syncTime', { userId, time: newTime });
         }
     };
 
@@ -122,9 +113,6 @@ const VideoParent: React.FC<VideoParentProps> = ({ onToggleViewMode, isVideoPare
             <div className="video-controls">
                 <div className="time-info">
                     <span>{formatTime(currentTime)} / {formatTime(duration)}</span>
-                    <span className="controller-info">
-                        {isController ? "You are in control" : "You are not in control"}
-                    </span>
                 </div>
 
                 <div className="controller-actions">

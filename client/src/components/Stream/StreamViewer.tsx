@@ -17,7 +17,6 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources, userId }) => {
   const [currentSourceIndex, setCurrentSourceIndex] = useState(0);
   const [isReady, setIsReady] = useState(false);
   const [showVideoParent, setShowVideoParent] = useState(false); // Ny state för att växla mellan StreamViewer och VideoParent
-  const [isController, setIsController] = useState(false); // Ny state för att kontrollera om användaren har kontrollen
   const videoRefs = useRef<HTMLVideoElement[]>([]);
   const [currentTime, setCurrentTime] = useState(0);
 
@@ -28,31 +27,16 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources, userId }) => {
     videoRefs.current = videoRefs.current.slice(0, sources.length);
   }, [sources.length]);
 
-  // Hämta kontrollstatus från servern
+  // Lyssna på vyändringar från servern
   useEffect(() => {
-    socket.on("youAreNowController", () => {
-      setIsController(true);
-    });
-
-    socket.on("youAreNoLongerController", () => {
-      setIsController(false);
-    });
-
-    // Lyssna på vyändringar från servern
     socket.on("viewModeChanged", (isVideoParent: boolean) => {
       setShowVideoParent(isVideoParent);
     });
 
-    // Fråga servern om initial kontrollstatus
-    console.log("Sending getControllerStatus with userId:", userId);
-    socket.emit("getControllerStatus", { userId });
-
     return () => {
-      socket.off("youAreNowController");
-      socket.off("youAreNoLongerController");
       socket.off("viewModeChanged");
     };
-  }, [socket, userId]);
+  }, [socket]);
 
   useEffect(() => {
     socket.on('syncTime', (time: number) => {
@@ -168,7 +152,6 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources, userId }) => {
         <VideoParent
           onToggleViewMode={toggleViewMode}
           isVideoParent={showVideoParent}
-          isController={isController} // Behåll denna prop om den används för andra ändamål
         />
       ) : (
         <>
@@ -196,7 +179,7 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources, userId }) => {
               onClick={toggleViewMode}
               className="toggle-view-button"
             >
-              {showVideoParent ? "Switch to stream" : "Switch to 360 stream"}
+              {showVideoParent ? "Switch to stream" : "Switch to 360° stream"}
             </button>
           </div>
 
