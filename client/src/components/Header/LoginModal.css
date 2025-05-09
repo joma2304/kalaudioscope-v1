@@ -238,6 +238,10 @@ p, h3 {
     margin-bottom: 5px;
 }
 
+.settings-form {
+    background-color: #e7e7e7;
+}
+
 /* Animation för modal */
 @keyframes fadeIn {
     from {

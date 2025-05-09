@@ -161,7 +161,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
           </button>
         </div>
 
-        <form onSubmit={handleUpdate}>
+        <form onSubmit={handleUpdate} className="settings-form">
           <div className="form-group">
             <label>First Name:</label>
             <input value={firstName} onChange={e => setFirstName(e.target.value)} />
