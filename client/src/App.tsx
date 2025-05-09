@@ -8,7 +8,6 @@ import RoomList from "./components/Lobby/RoomList";
 import StreamViewer from "./components/Stream/StreamViewer";
 import toast, { Toaster } from 'react-hot-toast';
 import Header from "./components/Header/Header";
-import { jwtDecode } from "jwt-decode";
 
 const defaultStreams = [
     { label: "Angle 1", url: "/videos/angle1.mp4" },
@@ -28,16 +27,6 @@ const getUserId = () => {
         return JSON.parse(authUser).userId || "";
     } catch {
         return "";
-    }
-};
-
-const isTokenExpired = (token: string | undefined): boolean => {
-    if (!token) return true;
-    try {
-        const { exp } = jwtDecode<{ exp: number }>(token);
-        return Date.now() >= exp * 1000;
-    } catch {
-        return true;
     }
 };
 
@@ -212,36 +201,12 @@ const AppContent: React.FC = () => {
     );
 };
 
-const App: React.FC = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("authUser"));
-    const [userId, setUserId] = useState(() => {
-        const authUser = localStorage.getItem("authUser");
-        return authUser ? JSON.parse(authUser).userId : "";
-    });
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            const authUser = localStorage.getItem("authUser");
-            const token = authUser ? JSON.parse(authUser).token : null;
-
-            if (isTokenExpired(token)) {
-                toast.error("Session expired. Logging out...");
-                localStorage.removeItem("authUser");
-                setIsLoggedIn(false);
-                setUserId("");
-            }
-        }, 10000); // Kontrollera tokenens giltighet var 10:e sekund
-
-        return () => clearInterval(interval);
-    }, []);
-
-    return (
-        <UserProvider>
-            <SocketProvider>
-                <AppContent />
-            </SocketProvider>
-        </UserProvider>
-    );
-};
+const App: React.FC = () => (
+    <UserProvider>
+        <SocketProvider>
+            <AppContent />
+        </SocketProvider>
+    </UserProvider>
+);
 
 export default App;
