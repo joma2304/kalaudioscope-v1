@@ -165,13 +165,35 @@ const AppContent: React.FC = () => {
                     {videoExists && <StreamViewer sources={testStreams} userId={userId} />}
                 </>
             ) : (
-                isLoggedIn && (
+                isLoggedIn ? (
                     <div className="lobby-view">
                         <JoinForm
                             userId={userId}
                             onJoinSuccess={handleJoinSuccess}
                         />
                         <RoomList onJoinRoom={handleJoinSuccess} userId={userId} />
+                    </div>
+                ) : (
+                    <div
+                        style={{
+                            minHeight: "70vh",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center"
+                        }}
+                    >
+                        <img
+                            src="/kalaudioscope-logo.png" // eller "/logo.svg"
+                            alt="Opera Chat Logo"
+                            style={{
+                                width: "320px",
+                                maxWidth: "90vw",
+                                marginBottom: "2rem",
+                                filter: "drop-shadow(0 8px 32px rgba(99,102,241,0.18))"
+                            }}
+                        />
+                        {/* Här kan du lägga till ev. välkomsttext */}
                     </div>
                 )
             )}

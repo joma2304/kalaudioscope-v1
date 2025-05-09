@@ -88,3 +88,10 @@
   .settings-btn:hover {
     background: #222;
   }
+
+  .header-logo-link img {
+    display: block;
+    height: 38px;
+    width: auto;
+    margin-right: 1rem;
+  }

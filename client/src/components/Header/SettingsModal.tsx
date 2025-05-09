@@ -29,10 +29,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
   const [email, setEmail] = useState(user?.email || "");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [error, setError] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
-  const [deleteError, setDeleteError] = useState("");
   const [streams, setStreams] = useState(() => {
     const stored = localStorage.getItem("customStreams");
     return stored ? JSON.parse(stored) : defaultStreams;
@@ -43,9 +41,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
   // Uppdatera konto
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     if (!oldPassword) {
-      setError("Current password required.");
+      toast.error("Current password required.");
       return;
     }
     try {
@@ -72,16 +69,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
         setNewPassword("");
         onClose();
       } else {
-        setError(data.message || "Update failed");
+        toast.error(data.message || "Update failed");
       }
     } catch {
-      setError("Network error");
+      toast.error("Network error");
     }
   };
 
   // Ta bort konto
   const handleDelete = async () => {
-    setDeleteError("");
     try {
       const token = user?.token;
       const res = await fetch("http://localhost:3500/api/user", {
@@ -99,10 +95,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
         onClose();
       } else {
         const data = await res.json();
-        setDeleteError(data.message || "Delete failed");
+        toast.error(data.message || "Delete failed"); // Visa toast istället för röd text
       }
     } catch {
-      setDeleteError("Network error");
+      toast.error("Network error");
     }
   };
 
@@ -171,7 +167,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
             <label>New password (optional):</label>
             <input value={newPassword} onChange={e => setNewPassword(e.target.value)} type="password" />
           </div>
-          {error && <div className="error-text">{error}</div>}
           <button type="submit" className="primary-btn">Update</button>
         </form>
         
@@ -200,7 +195,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
                   required
                 />
               </div>
-              {deleteError && <div className="error-text">{deleteError}</div>}
+              
               <button className="primary-btn" onClick={handleDelete}>Delete</button>
               <button className="secondary-btn" onClick={() => setShowDeleteModal(false)}>Cancel</button>
             </div>
