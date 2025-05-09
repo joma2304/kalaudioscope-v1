@@ -3,6 +3,12 @@ import "./LoginModal.css";
 import { useUser } from "../../context/UserContext";
 import toast from "react-hot-toast";
 
+// Define the Stream type
+interface Stream {
+  label: string;
+  url: string;
+}
+
 const defaultStreams = [
   { label: "Angle 1", url: "/videos/angle1.mp4" },
   { label: "Angle 2", url: "/videos/angle2.mp4" },
@@ -102,16 +108,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
 
   // Spara till localStorage när streams ändras
   const handleStreamChange = (idx: number, url: string) => {
-    const updated = streams.map((s: { label: string; url: string }, i: number) => 
-      i === idx ? { ...s, url } : s
-    );
+    const updated = streams.map((s: Stream, i: number): Stream => i === idx ? { ...s, url } : s);
     setStreams(updated);
     localStorage.setItem("customStreams", JSON.stringify(updated));
+    window.dispatchEvent(new Event("customStreamsChanged")); // <-- Lägg till denna rad
   };
 
   const handleResetStreams = () => {
     setStreams(defaultStreams);
     localStorage.removeItem("customStreams");
+    window.dispatchEvent(new Event("customStreamsChanged")); // <-- Lägg till denna rad
   };
 
   return (

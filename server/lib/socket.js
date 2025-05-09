@@ -79,7 +79,6 @@ io.on("connection", (socket) => {
         roomTags[roomName] = Array.isArray(tags) ? tags : [];
 
         callback({ success: true, roomName });
-        emitRoomList();
     });
 
     socket.on("enterRoom", async ({ userId, room, password }, callback = () => { }) => {
@@ -142,6 +141,7 @@ io.on("connection", (socket) => {
             users
         });
 
+        emitRoomList();
 
     });
 

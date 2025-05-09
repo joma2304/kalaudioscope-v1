@@ -57,6 +57,12 @@ const AppContent: React.FC = () => {
         return () => window.removeEventListener("storage", onStorage);
     }, []);
 
+    useEffect(() => {
+        const onCustomStreamsChanged = () => setTestStreams(getStreams());
+        window.addEventListener("customStreamsChanged", onCustomStreamsChanged);
+        return () => window.removeEventListener("customStreamsChanged", onCustomStreamsChanged);
+    }, []);
+
    // Hantera länk med ?room=...
    useEffect(() => {
     const roomFromUrl = searchParams.get("room");
@@ -134,6 +140,7 @@ const AppContent: React.FC = () => {
         } else {
             localStorage.removeItem("chatRoomPassword");
         }
+        window.dispatchEvent(new Event("roomListChanged")); // <-- Lägg till denna rad
     };
 
     const handleLogout = () => {

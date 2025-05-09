@@ -79,6 +79,14 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
     };
   }, [socket, connected]);
 
+  useEffect(() => {
+    const onRoomListChanged = () => {
+      socket.emit("getRoomList");
+    };
+    window.addEventListener("roomListChanged", onRoomListChanged);
+    return () => window.removeEventListener("roomListChanged", onRoomListChanged);
+  }, [socket]);
+
   const handleJoin = (room: Room) => {
     if (!userId.trim()) {
       toast.error("User ID is missing.");
