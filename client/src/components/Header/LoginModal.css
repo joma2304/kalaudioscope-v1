@@ -115,46 +115,107 @@ p, h3 {
     text-align: center;
 }
 
-.settings-modal {
+.modal-content {
     max-height: 90vh;
     overflow-y: auto;
 }
 
-/* Knappar */
-.primary-btn {
-    background: linear-gradient(135deg, #6366f1, #4338ca); /* Samma gradient som andra knappar */
-    color: #fff;
-    border: none;
-    padding: 10px 15px;
-    font-size: 1rem;
-    font-weight: 500;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 100%;
-    margin-bottom: 10px;
-    transition: background 0.3s ease;
-}
-
-.primary-btn:hover {
-    background: linear-gradient(135deg, #4338ca, #6366f1); /* Omvänd gradient vid hover */
-}
-
 .secondary-btn {
-    background: #f3f4f6; /* Ljus bakgrund */
-    color: #1a1a1a;
-    border: 1px solid #ddd;
-    padding: 10px 15px;
-    font-size: 1rem;
-    font-weight: 500;
-    border-radius: 5px;
+    position: relative;
+    background: linear-gradient(135deg, #6366f1, #4338ca);
+    color: white;
+    border: none;
     cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
     width: 100%;
-    transition: background 0.3s ease, color 0.3s ease;
+    max-width: 300px;
+    padding: 10px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
 }
 
 .secondary-btn:hover {
-    background: #e5e7eb; /* Ljusare grå vid hover */
-    color: #000;
+    transform: translateY(-1px) scale(1.01);
+    background: linear-gradient(135deg, #5145cd, #3730a3);
+}
+
+.primary-btn {
+    position: relative;
+    background: linear-gradient(135deg, #6366f1, #4338ca);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.primary-btn:hover {
+    transform: translateY(-1px) scale(1.01);
+    background: linear-gradient(135deg, #5145cd, #3730a3);
+}
+
+.delete-btn {
+    position: relative;
+    background-color: #e63946;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+.delete-btn:hover {
+    transform: translateY(-1px) scale(1.01);
+    background-color: #d62839;
+}
+
+.cancel-btn {
+    position: relative;
+    background-color: #868686;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+.cancel-btn:hover {
+    transform: translateY(-1px) scale(1.01);
+    background-color: #737373;
+}
+
+.popup {
+    margin-bottom: 5px;
 }
 
 /* Animation för modal */
