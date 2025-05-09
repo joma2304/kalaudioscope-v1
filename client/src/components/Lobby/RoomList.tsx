@@ -150,7 +150,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
               className={`filter-tag${isSelected ? " selected" : ""}`}
               onClick={() => toggleFilter(tag)}
               style={{
-                // Sätt färgen som CSS-variabel för både selected och unselected
+                
                 "--tag-color": tagColors[tag]
               } as React.CSSProperties}
             >
@@ -167,6 +167,9 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
             const isFull = room.maxUsers !== undefined && room.userCount >= room.maxUsers;
 
             return (
+              <>
+              <h3 className="room-list-header">Current active rooms:</h3>
+              <p className="tag-info">Click on room to join </p>
               <li key={index} className="room-item">
                 <button
                   onClick={() => !isFull && handleJoin(room)}
@@ -200,6 +203,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
                   )}
                 </button>
               </li>
+              </>
             );
           })}
         </ul>

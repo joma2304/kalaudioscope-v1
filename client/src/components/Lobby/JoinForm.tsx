@@ -110,9 +110,9 @@ const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
 
             <h3 className="create-room-header">Create a new chatroom</h3>
 
-            <label className="create-room-label">Select amount of spots in room:</label>
+            <label className="create-room-label">Select amount of seats in chatroom</label>
             <div className="chair-grid">
-              {[...Array(16)].map((_, i) => (
+              {[...Array(30)].map((_, i) => (
                 <button
                   type="button"
                   key={i}
@@ -126,10 +126,10 @@ const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
               ))}
             </div>
             <div className="chair-count-label">
-              {maxUsers} {maxUsers === 1 ? "user" : "users"}
+              {maxUsers} {maxUsers === 1 ? "seat selected" : "seats selected"}
             </div>
 
-            <label className="create-room-label">Password (optional):</label>
+            <label className="create-room-label">Password (optional)</label>
             <input
               className="create-room-input"
               type="password"
@@ -138,7 +138,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
               onChange={(e) => setPassword(e.target.value)}
             />
 
-            <label className="create-room-label">Tags:</label>
+            <label className="create-room-label">Select tags for your room</label>
             <div className="create-room-tags">
               {availableTags.map((tag) => {
                 const isSelected = selectedTags.includes(tag.name);

@@ -3,9 +3,9 @@
     margin-top: 0.7em;
   }
   
-  .create-room-btn {
+  .copy-room-btn {
     position: relative;
-    background: linear-gradient(135deg, #6366f1, #4338ca);
+    background: linear-gradient(135deg, #f1b363, #a57f2d);
     color: white;
     border: none;
     cursor: pointer;
@@ -21,9 +21,10 @@
     justify-content: center;
     align-items: center;
     z-index: 0;
+    margin: 0 auto;
   }
   
-  .create-room-btn::before {
+  .copy-room-btn::before {
     content: "";
     position: absolute;
     top: -50%;
@@ -37,18 +38,17 @@
     pointer-events: none;
   }
   
-  .create-room-btn:hover::before {
+  .copy-room-btn:hover::before {
     top: -80%;
     left: -80%;
     transform: rotate(45deg);
   }
   
-  .create-room-btn:hover {
+  .copy-room-btn:hover {
     transform: translateY(-1px) scale(1.01);
-    background: linear-gradient(135deg, #5145cd, #3730a3);
+    background: linear-gradient(135deg, #cda445, #a37930);
   }
   
   .copy-icon {
     margin-right: 6px;
-    margin-bottom: -2px;
   }

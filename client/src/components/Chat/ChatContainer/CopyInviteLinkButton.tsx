@@ -20,7 +20,7 @@ const CopyInviteLinkButton: React.FC<CopyInviteLinkButtonProps> = ({ room, passw
 
   return (
     <div className="copy-invite-wrapper">
-    <button className="create-room-btn" onClick={handleCopy}>
+    <button className="copy-room-btn" onClick={handleCopy}>
         <Copy size={16} className="copy-icon" />
         Copy invite link
     </button>

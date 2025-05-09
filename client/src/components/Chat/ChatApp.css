@@ -42,10 +42,12 @@ form {
     border: none;
     padding: 0.75rem;
     border-radius: 8px;
-    background: rgba(30, 30, 30, 0.5);
+    background: rgba(92, 92, 92, 0.6);
     /* Genomskinlig bakgrund för hela chatten */
     color: #fff;
-    max-width: 60%;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 
@@ -60,46 +62,104 @@ form {
 
 /* Knappstil */
 .send-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    position: relative;
+    background: linear-gradient(135deg, #6366f1, #4338ca);
+    color: white;
     border: none;
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: #fff;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    flex-shrink: 0;
-    font-size: 0.9em;
+    font-size: 1rem;
+    font-weight: 600;
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 0;
+    margin: 0 auto;
 }
 
+  .send-button::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
+    transform: rotate(25deg);
+    transition: all 0.6s ease;
+    z-index: 1;
+    pointer-events: none;
+  }
+  
+  .send-button:hover::before {
+    top: -80%;
+    left: -80%;
+    transform: rotate(45deg);
+  }
+
 .send-button:hover {
-    background: linear-gradient(135deg, #0056b3, #004494);
-    transform: scale(1.05);
+    transform: translateY(-1px) scale(1.01);
+    background: linear-gradient(135deg, #5145cd, #3730a3);
+}
+
+.send-message-icon {
+    margin-right: 6px;
 }
 
 /* Knapp för att lämna chatt */
 .leave-chat {
-    background: linear-gradient(135deg, #555, #777);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    position: relative;
+    background: linear-gradient(135deg, #f16363, #ca3838);
+    color: white;
     border: none;
-    color: #fff;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    flex-shrink: 0;
-    font-size: 0.9em;
+    font-size: 1rem;
+    font-weight: 600;
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 0;
+    margin: 0 auto;
 }
 
+  .leave-chat::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
+    transform: rotate(25deg);
+    transition: all 0.6s ease;
+    z-index: 1;
+    pointer-events: none;
+  }
+  
+  .leave-chat:hover::before {
+    top: -80%;
+    left: -80%;
+    transform: rotate(45deg);
+  }
+
 .leave-chat:hover {
-    background: linear-gradient(135deg, #444, #666);
-    transform: scale(1.05);
+    transform: translateY(-1px) scale(1.01);
+    background: linear-gradient(135deg, #cd4545, #a33030);
+}
+
+.leave-chat-icon {
+    margin-right: 6px;
 }
 
 /* Visa/dölj chatt-knapp */
@@ -110,7 +170,8 @@ form {
     right: 20px;
     z-index: 1000;
     display: flex;
-    align-items: center; /* Justera vertikalt för att få texten och ikonen i linje */
+    align-items: center;
+    /* Justera vertikalt för att få texten och ikonen i linje */
 }
 
 /* Knappen för att visa/dölj chatt */
@@ -126,11 +187,14 @@ form {
     padding: 0.2em;
     z-index: 1000;
     display: flex;
-    align-items: center; /* Gör att både ikonen och texten ligger i linje */
+    align-items: center;
+    /* Gör att både ikonen och texten ligger i linje */
 }
 
-.toggle-chat svg, .toggle-chat i {
-    margin-right: 3px; /* Lägger ett litet avstånd mellan ikonen och texten */
+.toggle-chat svg,
+.toggle-chat i {
+    margin-right: 3px;
+    /* Lägger ett litet avstånd mellan ikonen och texten */
 }
 
 .toggle-chat:hover {
