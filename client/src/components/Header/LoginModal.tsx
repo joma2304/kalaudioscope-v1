@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useUser } from "../../context/UserContext";
 import "./LoginModal.css"; // Importera CSS-filen
+import toast from "react-hot-toast";
 
 interface Props {
   open: boolean;
@@ -13,13 +14,12 @@ const LoginModal: React.FC<Props> = ({ open, onClose, setIsLoggedIn, setUserId }
   const { setUser } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  
 
   if (!open) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
   
     const res = await fetch("http://localhost:3500/api/user/login", {
       method: "POST",
@@ -39,7 +39,7 @@ const LoginModal: React.FC<Props> = ({ open, onClose, setIsLoggedIn, setUserId }
       setUserId(data.user.id);
       onClose();
     } else {
-      setError(data.message || "Login failed");
+      toast.error("Login failed. Please check your credentials.");
     }
   };
 
@@ -72,7 +72,6 @@ const LoginModal: React.FC<Props> = ({ open, onClose, setIsLoggedIn, setUserId }
             required
           />
         </div>
-        {error && <div className="error-text">{error}</div>}
         <button type="submit" className="primary-btn">Login</button>
         <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
       </form>
