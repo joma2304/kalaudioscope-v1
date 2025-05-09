@@ -132,7 +132,7 @@ export const loginUser = async (req, res) => {
         const token = jwt.sign(
             { id: user._id, email: user.email },
             process.env.JWT_SECRET || "your_jwt_secret", // Använd en miljövariabel för säkerhet
-            { expiresIn: "5h" } // Token giltig i 1 timme
+            { expiresIn: "24h" } // Token giltig i 24 timme
         );
 
         res.status(200).json({

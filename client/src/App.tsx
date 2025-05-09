@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SocketProvider } from "./context/SocketContext";
-import { UserProvider } from "./context/UserContext";
+import { UserProvider, useUser } from "./context/UserContext";
 import ChatApp from "./components/Chat/ChatApp";
 import JoinForm from "./components/Lobby/JoinForm";
 import RoomList from "./components/Lobby/RoomList";
 import StreamViewer from "./components/Stream/StreamViewer";
 import toast, { Toaster } from 'react-hot-toast';
 import Header from "./components/Header/Header";
+import { jwtDecode } from "jwt-decode";
 
 const defaultStreams = [
     { label: "Angle 1", url: "/videos/angle1.mp4" },
@@ -39,6 +40,7 @@ const AppContent: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("authUser"));
     const [searchParams, setSearchParams] = useSearchParams();
     const [testStreams, setTestStreams] = useState(getStreams());
+    const { logout } = useUser();
 
     // Uppdatera isLoggedIn och userId när authUser ändras (t.ex. i annan flik)
     useEffect(() => {
@@ -52,6 +54,39 @@ const AppContent: React.FC = () => {
     }, []);
 
     useEffect(() => {
+        const interval = setInterval(() => {
+            const authUser = localStorage.getItem("authUser");
+            if (!authUser) return;
+
+            try {
+                const { token } = JSON.parse(authUser);
+                if (!token) return;
+
+                const { exp } = jwtDecode<{ exp: number }>(token);
+                if (!exp || Date.now() >= exp * 1000) {
+                    // Token är utgången eller saknar exp
+                    localStorage.removeItem("authUser");
+                    setIsLoggedIn(false);
+                    setUserId("");
+                    logout(); // <-- Lägg till denna rad!
+                    toast.error("Session expired. You have been logged out.");
+
+                }
+            } catch {
+                // Om något går fel, logga ut ändå
+                localStorage.removeItem("authUser");
+                setIsLoggedIn(false);
+                setUserId("");
+                logout(); // <-- Lägg till denna rad!
+                toast.error("Session expired. You have been logged out.");
+  
+            }
+        }, 10000);
+
+        return () => clearInterval(interval);
+    }, [logout]);
+
+    useEffect(() => {
         const onStorage = () => setTestStreams(getStreams());
         window.addEventListener("storage", onStorage);
         return () => window.removeEventListener("storage", onStorage);
@@ -63,36 +98,36 @@ const AppContent: React.FC = () => {
         return () => window.removeEventListener("customStreamsChanged", onCustomStreamsChanged);
     }, []);
 
-   // Hantera länk med ?room=...
-   useEffect(() => {
-    const roomFromUrl = searchParams.get("room");
-    const passwordFromUrl = searchParams.get("password");
+    // Hantera länk med ?room=...
+    useEffect(() => {
+        const roomFromUrl = searchParams.get("room");
+        const passwordFromUrl = searchParams.get("password");
 
-    if (roomFromUrl) {
-        if (!userId) {
-            // Om användaren inte är inloggad, visa toast och spara rumsinformationen i pendingRoom
-            setPendingRoom(roomFromUrl);
-            setRoomPassword(passwordFromUrl || undefined);
-            toast.error("You need to log in to join the room.");
-        } else {
-            // Om användaren är inloggad, spara rumsinformationen i localStorage och anslut
-            localStorage.setItem("chatRoom", roomFromUrl);
-            if (passwordFromUrl) {
-                localStorage.setItem("chatRoomPassword", passwordFromUrl);
+        if (roomFromUrl) {
+            if (!userId) {
+                // Om användaren inte är inloggad, visa toast och spara rumsinformationen i pendingRoom
+                setPendingRoom(roomFromUrl);
+                setRoomPassword(passwordFromUrl || undefined);
+                toast.error("You need to log in to join the room.");
             } else {
-                localStorage.removeItem("chatRoomPassword");
-            }
-            setCurrentRoom(roomFromUrl);
-            setRoomPassword(passwordFromUrl || undefined);
+                // Om användaren är inloggad, spara rumsinformationen i localStorage och anslut
+                localStorage.setItem("chatRoom", roomFromUrl);
+                if (passwordFromUrl) {
+                    localStorage.setItem("chatRoomPassword", passwordFromUrl);
+                } else {
+                    localStorage.removeItem("chatRoomPassword");
+                }
+                setCurrentRoom(roomFromUrl);
+                setRoomPassword(passwordFromUrl || undefined);
 
-            // Ta bort room och password från URL
-            searchParams.delete("room");
-            searchParams.delete("password");
-            setSearchParams(searchParams, { replace: true });
-            toast.success("Joined room successfully!");
+                // Ta bort room och password från URL
+                searchParams.delete("room");
+                searchParams.delete("password");
+                setSearchParams(searchParams, { replace: true });
+                toast.success("Joined room successfully!");
+            }
         }
-    }
-}, [searchParams, userId]);
+    }, [searchParams, userId]);
 
     // När pendingRoom finns och userId är satt, gå till rummet automatiskt
     useEffect(() => {
@@ -193,7 +228,7 @@ const AppContent: React.FC = () => {
                                 filter: "drop-shadow(0 8px 32px rgba(99,102,241,0.18))"
                             }}
                         />
-                        {/* Här kan du lägga till ev. välkomsttext */}
+
                     </div>
                 )
             )}
