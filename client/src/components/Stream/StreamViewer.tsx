@@ -196,7 +196,7 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources, userId }) => {
               onClick={toggleViewMode}
               className="toggle-view-button"
             >
-              {showVideoParent ? "Switch to stream" : "Switch to 360 stream"}
+              {showVideoParent ? "Switch to stream" : "Switch to 360° stream"}
             </button>
           </div>
 

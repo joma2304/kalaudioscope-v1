@@ -122,91 +122,93 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Account Settings</h2>
+      <div className="settings-modal">
+        <div className="modal-content">
+          <h2>Account Settings</h2>
 
-        {/* Stream URL settings */}
-        <div style={{ marginBottom: 20 }}>
-          <h3 style={{ fontSize: "1.1em", marginBottom: 8 }}>Custom stream URLs</h3>
-          {streams.map((stream: { label: string; url: string }, idx: number) => (
-            <div className="form-group" key={stream.label}>
-              <label>{stream.label} URL:</label>
-              <input
-                className="modal-input"
-                type="text"
-                value={stream.url}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleStreamChange(idx, e.target.value)}
-                placeholder={`URL for ${stream.label}`}
-              />
-            </div>
-          ))}
-          <button
-            type="button"
-            className="secondary-btn"
-            style={{ marginTop: 4 }}
-            onClick={handleResetStreams}
-          >
-            Reset to default
-          </button>
-        </div>
-
-        <form onSubmit={handleUpdate}>
-          <div className="form-group">
-            <label>First Name:</label>
-            <input value={firstName} onChange={e => setFirstName(e.target.value)} required />
-          </div>
-          <div className="form-group">
-            <label>Last Name:</label>
-            <input value={lastName} onChange={e => setLastName(e.target.value)} required />
-          </div>
-          <div className="form-group">
-            <label>Email:</label>
-            <input value={email} onChange={e => setEmail(e.target.value)} required type="email" />
-          </div>
-          <div className="form-group">
-            <label>Current password:</label>
-            <input value={oldPassword} onChange={e => setOldPassword(e.target.value)} type="password" required />
-          </div>
-          <div className="form-group">
-            <label>New password (optional):</label>
-            <input value={newPassword} onChange={e => setNewPassword(e.target.value)} type="password" />
-          </div>
-          {error && <div className="error-text">{error}</div>}
-          <button type="submit" className="primary-btn">Update</button>
-        </form>
-        
-        <button
-          className="secondary-btn"
-          style={{ background: "#e63946", color: "#fff", marginTop: 10 }}
-          onClick={() => setShowDeleteModal(true)}
-        >
-          Delete account
-        </button>
-        {showDeleteModal && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <h3>Delete Account</h3>
-              <p style={{ marginBottom: 12 }}>
-                Enter your password to confirm <b>deletion of your account</b>:
-              </p>
-              <div className="form-group">
-                <label>Password:</label>
+          {/* Stream URL settings */}
+          <div style={{ marginBottom: 20 }}>
+            <h3 style={{ fontSize: "1.1em", marginBottom: 8 }}>Custom stream URLs</h3>
+            {streams.map((stream: { label: string; url: string }, idx: number) => (
+              <div className="form-group" key={stream.label}>
+                <label>{stream.label} URL:</label>
                 <input
                   className="modal-input"
-                  type="password"
-                  value={deletePassword}
-                  onChange={e => setDeletePassword(e.target.value)}
-                  placeholder="Password"
-                  required
+                  type="text"
+                  value={stream.url}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleStreamChange(idx, e.target.value)}
+                  placeholder={`URL for ${stream.label}`}
                 />
               </div>
-              {deleteError && <div className="error-text">{deleteError}</div>}
-              <button className="primary-btn" onClick={handleDelete}>Delete</button>
-              <button className="secondary-btn" onClick={() => setShowDeleteModal(false)}>Cancel</button>
-            </div>
+            ))}
+            <button
+              type="button"
+              className="secondary-btn"
+              style={{ marginTop: 4 }}
+              onClick={handleResetStreams}
+            >
+              Reset to default
+            </button>
           </div>
-        )}
-        <button className="secondary-btn" onClick={onClose} style={{ marginTop: 10 }}>Cancel</button>
+
+          <form onSubmit={handleUpdate}>
+            <div className="form-group">
+              <label>First Name:</label>
+              <input value={firstName} onChange={e => setFirstName(e.target.value)} required />
+            </div>
+            <div className="form-group">
+              <label>Last Name:</label>
+              <input value={lastName} onChange={e => setLastName(e.target.value)} required />
+            </div>
+            <div className="form-group">
+              <label>Email:</label>
+              <input value={email} onChange={e => setEmail(e.target.value)} required type="email" />
+            </div>
+            <div className="form-group">
+              <label>Current password:</label>
+              <input value={oldPassword} onChange={e => setOldPassword(e.target.value)} type="password" required />
+            </div>
+            <div className="form-group">
+              <label>New password (optional):</label>
+              <input value={newPassword} onChange={e => setNewPassword(e.target.value)} type="password" />
+            </div>
+            {error && <div className="error-text">{error}</div>}
+            <button type="submit" className="primary-btn">Update</button>
+          </form>
+
+          <button
+            className="secondary-btn"
+            style={{ background: "#e63946", color: "#fff", marginTop: 10 }}
+            onClick={() => setShowDeleteModal(true)}
+          >
+            Delete account
+          </button>
+          {showDeleteModal && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h3>Delete Account</h3>
+                <p style={{ marginBottom: 12 }}>
+                  Enter your password to confirm <b>deletion of your account</b>:
+                </p>
+                <div className="form-group">
+                  <label>Password:</label>
+                  <input
+                    className="modal-input"
+                    type="password"
+                    value={deletePassword}
+                    onChange={e => setDeletePassword(e.target.value)}
+                    placeholder="Password"
+                    required
+                  />
+                </div>
+                {deleteError && <div className="error-text">{deleteError}</div>}
+                <button className="primary-btn" onClick={handleDelete}>Delete</button>
+                <button className="secondary-btn" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+              </div>
+            </div>
+          )}
+          <button className="secondary-btn" onClick={onClose} style={{ marginTop: 10 }}>Cancel</button>
+        </div>
       </div>
     </div>
   );
