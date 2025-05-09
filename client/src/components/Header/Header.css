@@ -1,80 +1,83 @@
 .header {
-    padding: 1rem 2rem;
-    background-color: #34349a;
-    color: #ffffff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    width: 100vw;
-  }
-  
-  .header-title {
-    font-weight: bold;
-    font-size: 1.2rem;
-    letter-spacing: 0.5px;
-  }
-  
-  .header-user {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .user-info {
-    opacity: 0.9;
-  }
-  
-  .login-btn,
-  .logout-btn {
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    font-size: 1rem;
-    font-weight: 500;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-  }
-  
-  .login-btn,
-  .register-btn {
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 6px;
-    padding: 0.5em 1.2em;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s;
-    margin-right: 0.5em;
-  }
+  padding: 1rem 2rem;
+  background-color: #34349a;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 100vw;
+}
 
-  .login-btn {
-    background: #007bff;
-    color: #fff;
-  }
-  
-  .login-btn:hover {
-    background: #0056b3;
-  }
-  
-  .logout-btn {
-    background: linear-gradient(135deg, #f16363, #c82525); /* Gradient som matchar resten av appen */
-  }
-  
-  .logout-btn:hover {
-    background: linear-gradient(135deg, #ef5858, #c71f1f); /* Gradient som matchar resten av appen */
-    transform: scale(1.02); /* Lätt förstoring vid hover */
-  }
+.header-logo-link {
+  display: flex;
+  align-items: center;
+}
 
-  .register-btn {
-    background: #28a745;
-    color: #fff;
-  }
-  
-  .register-btn:hover {
-    background: #1e7e34;
-  }
+.header-logo {
+  height: 42px !important;
+  width: auto !important;
+}
+
+.header-title {
+  font-weight: bold;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info {
+  opacity: 0.9;
+}
+
+
+.logout-btn,
+.login-btn,
+.register-btn {
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 0.8em 1.2em;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s transform 0.4s ease;;
+  margin-right: 0.5em;
+}
+
+.register-btn {
+  background: #007bff;
+  color: #fff;
+}
+
+.register-btn:hover {
+  background: #0056b3;
+    transform: scale(1.02);
+}
+
+.logout-btn {
+  background: #c92a2a;
+  color: white;
+}
+
+.logout-btn:hover {
+  background: #a01717;
+  transform: scale(1.02);
+}
+
+.login-btn {
+  background: #28a745;
+  color: #fff;
+}
+
+.login-btn:hover {
+  background: #1e7e34;
+    transform: scale(1.02);
+}
 
 /* SettingsButton.css */
 
@@ -102,9 +105,9 @@
   color: #6a79ce;
 }
 
-  .header-logo-link img {
-    display: block;
-    height: 38px;
-    width: auto;
-    margin-right: 1rem;
-  }
+.header-logo-link img {
+  display: block;
+  height: 38px;
+  width: auto;
+  margin-right: 1rem;
+}

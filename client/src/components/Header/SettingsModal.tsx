@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./LoginModal.css";
 import { useUser } from "../../context/UserContext";
 import toast from "react-hot-toast";
+import { CircleX } from "lucide-react";
 
 // Define the Stream type
 interface Stream {
@@ -41,8 +42,21 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
   // Uppdatera konto
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!oldPassword) {
-      toast.error("Current password required.");
+    // Validering av obligatoriska fält
+    if (!firstName.trim()) {
+      toast.error("First name is required.");
+      return;
+    }
+    if (!lastName.trim()) {
+      toast.error("Last name is required.");
+      return;
+    }
+    if (!email.trim()) {
+      toast.error("Email is required.");
+      return;
+    }
+    if (!oldPassword.trim()) {
+      toast.error("Current password is required.");
       return;
     }
     try {
@@ -120,6 +134,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Account Settings</h2>
+        <button className="close-btn" onClick={onClose}> <CircleX /> </button>
 
         {/* Stream URL settings */}
         <div style={{ marginBottom: 20 }}>
@@ -149,19 +164,19 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
         <form onSubmit={handleUpdate}>
           <div className="form-group">
             <label>First Name:</label>
-            <input value={firstName} onChange={e => setFirstName(e.target.value)}  />
+            <input value={firstName} onChange={e => setFirstName(e.target.value)} />
           </div>
           <div className="form-group">
             <label>Last Name:</label>
-            <input value={lastName} onChange={e => setLastName(e.target.value)}  />
+            <input value={lastName} onChange={e => setLastName(e.target.value)} />
           </div>
           <div className="form-group">
             <label>Email:</label>
-            <input value={email} onChange={e => setEmail(e.target.value)}  type="email" />
+            <input value={email} onChange={e => setEmail(e.target.value)} type="email" />
           </div>
           <div className="form-group">
             <label>Current password (required):</label>
-            <input value={oldPassword} onChange={e => setOldPassword(e.target.value)} type="password"  />
+            <input value={oldPassword} onChange={e => setOldPassword(e.target.value)} type="password" />
           </div>
           <div className="form-group">
             <label>New password (optional):</label>
@@ -169,7 +184,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
           </div>
           <button type="submit" className="primary-btn">Update</button>
         </form>
-        
+
         <button
           className="secondary-btn"
           style={{ background: "#e63946", color: "#fff", marginTop: 10 }}
@@ -195,13 +210,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
                   required
                 />
               </div>
-              
+
               <button className="delete-btn popup" onClick={handleDelete}>Delete</button>
               <button className="cancel-btn" onClick={() => setShowDeleteModal(false)}>Cancel</button>
             </div>
           </div>
         )}
-        <button className="cancel-btn" onClick={onClose} style={{ marginTop: 10 }}>Cancel</button>
       </div>
     </div>
   );
