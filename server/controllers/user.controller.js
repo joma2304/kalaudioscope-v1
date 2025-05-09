@@ -58,15 +58,28 @@ export const getUserById = async (req, res) => {
 // Uppdatera en användare
 export const updateUser = async (req, res) => {
     try {
-        const updates = req.body;
+        const { firstName, lastName, email, oldPassword, password } = req.body;
+        const user = await User.findById(req.user.id);
 
-        const updatedUser = await User.findByIdAndUpdate(req.user.id, updates, { new: true });
-
-        if (!updatedUser) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        res.status(200).json({ message: "User updated successfully", user: updatedUser });
+        // Kontrollera att gamla lösenordet är korrekt
+        const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Incorrect current password" });
+        }
+
+        // Uppdatera fält
+        if (firstName) user.firstName = firstName;
+        if (lastName) user.lastName = lastName;
+        if (email) user.email = email;
+        if (password) user.password = password; // Kommer att hash:as av pre-save-hook
+
+        await user.save();
+
+        res.status(200).json({ message: "User updated successfully", user });
     } catch (error) {
         res.status(500).json({ message: "Error updating user", error: error.message });
     }
@@ -75,11 +88,22 @@ export const updateUser = async (req, res) => {
 // Ta bort en användare
 export const deleteUser = async (req, res) => {
     try {
-        const deletedUser = await User.findByIdAndDelete(req.user.id);
+        const { password } = req.body;
+        if (!password) {
+            return res.status(400).json({ message: "Password required" });
+        }
 
-        if (!deletedUser) {
+        const user = await User.findById(req.user.id);
+        if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Incorrect password" });
+        }
+
+        await User.findByIdAndDelete(req.user.id);
 
         res.status(200).json({ message: "User deleted successfully" });
     } catch (error) {

@@ -4,6 +4,8 @@ import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import "./Header.css";
 import toast from "react-hot-toast";
+import { Settings } from "lucide-react";
+import SettingsModal from "./SettingsModal";
 
 interface HeaderProps {
   setIsLoggedIn: (val: boolean) => void;
@@ -14,6 +16,7 @@ const Header: React.FC<HeaderProps> = ({ setIsLoggedIn, setUserId }) => {
   const { user, logout } = useUser();
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const handleRegister = async (user: { firstName: string; lastName: string; email: string; password: string }) => {
     try {
@@ -43,6 +46,23 @@ const Header: React.FC<HeaderProps> = ({ setIsLoggedIn, setUserId }) => {
             <span className="user-info">
               {user.firstName} {user.lastName} ({user.email})
             </span>
+            <button
+              className="settings-btn"
+              onClick={() => setShowSettings(true)}
+              title="Account settings"
+              style={{ background: "none", border: "none", marginRight: "0.5em", cursor: "pointer" }}
+            >
+              <Settings size={22} color="#bbb" />
+            </button>
+            <SettingsModal
+              isOpen={showSettings}
+              onClose={() => setShowSettings(false)}
+              onLogout={() => {
+                logout();
+                setIsLoggedIn(false);
+                setUserId("");
+              }}
+            />
             <button className="logout-btn" onClick={() => {
               logout();
               setIsLoggedIn(false);

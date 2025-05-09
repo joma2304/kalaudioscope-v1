@@ -48,7 +48,8 @@
 
 .form-group input,
 .form-group select,
-.form-group textarea {
+.form-group textarea,
+.modal-input {
     width: 100%;
     padding: 0.5em 0.75em;
     border: 1px solid #ccc;
@@ -59,12 +60,35 @@
     box-sizing: border-box;
     background: #f9f9f9;
     transition: border 0.2s;
+    color: #222 !important;
+}
+
+p, h3 {
+    color: #222 !important;
 }
 
 .form-group input:focus {
     border: 1.5px solid #007bff;
     outline: none;
     background: #fff;
+}
+
+.modal-input, .form-group input {
+  width: 100%;
+  padding: 0.5em 0.75em;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1em;
+  margin-top: 0.25em;
+  margin-bottom: 0.75em;
+  box-sizing: border-box;
+  background: #f9f9f9;
+  transition: border 0.2s;
+}
+.modal-input:focus {
+  border: 1.5px solid #007bff;
+  outline: none;
+  background: #fff;
 }
 
 .login-form-input {

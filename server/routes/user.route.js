@@ -16,8 +16,8 @@ router.post("/user/login", loginUser); // Logga in en användare
 
 router.get("/user", authenticateToken, getAllUsers); // Hämta alla användare
 router.get("/user:id", authenticateToken, getUserById); // Hämta en användare baserat på ID
-router.put("/user/:id", authenticateToken, updateUser); // Uppdatera en användare
-router.delete("/user/:id", authenticateToken, deleteUser); // Ta bort en användare
+router.put("/user", authenticateToken, updateUser); // Uppdatera en användare
+router.delete("/user", authenticateToken, deleteUser); // Ta bort en användare
 
 
 export default router;
