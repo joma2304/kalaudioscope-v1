@@ -69,7 +69,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onRegist
                     </div>
                     {error && <div className="error-text">{error}</div>}
                     <button type="submit" className="primary-btn">Register</button>
-                    <button type="button" className="secondary-btn" onClick={onClose}>Cancel</button>
+                    <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
                 </form>
             </div>
         </div>

@@ -149,19 +149,19 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
         <form onSubmit={handleUpdate}>
           <div className="form-group">
             <label>First Name:</label>
-            <input value={firstName} onChange={e => setFirstName(e.target.value)} required />
+            <input value={firstName} onChange={e => setFirstName(e.target.value)}  />
           </div>
           <div className="form-group">
             <label>Last Name:</label>
-            <input value={lastName} onChange={e => setLastName(e.target.value)} required />
+            <input value={lastName} onChange={e => setLastName(e.target.value)}  />
           </div>
           <div className="form-group">
             <label>Email:</label>
-            <input value={email} onChange={e => setEmail(e.target.value)} required type="email" />
+            <input value={email} onChange={e => setEmail(e.target.value)}  type="email" />
           </div>
           <div className="form-group">
-            <label>Current password:</label>
-            <input value={oldPassword} onChange={e => setOldPassword(e.target.value)} type="password" required />
+            <label>Current password (required):</label>
+            <input value={oldPassword} onChange={e => setOldPassword(e.target.value)} type="password"  />
           </div>
           <div className="form-group">
             <label>New password (optional):</label>
@@ -196,12 +196,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
                 />
               </div>
               
-              <button className="primary-btn" onClick={handleDelete}>Delete</button>
-              <button className="secondary-btn" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+              <button className="delete-btn popup" onClick={handleDelete}>Delete</button>
+              <button className="cancel-btn" onClick={() => setShowDeleteModal(false)}>Cancel</button>
             </div>
           </div>
         )}
-        <button className="secondary-btn" onClick={onClose} style={{ marginTop: 10 }}>Cancel</button>
+        <button className="cancel-btn" onClick={onClose} style={{ marginTop: 10 }}>Cancel</button>
       </div>
     </div>
   );
