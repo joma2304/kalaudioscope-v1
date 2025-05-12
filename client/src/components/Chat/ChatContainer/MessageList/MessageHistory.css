@@ -3,6 +3,7 @@
     flex-direction: column;
     gap: 10px; /* Mellanrum mellan meddelandena */
     padding: 5px;
+    color: #fff; /* Lägg till denna rad för att göra all text vit som standard */
 }
 
 .chat-history-title {
@@ -37,7 +38,7 @@ text-align: center;
   
   .sender-name {
     font-weight: 600;
-    color: #444;
+    color: #fff;   /* Ändra till vit */
   }
   
   .message-text {
@@ -47,7 +48,6 @@ text-align: center;
   
   .message-time {
     font-size: 0.75rem;
-    color: #888;
+    color: #eee;   /* Gör tiden ljusgrå för bättre kontrast */
     text-align: right;
   }
-  

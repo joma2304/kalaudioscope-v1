@@ -64,9 +64,6 @@
     color: #222 !important;
 }
 
-p, h3 {
-    color: #222;
-}
 
 .form-group input:focus {
     border: 1.5px solid #007bff;
@@ -119,6 +116,11 @@ p, h3 {
 .modal-content {
     max-height: 90vh;
     overflow-y: auto;
+}
+
+.modal-content p,
+.modal-content h3 {
+    color: #222;
 }
 
 .secondary-btn {
