@@ -23,7 +23,7 @@ body {
 }
 
 /* Form Styling */
-form {
+.message-form {
     display: flex;
     flex-direction: row; /* Placera elementen horisontellt */
     align-items: center; /* Centrera elementen vertikalt */

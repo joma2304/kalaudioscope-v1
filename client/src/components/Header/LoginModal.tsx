@@ -47,7 +47,7 @@ const LoginModal: React.FC<Props> = ({ open, onClose, setIsLoggedIn, setUserId }
     <div className="modal-overlay">
     <div className="modal-content">
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="modal-form">
         <div className="form-group">
           <label htmlFor="email">Email:</label>
           <input

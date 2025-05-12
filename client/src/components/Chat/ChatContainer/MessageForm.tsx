@@ -9,7 +9,7 @@ interface MessageFormProps {
 
 const MessageForm: React.FC<MessageFormProps> = ({ message, setMessage, sendMessage, handleTyping }) => {
     return (
-        <form onSubmit={sendMessage}>
+        <form onSubmit={sendMessage} className="message-form">
             <input
                 className="message-input"
                 type="text"
