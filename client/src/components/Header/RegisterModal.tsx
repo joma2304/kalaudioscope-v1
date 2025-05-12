@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./LoginModal.css";
+import toast from "react-hot-toast";
 
 interface RegisterModalProps {
     isOpen: boolean;
@@ -12,15 +13,13 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onRegist
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!firstName || !lastName || !email || !password) {
-            setError("All fields are required.");
+            toast.error("All fields are required.");
             return;
         }
-        setError("");
         onRegister({ firstName, lastName, email, password });
     };
 
@@ -37,7 +36,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onRegist
                             type="text"
                             value={firstName}
                             onChange={e => setFirstName(e.target.value)}
-                            required
+                            
                         />
                     </div>
                     <div className="form-group">
@@ -46,7 +45,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onRegist
                             type="text"
                             value={lastName}
                             onChange={e => setLastName(e.target.value)}
-                            required
+                            
                         />
                     </div>
                     <div className="form-group">
@@ -55,7 +54,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onRegist
                             type="email"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
-                            required
+                            
                         />
                     </div>
                     <div className="form-group">
@@ -64,10 +63,9 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose, onRegist
                             type="password"
                             value={password}
                             onChange={e => setPassword(e.target.value)}
-                            required
+                            
                         />
                     </div>
-                    {error && <div className="error-text">{error}</div>}
                     <button type="submit" className="primary-btn">Register</button>
                     <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
                 </form>
