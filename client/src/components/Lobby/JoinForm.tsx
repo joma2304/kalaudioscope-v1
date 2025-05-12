@@ -109,7 +109,7 @@ const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
             </button>
 
             <h3 className="create-room-header">Create a new chatroom</h3>
-
+            <br />
             <label className="create-room-label">Select amount of seats in chatroom</label>
             <div className="chair-grid">
               {[...Array(30)].map((_, i) => (
