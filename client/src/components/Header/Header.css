@@ -7,6 +7,7 @@
   align-items: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   width: 100vw;
+  position: relative;
 }
 
 .header-logo-link {
@@ -31,10 +32,40 @@
   gap: 1rem;
 }
 
-.user-info {
-  opacity: 0.9;
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  justify-content: center;
+  margin-left: auto;
 }
 
+.hamburger span {
+  display: block;
+  height: 3px;
+  width: 28px;
+  background: #fff;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.user-info {
+  opacity: 0.9;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.user-email {
+  font-size: 0.97em;
+  opacity: 0.85;
+  word-break: break-all;
+  display: block;
+}
 
 .logout-btn,
 .login-btn,
@@ -45,7 +76,7 @@
   padding: 0.8em 1.2em;
   border: none;
   cursor: pointer;
-  transition: background 0.2s transform 0.4s ease;;
+  transition: background 0.2s transform 0.4s ease;
   margin-right: 0.5em;
 }
 
@@ -56,7 +87,7 @@
 
 .register-btn:hover {
   background: #0056b3;
-    transform: scale(1.02);
+  transform: scale(1.02);
 }
 
 .logout-btn {
@@ -76,7 +107,7 @@
 
 .login-btn:hover {
   background: #1e7e34;
-    transform: scale(1.02);
+  transform: scale(1.02);
 }
 
 /* SettingsButton.css */
@@ -95,7 +126,6 @@
   border-radius: 8px;
 }
 
-
 .settings-icon-svg {
   color: #c8c8c8;
   transition: color 0.3s;
@@ -110,4 +140,44 @@
   height: 38px;
   width: auto;
   margin-right: 1rem;
+}
+
+/* Desktop: Dölj radbrytningen */
+.user-break {
+  display: none;
+}
+
+/* Responsivitet för mobil */
+@media (max-width: 700px) {
+  .header {
+    padding: 0.7rem 1rem;
+  }
+  .header-user {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 1rem;
+    background: #34349a;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    padding: 1rem 2.2rem;      /* lite bredare padding */
+    border-radius: 10px;
+    z-index: 100;
+    min-width: 260px;          /* öka från 200px till 260px */
+    max-width: 90vw;           /* för att undvika overflow på små skärmar */
+    word-break: break-word;
+  }
+  .header-user.open {
+    display: flex;
+  }
+  .hamburger {
+    display: flex;
+  }
+  .user-break {
+    display: inline;
+  }
+  .user-info {
+    max-width: 220px;          /* öka från 140px till 220px */
+  }
 }

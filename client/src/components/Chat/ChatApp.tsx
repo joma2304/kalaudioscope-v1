@@ -32,6 +32,17 @@ interface ChatAppProps {
     password?: string;
 }
 
+// Hook för att känna av mobilvy dynamiskt
+function useIsMobile(breakpoint = 700) {
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth <= breakpoint);
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= breakpoint);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [breakpoint]);
+    return isMobile;
+}
+
 const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) => {
     const socket = useSocket();
     const [message, setMessage] = useState("");
@@ -43,11 +54,12 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
     const [displayChat, setDisplayChat] = useState(true);
     const hasJoinedRef = useRef(false);
 
+    const isMobile = useIsMobile(700);
+
     useEffect(() => {
         usersRef.current = users;
     }, [users]);
 
-    // Sätt alltid upp listeners först!
     useEffect(() => {
         const handleMessage = (data: Message) => {
             setMessages((prev) => [...prev, data]);
@@ -78,7 +90,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
         };
     }, [socket]);
 
-    // Gör join när ChatApp mountas och userId/room finns
     useEffect(() => {
         if (!hasJoinedRef.current && userId && room) {
             socket.emit("enterRoom", { userId, room, password });
@@ -86,7 +97,6 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
         }
     }, [socket, userId, room, password]);
 
-    // Hantera scrollning av chattfönstret
     const chatRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         if (chatRef.current) {
@@ -160,14 +170,16 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
                         bounds={"window"}
                         minWidth={325}
                         minHeight={679}
-                        maxWidth={window.innerWidth - 20} // Maxbredd: 20px marginal totalt (10px på varje sida)
-                        maxHeight={window.innerHeight - 20} // Maxhöjd: 20px marginal totalt (10px på varje sida)
+                        maxWidth={window.innerWidth - 20}
+                        maxHeight={window.innerHeight - 20}
                         default={{
                             x: 0,
-                            y: 55, 
+                            y: 55,
                             width: '400',
                             height: '679',
                         }}
+                        disableDragging={isMobile}
+                        enableResizing={!isMobile}
                     >
                         <MessageList messages={messages} userId={userId} chatRef={chatRef} roomId={room} />
                         <ActivityIndicator activity={activity} />

@@ -252,7 +252,6 @@ text-align: left;
 .chair-grid {
   display: grid;
   grid-template-columns: repeat(10, 2.2em);
-  grid-template-rows: repeat(3, 2.2em);
   gap: 0.4em;
   margin: 0.5em 0 0.3em 0;
   justify-content: center;
@@ -285,4 +284,80 @@ text-align: left;
   margin: 0 auto;
   margin-top: 10px;
   margin-bottom: 2rem;
+}
+
+@media (max-width: 700px) {
+  .create-room-container {
+    padding: 0.5rem 0.2rem;
+    border-radius: 0;
+    box-shadow: none;
+    min-width: unset;
+    max-width: 100vw;
+  }
+
+  .create-room-form {
+    padding: 1rem 0.5rem;
+    width: 100%;
+    min-width: unset;
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+
+  .create-room-header {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+
+  .chair-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    justify-items: stretch;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .chair-btn {
+    width: 100%;
+    height: 48px;
+    font-size: 2.2rem;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    margin: 0;
+  }
+
+  .create-room-input {
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+
+  .create-room-tags {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .tag-checkbox {
+    font-size: 0.95rem;
+    padding: 0.3rem 0.7rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .create-room-button {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 0.7rem 0;
+    margin-top: 1rem;
+  }
+
+  .close-form-button {
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 32px;
+    height: 32px;
+  }
 }

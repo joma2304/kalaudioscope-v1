@@ -17,6 +17,7 @@ const Header: React.FC<HeaderProps> = ({ setIsLoggedIn, setUserId }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleRegister = async (user: { firstName: string; lastName: string; email: string; password: string }) => {
     try {
@@ -46,21 +47,32 @@ const Header: React.FC<HeaderProps> = ({ setIsLoggedIn, setUserId }) => {
           className="header-logo"
         />
       </a>
-      <div className="header-user">
+      <button
+        className={`hamburger${menuOpen ? " open" : ""}`}
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Toggle menu"
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+      <div className={`header-user${menuOpen ? " open" : ""}`}>
         {user ? (
           <>
             <span className="user-info">
-              {user.firstName} {user.lastName} ({user.email})
+              {user.firstName} {user.lastName}
+              <br className="user-break" />
+              <span className="user-email">({user.email})</span>
             </span>
-    <div className="settings-icon">
-      <button
-        className="settings-btn"
-        onClick={() => setShowSettings(true)}
-        title="Account settings"
-      >
-        <Settings size={22} className="settings-icon-svg" />
-      </button>
-    </div>
+            <div className="settings-icon">
+              <button
+                className="settings-btn"
+                onClick={() => setShowSettings(true)}
+                title="Account settings"
+              >
+                <Settings size={22} className="settings-icon-svg" />
+              </button>
+            </div>
             <SettingsModal
               isOpen={showSettings}
               onClose={() => setShowSettings(false)}
