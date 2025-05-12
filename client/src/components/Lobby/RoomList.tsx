@@ -52,12 +52,12 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
       setConnected(true);
       socket.emit("getRoomList"); // Begär rumslistan vid anslutning
     };
-  
+
     const handleDisconnect = () => setConnected(false);
-  
+
     socket.on("connect", handleConnect);
     socket.on("disconnect", handleDisconnect);
-  
+
     return () => {
       socket.off("connect", handleConnect);
       socket.off("disconnect", handleDisconnect);
@@ -128,8 +128,8 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
   const filteredRooms = filterTags.length === 0
     ? rooms
     : rooms.filter((room) =>
-        (room.tags ?? []).some((tag) => filterTags.includes(tag))
-      );
+      (room.tags ?? []).some((tag) => filterTags.includes(tag))
+    );
 
   if (!connected) {
     return <div>Loading list of active chatrooms...</div>;
@@ -150,7 +150,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
               className={`filter-tag${isSelected ? " selected" : ""}`}
               onClick={() => toggleFilter(tag)}
               style={{
-                
+
                 "--tag-color": tagColors[tag]
               } as React.CSSProperties}
             >
@@ -187,7 +187,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
                     {/* Room tags */}
                     {room.tags && room.tags.length > 0 && (
                       <div className="room-tags">
-                        {room.tags.map((tag, i) => (
+                        {room.tags.map((tag) => (
                           <span
                             key={tag}
                             className="room-tag"

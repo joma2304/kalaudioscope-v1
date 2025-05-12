@@ -164,36 +164,36 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
             </div>
             <div className="font-bold p-2 ">
                 {displayChat && (
-                <>
-                    <Rnd
-                        className="chat-container cursor-move"
-                        bounds={"window"}
-                        minWidth={325}
-                        minHeight={679}
-                        maxWidth={window.innerWidth - 20}
-                        maxHeight={window.innerHeight - 20}
-                        default={{
-                            x: 0,
-                            y: 55,
-                            width: '400',
-                            height: '679',
-                        }}
-                        disableDragging={isMobile}
-                        enableResizing={!isMobile}
-                    >
-                        <MessageList messages={messages} userId={userId} chatRef={chatRef} roomId={room} />
-                        <ActivityIndicator activity={activity} />
-                        <MessageForm
-                            message={message}
-                            setMessage={setMessage}
-                            sendMessage={sendMessage}
-                            handleTyping={handleTyping}
-                        />
-                        <UserList users={users} />
-                        <LeaveChatButton leaveChat={leaveChat} />
-                        <CopyInviteLinkButton room={room} password={password}/>
-                    </Rnd>
-                </>
+                    <>
+                        <Rnd
+                            className="chat-container cursor-move"
+                            bounds={"window"}
+                            minWidth={325}
+                            minHeight={679}
+                            maxWidth={window.innerWidth - 20}
+                            maxHeight={window.innerHeight - 20}
+                            default={{
+                                x: 0,
+                                y: 55,
+                                width: '400',
+                                height: '679',
+                            }}
+                            disableDragging={isMobile}
+                            enableResizing={!isMobile}
+                        >
+                            <MessageList messages={messages} userId={userId} chatRef={chatRef} roomId={room} />
+                            <ActivityIndicator activity={activity} />
+                            <MessageForm
+                                message={message}
+                                setMessage={setMessage}
+                                sendMessage={sendMessage}
+                                handleTyping={handleTyping}
+                            />
+                            <UserList users={users} />
+                            <LeaveChatButton leaveChat={leaveChat} />
+                            <CopyInviteLinkButton room={room} password={password} />
+                        </Rnd>
+                    </>
                 )}
             </div>
         </>

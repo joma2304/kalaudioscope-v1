@@ -82,7 +82,7 @@ form {
     margin: 0 auto;
 }
 
-  .send-button::before {
+.send-button::before {
     content: "";
     position: absolute;
     top: -50%;
@@ -94,13 +94,13 @@ form {
     transition: all 0.6s ease;
     z-index: 1;
     pointer-events: none;
-  }
-  
-  .send-button:hover::before {
+}
+
+.send-button:hover::before {
     top: -80%;
     left: -80%;
     transform: rotate(45deg);
-  }
+}
 
 .send-button:hover {
     transform: translateY(-1px) scale(1.01);
@@ -133,7 +133,7 @@ form {
     margin: 0 auto;
 }
 
-  .leave-chat::before {
+.leave-chat::before {
     content: "";
     position: absolute;
     top: -50%;
@@ -145,13 +145,13 @@ form {
     transition: all 0.6s ease;
     z-index: 1;
     pointer-events: none;
-  }
-  
-  .leave-chat:hover::before {
+}
+
+.leave-chat:hover::before {
     top: -80%;
     left: -80%;
     transform: rotate(45deg);
-  }
+}
 
 .leave-chat:hover {
     transform: translateY(-1px) scale(1.01);

@@ -16,8 +16,8 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType>({
   user: null,
-  setUser: () => {},
-  logout: () => {},
+  setUser: () => { },
+  logout: () => { },
 });
 
 export const useUser = () => useContext(UserContext);
@@ -36,11 +36,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser: (u) => {
-      setUser(u);
-      if (u) localStorage.setItem("authUser", JSON.stringify(u));
-      else localStorage.removeItem("authUser");
-    }, logout }}>
+    <UserContext.Provider value={{
+      user, setUser: (u) => {
+        setUser(u);
+        if (u) localStorage.setItem("authUser", JSON.stringify(u));
+        else localStorage.removeItem("authUser");
+      }, logout
+    }}>
       {children}
     </UserContext.Provider>
   );
