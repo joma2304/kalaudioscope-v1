@@ -162,51 +162,51 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
 
       {/* Room list */}
       {filteredRooms.length > 0 ? (
-        <ul className="room-list">
-          {filteredRooms.map((room, index) => {
-            const isFull = room.maxUsers !== undefined && room.userCount >= room.maxUsers;
+        <>
+          <h3 className="room-list-header">Current active rooms:</h3>
+          <p className="tag-info">Click on room to join </p>
+          <ul className="room-list">
+            {filteredRooms.map((room) => {
+              const isFull = room.maxUsers !== undefined && room.userCount >= room.maxUsers;
 
-            return (
-              <>
-              <h3 className="room-list-header">Current active rooms:</h3>
-              <p className="tag-info">Click on room to join </p>
-              <li key={index} className="room-item">
-                <button
-                  onClick={() => !isFull && handleJoin(room)}
-                  className={`room-button ${isFull ? "room-button-full" : ""}`}
-                  disabled={isFull}
-                >
-                  <div className="room-info">
-                    <span className="room-users">
-                      {room.userCount}/{room.maxUsers || "∞"} Users
-                    </span>
-                    {isFull && <span className="room-full-message"> (No spots available)</span>}
-                    {room.hasPassword && <span className="room-lock"> - Password required 🔒</span>}
-                  </div>
-
-                  {/* Room tags */}
-                  {room.tags && room.tags.length > 0 && (
-                    <div className="room-tags">
-                      {room.tags.map((tag, i) => (
-                        <span
-                          key={i}
-                          className="room-tag"
-                          style={{
-                            backgroundColor: tagColors[tag] || "#e5e7eb",
-                            color: "#fff",
-                          }}
-                        >
-                          #{tag}
-                        </span>
-                      ))}
+              return (
+                <li key={room.name} className="room-item">
+                  <button
+                    onClick={() => !isFull && handleJoin(room)}
+                    className={`room-button ${isFull ? "room-button-full" : ""}`}
+                    disabled={isFull}
+                  >
+                    <div className="room-info">
+                      <span className="room-users">
+                        {room.userCount}/{room.maxUsers || "∞"} Users
+                      </span>
+                      {isFull && <span className="room-full-message"> (No spots available)</span>}
+                      {room.hasPassword && <span className="room-lock"> - Password required 🔒</span>}
                     </div>
-                  )}
-                </button>
-              </li>
-              </>
-            );
-          })}
-        </ul>
+
+                    {/* Room tags */}
+                    {room.tags && room.tags.length > 0 && (
+                      <div className="room-tags">
+                        {room.tags.map((tag, i) => (
+                          <span
+                            key={tag}
+                            className="room-tag"
+                            style={{
+                              backgroundColor: tagColors[tag] || "#e5e7eb",
+                              color: "#fff",
+                            }}
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </>
       ) : (
         <p className="no-rooms-message">No active rooms</p>
       )}
