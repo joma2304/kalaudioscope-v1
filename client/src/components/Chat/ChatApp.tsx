@@ -153,36 +153,56 @@ const ChatApp: React.FC<ChatAppProps> = ({ onLeave, userId, room, password }) =>
                 </div>
             </div>
             <div className="font-bold p-2 ">
-                {displayChat && (
-                <>
-                    <Rnd
-                        className="chat-container cursor-move"
-                        bounds={"window"}
-                        minWidth={325}
-                        minHeight={679}
-                        maxWidth={window.innerWidth - 20} // Maxbredd: 20px marginal totalt (10px på varje sida)
-                        maxHeight={window.innerHeight - 20} // Maxhöjd: 20px marginal totalt (10px på varje sida)
-                        default={{
-                            x: 0,
-                            y: 55, 
-                            width: '400',
-                            height: '679',
-                        }}
-                    >
-                        <MessageList messages={messages} userId={userId} chatRef={chatRef} roomId={room} />
-                        <ActivityIndicator activity={activity} />
-                        <MessageForm
-                            message={message}
-                            setMessage={setMessage}
-                            sendMessage={sendMessage}
-                            handleTyping={handleTyping}
-                        />
-                        <UserList users={users} />
-                        <LeaveChatButton leaveChat={leaveChat} />
-                        <CopyInviteLinkButton room={room} password={password}/>
-                    </Rnd>
-                </>
-                )}
+                <div className="chat-bounds">
+                    {displayChat && (
+                        <>
+                            <Rnd
+                                className="chat-container cursor-move"
+                                bounds="window" // Begränsa rörelsen till fönstret
+                                minWidth={325}
+                                minHeight={679}
+                                default={{
+                                    x: 10, // Startposition med 10px marginal från vänster
+                                    y: 10, // Startposition med 10px marginal från toppen
+                                    width: 400,
+                                    height: 679,
+                                }}
+                                onDrag={(e, d) => {
+                                    const minX = 10; // Minsta avstånd från vänster
+                                    const minY = 10; // Minsta avstånd från toppen
+                                    const maxX = window.innerWidth - d.node.offsetWidth - 10; // Max avstånd från höger
+                                    const maxY = window.innerHeight - d.node.offsetHeight - 10; // Max avstånd från botten
+
+                                    // Begränsa X-position
+                                    if (d.x < minX) {
+                                        d.node.style.left = `${minX}px`;
+                                    } else if (d.x > maxX) {
+                                        d.node.style.left = `${maxX}px`;
+                                    }
+
+                                    // Begränsa Y-position
+                                    if (d.y < minY) {
+                                        d.node.style.top = `${minY}px`;
+                                    } else if (d.y > maxY) {
+                                        d.node.style.top = `${maxY}px`;
+                                    }
+                                }}
+                            >
+                                <MessageList messages={messages} userId={userId} chatRef={chatRef} roomId={room} />
+                                <ActivityIndicator activity={activity} />
+                                <MessageForm
+                                    message={message}
+                                    setMessage={setMessage}
+                                    sendMessage={sendMessage}
+                                    handleTyping={handleTyping}
+                                />
+                                <UserList users={users} />
+                                <LeaveChatButton leaveChat={leaveChat} />
+                                <CopyInviteLinkButton room={room} password={password} />
+                            </Rnd>
+                        </>
+                    )}
+                </div>
             </div>
         </>
     );
