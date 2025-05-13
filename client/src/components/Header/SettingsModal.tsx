@@ -66,7 +66,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
     }
     try {
       const token = user?.token;
-      const res = await fetch("http://localhost:3500/api/user", {
+      const res = await fetch("https://kalaudioscope-test.onrender.com/api/user", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -99,7 +99,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
   const handleDelete = async () => {
     try {
       const token = user?.token;
-      const res = await fetch("http://localhost:3500/api/user", {
+      const res = await fetch("https://kalaudioscope-test.onrender.com/api/user", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

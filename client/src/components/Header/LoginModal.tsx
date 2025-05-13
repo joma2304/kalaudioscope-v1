@@ -21,7 +21,7 @@ const LoginModal: React.FC<Props> = ({ open, onClose, setIsLoggedIn, setUserId }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:3500/api/user/login", {
+    const res = await fetch("https://kalaudioscope-test.onrender.com/api/user/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

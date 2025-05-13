@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("ws://localhost:3500", { autoConnect: false });
+const socket = io("https://kalaudioscope-test.onrender.com", { autoConnect: false });
 
 export const SocketContext = createContext(socket);
 export const useSocket = () => useContext(SocketContext);

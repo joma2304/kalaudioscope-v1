@@ -21,7 +21,7 @@ const Header: React.FC<HeaderProps> = ({ setIsLoggedIn, setUserId }) => {
 
   const handleRegister = async (user: { firstName: string; lastName: string; email: string; password: string }) => {
     try {
-      const res = await fetch("http://localhost:3500/api/user", {
+      const res = await fetch("https://kalaudioscope-test.onrender.com/api/user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),

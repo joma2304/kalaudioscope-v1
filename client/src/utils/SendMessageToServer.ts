@@ -12,7 +12,7 @@ export const sendMessageToServer = async ({
     socket.emit("message", { userId, text });
 
     try {
-        const res = await fetch("http://localhost:3500/api/send", {
+        const res = await fetch("https://kalaudioscope-test.onrender.com/api/send", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

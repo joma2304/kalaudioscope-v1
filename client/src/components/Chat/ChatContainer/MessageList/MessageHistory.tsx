@@ -17,7 +17,7 @@ const MessageHistory = ({ roomId }: { roomId: string }) => {
     useEffect(() => {
         const fetchMessages = async (roomId: string) => {
             try {
-                const res = await fetch(`http://localhost:3500/api/messages/${roomId}`);
+                const res = await fetch(`https://kalaudioscope-test.onrender.com/api/messages/${roomId}`);
                 if (res.ok) {
                     const data = await res.json();
                     setMessages(data);
