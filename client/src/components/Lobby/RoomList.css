@@ -5,6 +5,8 @@
   border-radius: 16px;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
   max-width: 520px;
+  width: 90vw;
+
   margin: 2rem auto;
   animation: fadeInUp 0.5s ease-out;
 }
@@ -176,9 +178,13 @@
 @media (max-width: 700px) {
   .room-list-container {
         padding: 1rem 0.5rem;
-        width: 100%;
+        width: 90vw;
         min-width: unset;
         max-width: 100vw;
         box-sizing: border-box;
   }
+ .room-list-header {
+  font-size: 1.5rem;
+}
+
 }
