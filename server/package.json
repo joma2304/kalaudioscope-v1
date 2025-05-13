@@ -1,5 +1,5 @@
 {
-  "name": "testchat2",
+  "name": "testchat-server",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -7,10 +7,6 @@
     "start": "node .",
     "dev": "nodemon index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.4.7",

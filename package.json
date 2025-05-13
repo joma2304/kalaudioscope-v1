@@ -1,22 +1,19 @@
 {
-  "devDependencies": {
-    "@types/node": "^22.13.14",
-    "@types/react-rnd": "^7.4.4",
-    "concurrently": "^9.1.2"
-  },
   "name": "testchat",
   "version": "1.0.0",
   "main": "index.js",
-  "dependencies": {
-    "jwt-decode": "^4.0.0",
-    "mongoose": "^8.13.2",
-    "react-hot-toast": "^2.5.2",
-    "react-rnd": "^10.5.2",
-    "undici-types": "^6.21.0"
-  },
   "scripts": {
+    "start": "node server/index.js",
     "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "build": "npm install --prefix server && npm install --prefix client && npm run build --prefix client"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.14",
+    "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "mongoose": "^8.13.2",
+    "undici-types": "^6.21.0"
   },
   "repository": {
     "type": "git",
