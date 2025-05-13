@@ -157,23 +157,24 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources, userId }) => {
         <>
           {/* Vinklarna */}
           <div className="stream-thumbnails">
-            {sources.map((source, index) => (
-              <button
-                key={index}
-                className={`thumbnail-button ${currentSourceIndex === index ? "active" : ""}`}
-                onClick={() => switchSource(index)}
-              >
-                <video
-                  className="thumbnail-video"
-                  src={source.url}
-                  muted
-                  playsInline
-                  preload="metadata"
-                />
-                <span className="label">{source.label}</span>
-              </button>
-            ))}
-
+            {sources
+              .filter(source => source.label !== "360°") // Visa ej thumbnail för 360°
+              .map((source, index) => (
+                <button
+                  key={index}
+                  className={`thumbnail-button ${currentSourceIndex === index ? "active" : ""}`}
+                  onClick={() => switchSource(index)}
+                >
+                  <video
+                    className="thumbnail-video"
+                    src={source.url}
+                    muted
+                    playsInline
+                    preload="metadata"
+                  />
+                  <span className="label">{source.label}</span>
+                </button>
+              ))}
             {/* Knapp för att byta vy */}
             <button
               onClick={toggleViewMode}

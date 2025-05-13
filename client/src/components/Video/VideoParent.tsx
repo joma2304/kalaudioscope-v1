@@ -11,10 +11,12 @@ const formatTime = (time: number) => {
 };
 
 const STORAGE_KEY = "lastVideoTime";
+const STREAMS_KEY = "customStreams";
+const DEFAULT_360_URL = "/Malmolive360_Fb360_360-1.mp4";
 
 interface VideoParentProps {
-    onToggleViewMode: () => void; // Ny prop för att hantera vybyte
-    isVideoParent: boolean; // För att veta vilken vy som är aktiv
+    onToggleViewMode: () => void;
+    isVideoParent: boolean;
 }
 
 const VideoParent: React.FC<VideoParentProps> = ({ onToggleViewMode, isVideoParent }) => {
@@ -23,6 +25,28 @@ const VideoParent: React.FC<VideoParentProps> = ({ onToggleViewMode, isVideoPare
     const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
     const [isVideoReady, setIsVideoReady] = useState(false);
+    const [videoUrl, setVideoUrl] = useState(DEFAULT_360_URL);
+
+    // Hämta rätt 360°-källa från localStorage eller default
+    useEffect(() => {
+        const updateUrl = () => {
+            const saved = localStorage.getItem(STREAMS_KEY);
+            if (saved) {
+                try {
+                    const arr = JSON.parse(saved);
+                    const found = arr.find((s: any) => s.label === "360°");
+                    setVideoUrl(found?.url || DEFAULT_360_URL);
+                } catch {
+                    setVideoUrl(DEFAULT_360_URL);
+                }
+            } else {
+                setVideoUrl(DEFAULT_360_URL);
+            }
+        };
+        updateUrl();
+        window.addEventListener("customStreamsChanged", updateUrl);
+        return () => window.removeEventListener("customStreamsChanged", updateUrl);
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -107,7 +131,7 @@ const VideoParent: React.FC<VideoParentProps> = ({ onToggleViewMode, isVideoPare
                     minPolarAngle={Math.PI / 3}
                     maxPolarAngle={Math.PI / 1.5}
                 />
-                <Video360 videoSrc="/Malmolive360_Fb360_360-1.mp4" videoRef={videoRef} />
+                <Video360 videoSrc={videoUrl} videoRef={videoRef} />
             </Canvas>
 
             <div className="video-controls">

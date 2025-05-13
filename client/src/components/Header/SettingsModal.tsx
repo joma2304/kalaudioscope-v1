@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./LoginModal.css";
 import { useUser } from "../../context/UserContext";
 import toast from "react-hot-toast";
@@ -14,8 +14,11 @@ const defaultStreams = [
   { label: "Angle 1", url: "/videos/angle1.mp4" },
   { label: "Angle 2", url: "/videos/angle2.mp4" },
   { label: "Angle 3", url: "/videos/angle3.mp4" },
-  { label: "Angle 4", url: "/videos/angle4.mp4" }
+  { label: "Angle 4", url: "/videos/angle4.mp4" },
+  { label: "360°", url: "/Malmolive360_Fb360_360-1.mp4" },
 ];
+
+const STORAGE_KEY = "customStreams";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -32,10 +35,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
   const [newPassword, setNewPassword] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
-  const [streams, setStreams] = useState(() => {
-    const stored = localStorage.getItem("customStreams");
-    return stored ? JSON.parse(stored) : defaultStreams;
-  });
+  const [streams, setStreams] = useState(defaultStreams);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) setStreams(JSON.parse(saved));
+  }, []);
 
   if (!isOpen) return null;
 
@@ -120,13 +125,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
   const handleStreamChange = (idx: number, url: string) => {
     const updated = streams.map((s: Stream, i: number): Stream => i === idx ? { ...s, url } : s);
     setStreams(updated);
-    localStorage.setItem("customStreams", JSON.stringify(updated));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     window.dispatchEvent(new Event("customStreamsChanged")); // <-- Lägg till denna rad
   };
 
   const handleResetStreams = () => {
     setStreams(defaultStreams);
-    localStorage.removeItem("customStreams");
+    localStorage.removeItem(STORAGE_KEY);
     window.dispatchEvent(new Event("customStreamsChanged")); // <-- Lägg till denna rad
   };
 
