@@ -171,6 +171,14 @@ const StreamViewer: React.FC<StreamViewerProps> = ({ sources, userId }) => {
                     muted
                     playsInline
                     preload="metadata"
+                    // Hoppa till 30 sekunder när metadata är laddad
+                    onLoadedMetadata={e => {
+                      const video = e.currentTarget;
+                      // Hoppa bara om videon är längre än 30 sekunder
+                      if (video.duration > 30) {
+                        video.currentTime = 30;
+                      }
+                    }}
                   />
                   <span className="label">{source.label}</span>
                 </button>
