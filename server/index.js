@@ -21,12 +21,21 @@ const PORT = process.env.PORT || 3500
 
 
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "client/build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/build", "index.html"));
+});
 
 app.use(
-    cors({
-        origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
-    })
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "https://din-frontend.onrender.com", // Lägg till din riktiga frontend-URL här
+    ],
+    credentials: true,
+  })
 );
 
 app.use("/api", messageRoutes);
