@@ -12,7 +12,8 @@ const formatTime = (time: number) => {
 
 const STORAGE_KEY = "lastVideoTime";
 const STREAMS_KEY = "customStreams";
-const DEFAULT_360_URL = "/Malmolive360_Fb360_360-1.mp4";
+/* const DEFAULT_360_URL = "/Malmolive360_Fb360_360-1.mp4"; */
+const DEFAULT_360_URL = "https://cdn.bitmovin.com/content/assets/playhouse-vr/progressive.mp4";
 
 interface VideoParentProps {
     onToggleViewMode: () => void;

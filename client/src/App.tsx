@@ -10,12 +10,18 @@ import toast, { Toaster } from 'react-hot-toast';
 import Header from "./components/Header/Header";
 import { jwtDecode } from "jwt-decode";
 
-const defaultStreams = [
+/* const defaultStreams = [
     { label: "Angle 1", url: "/videos/angle1.mp4" },
     { label: "Angle 2", url: "/videos/angle2.mp4" },
     { label: "Angle 3", url: "/videos/angle3.mp4" },
     { label: "Angle 4", url: "/videos/angle4.mp4" }
-];
+]; */
+const defaultStreams = [
+    { label: "Angle 1", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" },
+    { label: "Angle 2", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" },
+    { label: "Angle 3", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" },
+    { label: "Angle 4", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" }
+]; 
 const getStreams = () => {
     const stored = localStorage.getItem("customStreams");
     return stored ? JSON.parse(stored) : defaultStreams;
