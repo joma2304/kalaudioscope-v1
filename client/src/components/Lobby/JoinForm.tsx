@@ -102,13 +102,14 @@ const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
           <form className="create-room-form" onSubmit={joinRoom}>
             <button
               className="close-form-button"
+              aria-label="Close form"
               onClick={() => setIsFormVisible(false)}
               type="button"
             >
               <CircleX />
             </button>
 
-            <h3 className="create-room-header">Create a new chatroom</h3>
+            <h2 className="create-room-header">Create a new chatroom</h2>
             <br />
             <label className="create-room-label">Select amount of seats in chatroom</label>
             <div className="chair-grid">
@@ -129,8 +130,9 @@ const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
               {maxUsers} {maxUsers === 1 ? "seat selected" : "seats selected"}
             </div>
 
-            <label className="create-room-label">Password (optional)</label>
+            <label htmlFor="password" className="create-room-label">Password (optional)</label>
             <input
+              id="password"
               className="create-room-input"
               type="password"
               placeholder="Enter password if you want to restrict access"
@@ -144,11 +146,13 @@ const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {
                 const isSelected = selectedTags.includes(tag.name);
                 return (
                   <label
+                  htmlFor={tag.name}
                     key={tag.name}
                     className={`tag-checkbox${isSelected ? " selected" : ""}`}
                     style={{ "--tag-color": tag.color } as React.CSSProperties}
                   >
                     <input
+                      id={tag.name}
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleTag(tag.name)}

@@ -137,7 +137,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
 
   return (
     <div className="room-list-container">
-      <h3 className="room-list-header">Join an active room</h3>
+      <h2 className="room-list-header">Join an active room</h2>
       <p className="tag-info">Filter active rooms by tags</p>
 
       {/* Filter tags */}
@@ -163,7 +163,7 @@ const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {
       {/* Room list */}
       {filteredRooms.length > 0 ? (
         <>
-          <h3 className="room-list-header">Current active rooms:</h3>
+          <h2 className="room-list-header">Current active rooms:</h2>
           <p className="tag-info">Click on room to join </p>
           <ul className="room-list">
             {filteredRooms.map((room) => {

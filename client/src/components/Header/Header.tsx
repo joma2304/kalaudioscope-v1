@@ -40,13 +40,16 @@ const Header: React.FC<HeaderProps> = ({ setIsLoggedIn, setUserId }) => {
 
   return (
     <header className="header">
-      <a href="/" className="header-logo-link">
-        <img
-          src="/kalaudioscope-logo-small.png"
-          alt="Kalaudioscope Logo"
-          className="header-logo"
-        />
-      </a>
+      <div className="header-logo-container">
+        <a href="/" className="header-logo-link">
+          <img
+            src="/kalaudioscope-logo-small.png"
+            alt="Kalaudioscope Logo"
+            className="header-logo"
+          />
+        </a>
+        <h1 className="header-title">KalAudioScope</h1>
+      </div>
       <button
         className={`hamburger${menuOpen ? " open" : ""}`}
         onClick={() => setMenuOpen(!menuOpen)}
@@ -69,6 +72,7 @@ const Header: React.FC<HeaderProps> = ({ setIsLoggedIn, setUserId }) => {
                 className="settings-btn"
                 onClick={() => setShowSettings(true)}
                 title="Account settings"
+                aria-label="Account settings"
               >
                 <Settings size={22} className="settings-icon-svg" />
               </button>

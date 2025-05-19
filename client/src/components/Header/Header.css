@@ -1,6 +1,6 @@
 .header {
   padding: 1rem 2rem;
-  background-color: #34349a;
+  background-color: #252545;
   color: #ffffff;
   display: flex;
   justify-content: space-between;
@@ -18,12 +18,21 @@
 .header-logo {
   height: 42px !important;
   width: auto !important;
+  flex-direction: column;
+}
+
+.header-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
 }
 
 .header-title {
   font-weight: bold;
   font-size: 1.2rem;
   letter-spacing: 0.5px;
+  flex-direction: column;
 }
 
 .header-user {
@@ -81,7 +90,7 @@
 }
 
 .register-btn {
-  background: #007bff;
+  background: #006cdf;
   color: #fff;
 }
 
@@ -101,7 +110,7 @@
 }
 
 .login-btn {
-  background: #28a745;
+  background: #00a426;
   color: #fff;
 }
 
@@ -127,12 +136,12 @@
 }
 
 .settings-icon-svg {
-  color: #c8c8c8;
+  color: #e1e1e1;
   transition: color 0.3s;
 }
 
 .settings-btn:hover .settings-icon-svg {
-  color: #6a79ce;
+  color: #ffffff;
 }
 
 .header-logo-link img {
@@ -152,6 +161,7 @@
   .header {
     padding: 0.7rem 1rem;
   }
+
   .header-user {
     display: none;
     position: absolute;
@@ -160,24 +170,32 @@
     background: #34349a;
     flex-direction: column;
     gap: 1rem;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    padding: 1rem 2.2rem;      /* lite bredare padding */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 1rem 2.2rem;
+    /* lite bredare padding */
     border-radius: 10px;
     z-index: 100;
-    min-width: 260px;          /* öka från 200px till 260px */
-    max-width: 90vw;           /* för att undvika overflow på små skärmar */
+    min-width: 260px;
+    /* öka från 200px till 260px */
+    max-width: 90vw;
+    /* för att undvika overflow på små skärmar */
     word-break: break-word;
   }
+
   .header-user.open {
     display: flex;
   }
+
   .hamburger {
     display: flex;
   }
+
   .user-break {
     display: inline;
   }
+
   .user-info {
-    max-width: 220px;          /* öka från 140px till 220px */
+    max-width: 220px;
+    /* öka från 140px till 220px */
   }
 }

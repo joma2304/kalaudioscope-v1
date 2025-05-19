@@ -139,7 +139,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onLogout
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Account Settings</h2>
-        <button className="close-btn" onClick={onClose}> <CircleX /> </button>
+        <button className="close-btn" aria-label="close form" onClick={onClose}> <CircleX /> </button>
 
         {/* Stream URL settings */}
         <div style={{ marginBottom: 20 }}>
