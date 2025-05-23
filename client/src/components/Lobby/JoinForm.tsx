@@ -10,19 +10,19 @@ interface JoinFormProps {
 }
 
 const availableTags = [
-  { name: "Opera pro", color: "#6366f1" },
-  { name: "Quiet room", color: "#10b981" },
-  { name: "Chatting", color: "#f59e0b" },
-  { name: "Beginner", color: "#3b82f6" },
-  { name: "Talk after show", color: "#ef4444" },
-  { name: "Meet new people", color: "#8b5cf6" },
-  { name: "First-timers welcome", color: "#22c55e" },
-  { name: "Discussion-focused", color: "#eab308" },
-  { name: "Silent viewers", color: "#6b7280" },
-  { name: "Casual hangout", color: "#0ea5e9" },
-  { name: "Q&A after", color: "#14b8a6" },
-  { name: "No spoilers", color: "#f97316" },
-  { name: "Late joiners ok", color: "#60a5fa" },
+  { name: "Opera pro", color: "#3730a3" },         // Mörk indigo
+  { name: "Quiet room", color: "#047857" },        // Mörk smaragd
+  { name: "Chatting", color: "#b45309" },          // Mörk bärnsten
+  { name: "Beginner", color: "#1d4ed8" },          // Mörk blå
+  { name: "Talk after show", color: "#b91c1c" },   // Mörk röd
+  { name: "Meet new people", color: "#5b21b6" },   // Mörk violett
+  { name: "First-timers welcome", color: "#15803d" }, // Mörk grön
+  { name: "Discussion-focused", color: "#a16207" },   // Mörk gul
+  { name: "Silent viewers", color: "#1f2937" },        // Mörkgrå
+  { name: "Casual hangout", color: "#0369a1" },        // Mörk himmelsblå
+  { name: "Q&A after", color: "#0f766e" },             // Mörk teal
+  { name: "No spoilers", color: "#c2410c" },           // Mörk orange
+  { name: "Late joiners ok", color: "#1e40af" }        // Mörkare blå
 ];
 
 const JoinForm: React.FC<JoinFormProps> = ({ userId, onJoinSuccess }) => {

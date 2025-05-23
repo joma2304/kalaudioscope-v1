@@ -22,19 +22,19 @@ interface RoomListProps {
 }
 
 const tagColors: { [key: string]: string } = {
-  "Opera pro": "#6366f1",
-  "Quiet room": "#10b981",
-  "Chatting": "#f59e0b",
-  "Beginner": "#3b82f6",
-  "Talk after show": "#ef4444",
-  "Meet new people": "#8b5cf6",
-  "First-timers welcome": "#22c55e",
-  "Discussion-focused": "#eab308",
-  "Silent viewers": "#6b7280",
-  "Casual hangout": "#0ea5e9",
-  "Q&A after": "#14b8a6",
-  "No spoilers": "#f97316",
-  "Late joiners ok": "#60a5fa",
+  "Opera pro": "#3730a3",              // Dark Indigo
+  "Quiet room": "#047857",             // Dark Emerald
+  "Chatting": "#b45309",               // Dark Amber
+  "Beginner": "#1d4ed8",               // Dark Blue
+  "Talk after show": "#b91c1c",        // Dark Red
+  "Meet new people": "#5b21b6",        // Dark Violet
+  "First-timers welcome": "#15803d",   // Dark Green
+  "Discussion-focused": "#a16207",     // Dark Yellow
+  "Silent viewers": "#1f2937",         // Very Dark Gray
+  "Casual hangout": "#0369a1",         // Dark Sky Blue
+  "Q&A after": "#0f766e",              // Dark Teal
+  "No spoilers": "#c2410c",            // Dark Orange
+  "Late joiners ok": "#1e40af"  
 };
 
 const RoomList: React.FC<RoomListProps> = ({ onJoinRoom, userId }) => {

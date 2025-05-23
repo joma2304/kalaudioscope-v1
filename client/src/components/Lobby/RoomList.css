@@ -93,7 +93,7 @@
 
 /* Meddelande om inga rum finns */
 .no-rooms-message {
-  color: #adb5bd;
+  color: #6c6c6c;
   font-style: italic;
   text-align: center;
   font-size: 1rem;
