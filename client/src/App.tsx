@@ -9,6 +9,7 @@ import StreamViewer from "./components/Stream/StreamViewer";
 import toast, { Toaster } from 'react-hot-toast';
 import Header from "./components/Header/Header";
 import { jwtDecode } from "jwt-decode";
+import { useSocket } from "./context/SocketContext"; // Lägg till denna import
 
 /* const defaultStreams = [
     { label: "Angle 1", url: "/videos/angle1.mp4" },
@@ -47,6 +48,7 @@ const AppContent: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [testStreams, setTestStreams] = useState(getStreams());
     const { logout } = useUser();
+    const socket = useSocket(); // Lägg till denna rad
 
     // Uppdatera isLoggedIn och userId när authUser ändras (t.ex. i annan flik)
     useEffect(() => {
@@ -171,6 +173,16 @@ const AppContent: React.FC = () => {
         checkVideoFile();
     }, [userId]);
 
+    // Ny korrekt join-funktion
+    const handleJoinRoom = (roomName: string, password?: string, callback?: (result: { success: boolean; message?: string }) => void) => {
+        socket.emit("enterRoom", { userId, room: roomName, password }, (result: { success: boolean; message?: string }) => {
+            if (result.success) {
+                handleJoinSuccess(roomName, password);
+            }
+            if (callback) callback(result);
+        });
+    };
+
     // När man skapar ett nytt rum (från JoinForm)
     const handleJoinSuccess = (roomName: string, password?: string) => {
         setCurrentRoom(roomName);
@@ -212,7 +224,7 @@ const AppContent: React.FC = () => {
                             userId={userId}
                             onJoinSuccess={handleJoinSuccess}
                         />
-                        <RoomList onJoinRoom={handleJoinSuccess} userId={userId} />
+                        <RoomList onJoinRoom={handleJoinRoom} userId={userId} />
                     </div>
                 ) : (
                     <div
